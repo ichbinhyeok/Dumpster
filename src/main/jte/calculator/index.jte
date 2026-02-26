@@ -65,6 +65,37 @@
         <p class="eyebrow">Decision Engine</p>
         <h1>${model.pageTitle()}</h1>
         <p>Get a range-based size and weight recommendation with overweight risk and next action routing.</p>
+        <div class="hero-tags">
+            <span class="tag">Range, not guess</span>
+            <span class="tag">Weight + volume</span>
+            <span class="tag">Safe vs budget</span>
+            <span class="tag">Heavy debris aware</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="link-grid">
+            <article class="link-card">
+                <h2>Popular material guides</h2>
+                <ul>
+                    <li><a href="/dumpster/weight/asphalt_shingles">Asphalt shingles weight guide</a></li>
+                    <li><a href="/dumpster/weight/concrete">Concrete dumpster weight guide</a></li>
+                    <li><a href="/dumpster/weight/dirt_soil">Dirt and soil weight guide</a></li>
+                    <li><a href="/dumpster/weight/tile_ceramic">Tile and ceramic weight guide</a></li>
+                    <li><a href="/dumpster/weight/yard_waste">Yard waste weight guide</a></li>
+                </ul>
+            </article>
+            <article class="link-card">
+                <h2>Project quick starts</h2>
+                <ul>
+                    <li><a href="/dumpster/size/roof_tearoff">Roof tear-off preset</a></li>
+                    <li><a href="/dumpster/size/kitchen_remodel">Kitchen remodel preset</a></li>
+                    <li><a href="/dumpster/size/concrete_removal">Concrete removal strategy</a></li>
+                    <li><a href="/dumpster/size/estate_cleanout">Estate cleanout flow</a></li>
+                    <li><a href="/dumpster/heavy-debris-rules">Heavy debris rules</a></li>
+                </ul>
+            </article>
+        </div>
     </section>
 
     <section class="panel">

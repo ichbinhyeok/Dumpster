@@ -43,16 +43,13 @@ public class CsvBootstrapService {
     }
 
     private void seedMaterialFactors() {
-        if (countRows("material_factors") > 0) {
-            return;
-        }
         List<Map<String, String>> rows = readCsv("classpath:data/material_factors.csv");
         for (Map<String, String> row : rows) {
             jdbcTemplate.update("""
-                    insert into material_factors (
+                    merge into material_factors (
                         material_id, name, category, density_low, density_typ, density_high,
                         wet_multiplier_low, wet_multiplier_high, data_quality, source, source_version_date
-                    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) key(material_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     row.get("material_id"),
                     row.get("name"),
@@ -66,19 +63,16 @@ public class CsvBootstrapService {
                     row.getOrDefault("source", ""),
                     row.getOrDefault("source_version_date", null));
         }
-        log.info("Seeded material_factors: {}", rows.size());
+        log.info("Upserted material_factors: {}", rows.size());
     }
 
     private void seedUnitConversions() {
-        if (countRows("unit_conversions") > 0) {
-            return;
-        }
         List<Map<String, String>> rows = readCsv("classpath:data/unit_conversions.csv");
         for (Map<String, String> row : rows) {
             jdbcTemplate.update("""
-                    insert into unit_conversions (
+                    merge into unit_conversions (
                         unit_id, formula_type, material_required, uncertainty_pct, formula_expression
-                    ) values (?, ?, ?, ?, ?)
+                    ) key(unit_id) values (?, ?, ?, ?, ?)
                     """,
                     row.get("unit_id"),
                     row.get("formula_type"),
@@ -86,22 +80,19 @@ public class CsvBootstrapService {
                     parseDouble(row.get("uncertainty_pct")),
                     row.get("formula_expression"));
         }
-        log.info("Seeded unit_conversions: {}", rows.size());
+        log.info("Upserted unit_conversions: {}", rows.size());
     }
 
     private void seedDumpsterSizes() {
-        if (countRows("dumpster_sizes") > 0) {
-            return;
-        }
         List<Map<String, String>> rows = readCsv("classpath:data/dumpster_sizes.csv");
         for (Map<String, String> row : rows) {
             jdbcTemplate.update("""
-                    insert into dumpster_sizes (
+                    merge into dumpster_sizes (
                         size_yd, dimensions_approx,
                         included_tons_low, included_tons_typ, included_tons_high,
                         max_haul_tons_low, max_haul_tons_typ, max_haul_tons_high,
                         heavy_debris_max_fill_ratio, clean_load_required_for_heavy
-                    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) key(size_yd) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     parseInteger(row.get("size_yd")),
                     row.get("dimensions_approx"),
@@ -114,22 +105,19 @@ public class CsvBootstrapService {
                     parseDouble(row.get("heavy_debris_max_fill_ratio")),
                     parseBoolean(row.get("clean_load_required_for_heavy")));
         }
-        log.info("Seeded dumpster_sizes: {}", rows.size());
+        log.info("Upserted dumpster_sizes: {}", rows.size());
     }
 
     private void seedPricingAssumptions() {
-        if (countRows("pricing_assumptions") > 0) {
-            return;
-        }
         List<Map<String, String>> rows = readCsv("classpath:data/pricing_assumptions.csv");
         for (Map<String, String> row : rows) {
             jdbcTemplate.update("""
-                    insert into pricing_assumptions (
+                    merge into pricing_assumptions (
                         size_yd,
                         rental_fee_low, rental_fee_typ, rental_fee_high,
                         overage_fee_per_ton_low, overage_fee_per_ton_typ, overage_fee_per_ton_high,
                         haul_fee_low, haul_fee_typ, haul_fee_high, junk_rate_basis
-                    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) key(size_yd) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     parseInteger(row.get("size_yd")),
                     parseDouble(row.get("rental_fee_low")),
@@ -143,12 +131,7 @@ public class CsvBootstrapService {
                     parseDouble(row.get("haul_fee_high")),
                     row.get("junk_rate_basis"));
         }
-        log.info("Seeded pricing_assumptions: {}", rows.size());
-    }
-
-    private int countRows(String tableName) {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from " + tableName, Integer.class);
-        return count == null ? 0 : count;
+        log.info("Upserted pricing_assumptions: {}", rows.size());
     }
 
     private List<Map<String, String>> readCsv(String location) {
