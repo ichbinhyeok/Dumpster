@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -154,24 +157,31 @@ public class CsvBootstrapService {
             throw new IllegalStateException("CSV resource not found: " + location);
         }
         try (InputStream inputStream = resource.getInputStream();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            String headerLine = reader.readLine();
-            if (headerLine == null || headerLine.isBlank()) {
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+             CSVParser parser = CSVFormat.DEFAULT.builder()
+                     .setHeader()
+                     .setSkipHeaderRecord(true)
+                     .setIgnoreSurroundingSpaces(true)
+                     .build()
+                     .parse(reader)) {
+
+            if (parser.getHeaderMap() == null || parser.getHeaderMap().isEmpty()) {
                 return List.of();
             }
-            String[] headers = headerLine.split(",");
             List<Map<String, String>> rows = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.isBlank()) {
-                    continue;
-                }
-                String[] values = line.split(",", -1);
+            for (CSVRecord record : parser) {
                 Map<String, String> row = new HashMap<>();
-                for (int i = 0; i < headers.length; i++) {
-                    String key = headers[i].trim();
-                    String value = i < values.length ? values[i].trim() : "";
+                boolean hasData = false;
+                for (String header : parser.getHeaderNames()) {
+                    String key = header.trim();
+                    String value = record.isMapped(header) ? record.get(header).trim() : "";
                     row.put(key, value);
+                    if (!value.isBlank()) {
+                        hasData = true;
+                    }
+                }
+                if (!hasData) {
+                    continue;
                 }
                 rows.add(row);
             }
@@ -196,4 +206,3 @@ public class CsvBootstrapService {
         return Boolean.parseBoolean(value);
     }
 }
-

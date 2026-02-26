@@ -29,7 +29,9 @@ public class CtaRoutingService {
         if (heavyWarning) {
             reasons.add("heavy debris flow active");
         }
-        if ("48h".equalsIgnoreCase(command.needTiming())) {
+        if ("48h".equalsIgnoreCase(command.needTiming())
+                && feasibility == Feasibility.OK
+                && priceRisk != PriceRisk.HIGH) {
             primary = "dumpster_call";
             secondary = "junk_removal";
             reasons.add("urgent timing selected");
@@ -44,4 +46,3 @@ public class CtaRoutingService {
         return new CtaRouting(primary, secondary, reasons);
     }
 }
-

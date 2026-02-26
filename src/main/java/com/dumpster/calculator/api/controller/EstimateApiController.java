@@ -7,6 +7,7 @@ import com.dumpster.calculator.domain.service.EstimationFacade;
 import com.dumpster.calculator.infra.persistence.EstimateStorageService;
 import com.dumpster.calculator.infra.persistence.StoredEstimate;
 import com.dumpster.calculator.infra.tracking.TrackingService;
+import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class EstimateApiController {
     }
 
     @PostMapping
-    public ResponseEntity<EstimateApiResponse> createEstimate(@RequestBody EstimateCommand command) {
+    public ResponseEntity<EstimateApiResponse> createEstimate(@Valid @RequestBody EstimateCommand command) {
         EstimateResult result = estimationFacade.estimate(command);
         StoredEstimate storedEstimate = estimateStorageService.save(command, result);
         trackingService.track("calc_completed", storedEstimate.estimateId(), Map.of(

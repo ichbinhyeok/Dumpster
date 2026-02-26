@@ -1,6 +1,8 @@
 package com.dumpster.calculator.domain.model;
 
-public record ItemConditions(Boolean wet, Boolean mixedLoad, String compaction) {
+import jakarta.validation.constraints.Pattern;
+
+public record ItemConditions(Boolean wet, Boolean mixedLoad, @Pattern(regexp = "LOW|MEDIUM|HIGH") String compaction) {
 
     public static ItemConditions defaults() {
         return new ItemConditions(false, false, CompactionLevel.MEDIUM.name());
@@ -18,4 +20,3 @@ public record ItemConditions(Boolean wet, Boolean mixedLoad, String compaction) 
         return CompactionLevel.fromNullable(compaction);
     }
 }
-

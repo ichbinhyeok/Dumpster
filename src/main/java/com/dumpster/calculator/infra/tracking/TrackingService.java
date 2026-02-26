@@ -10,6 +10,10 @@ import tools.jackson.databind.ObjectMapper;
 @Service
 public class TrackingService {
 
+    private static final int MAX_EVENT_NAME_LEN = 120;
+    private static final int MAX_ESTIMATE_ID_LEN = 64;
+    private static final int MAX_EVENT_PAYLOAD_LEN = 4096;
+
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
     private final Clock clock;
@@ -27,13 +31,24 @@ public class TrackingService {
         } catch (Exception ignored) {
             eventPayload = "{\"serialization\":\"failed\"}";
         }
+        if (eventPayload.length() > MAX_EVENT_PAYLOAD_LEN) {
+            eventPayload = eventPayload.substring(0, MAX_EVENT_PAYLOAD_LEN);
+        }
+        String safeEventName = truncate(eventName, MAX_EVENT_NAME_LEN);
+        String safeEstimateId = truncate(estimateId, MAX_ESTIMATE_ID_LEN);
         jdbcTemplate.update(
                 "insert into tracking_events (estimate_id, event_name, event_payload, created_at) values (?, ?, ?, ?)",
-                estimateId,
-                eventName,
+                safeEstimateId,
+                safeEventName,
                 eventPayload,
                 Instant.now(clock)
         );
     }
-}
 
+    private static String truncate(String value, int maxLen) {
+        if (value == null) {
+            return null;
+        }
+        return value.length() <= maxLen ? value : value.substring(0, maxLen);
+    }
+}

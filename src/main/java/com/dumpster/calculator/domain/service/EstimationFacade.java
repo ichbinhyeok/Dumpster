@@ -149,7 +149,7 @@ public class EstimationFacade {
             Double allowanceInput,
             boolean heavyMode
     ) {
-        boolean volumeFits = policy.sizeYd() >= safeVolume.typ();
+        boolean volumeFits = policy.sizeYd() >= safeVolume.high();
         double allowance = allowanceInput == null ? policy.includedTonsTyp() : allowanceInput;
         PriceRisk risk = classifyPriceRisk(totalWeight, allowance);
 
@@ -179,8 +179,8 @@ public class EstimationFacade {
         }
 
         int haulCount = Math.max(1, (int) Math.ceil(Math.max(
-                safeVolume.typ() / policy.sizeYd(),
-                totalWeight.typ() / Math.max(0.1d, policy.maxHaulTonsTyp())
+                safeVolume.high() / policy.sizeYd(),
+                totalWeight.high() / Math.max(0.1d, policy.maxHaulTonsTyp())
         )));
 
         return new CandidateEvaluation(policy, risk, feasibility, volumeFits, score, haulCount, reasons);
@@ -202,13 +202,13 @@ public class EstimationFacade {
             RangeValue safeVolume,
             boolean heavyMode
     ) {
-        if (totalWeight.low() > policy.maxHaulTonsHigh()) {
+        if (totalWeight.high() > policy.maxHaulTonsHigh()) {
             return Feasibility.NOT_RECOMMENDED;
         }
         if (totalWeight.typ() > policy.maxHaulTonsTyp()) {
             return Feasibility.MULTI_HAUL_REQUIRED;
         }
-        if (heavyMode && safeVolume.typ() > (policy.sizeYd() * policy.heavyDebrisMaxFillRatio())) {
+        if (heavyMode && safeVolume.high() > (policy.sizeYd() * policy.heavyDebrisMaxFillRatio())) {
             return Feasibility.MULTI_HAUL_REQUIRED;
         }
         return Feasibility.OK;
@@ -274,8 +274,8 @@ public class EstimationFacade {
                 .findFirst()
                 .orElse(policies.get(0));
         return Math.max(1, (int) Math.ceil(Math.max(
-                safeVolume.typ() / policy10.sizeYd(),
-                totalWeight.typ() / Math.max(0.1d, policy10.maxHaulTonsTyp())
+                safeVolume.high() / policy10.sizeYd(),
+                totalWeight.high() / Math.max(0.1d, policy10.maxHaulTonsTyp())
         )));
     }
 

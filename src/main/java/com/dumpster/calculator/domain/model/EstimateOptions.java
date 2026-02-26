@@ -1,9 +1,12 @@
 package com.dumpster.calculator.domain.model;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+
 public record EstimateOptions(
         Boolean mixedLoad,
-        Double allowanceTons,
-        Double bulkingFactor
+        @DecimalMin("0.0") Double allowanceTons,
+        @DecimalMin("1.0") @DecimalMax("1.5") Double bulkingFactor
 ) {
 
     public static EstimateOptions defaults() {
@@ -19,4 +22,3 @@ public record EstimateOptions(
         return Math.max(1.0d, Math.min(1.5d, defaultValue));
     }
 }
-
