@@ -13,6 +13,9 @@
     const resultActions = document.getElementById("result-actions");
     const shareLink = document.getElementById("share-link");
     const submitButton = document.getElementById("submit-button");
+    const floatingCta = document.getElementById("floating-cta");
+    const floatingCall = document.getElementById("floating-call");
+    const floatingQuote = document.getElementById("floating-quote");
     const personaSelect = document.getElementById("persona");
     const materialSelect = document.getElementById("material-id");
     const allowanceInput = document.getElementById("allowance-tons");
@@ -161,7 +164,7 @@
         `;
 
         resultRecommendations.innerHTML = result.recommendations.map((rec) => `
-            <article class="result-card">
+            <article class="result-card ${recTone(rec.label)}">
                 <h3>${rec.label} - ${rec.sizeYd}yd</h3>
                 <p>Risk: ${rec.risk} / Feasibility: ${rec.feasibility}</p>
                 <p>Multi-haul: ${rec.multiHaul ? "Yes (" + rec.haulCount + ")" : "No"}</p>
@@ -193,6 +196,15 @@
         const dumpsterCall = document.getElementById("cta-dumpster-call");
         const dumpsterForm = document.getElementById("cta-dumpster-form");
         const junkCall = document.getElementById("cta-junk");
+        if (floatingCta) {
+            floatingCta.hidden = false;
+        }
+        if (floatingCall) {
+            floatingCall.onclick = () => trackEvent("cta_click_dumpster_call", apiData.estimateId, {source: "floating"});
+        }
+        if (floatingQuote) {
+            floatingQuote.onclick = () => trackEvent("cta_click_dumpster_form", apiData.estimateId, {source: "floating"});
+        }
         if (dumpsterCall) {
             dumpsterCall.addEventListener("click", () => trackEvent("cta_click_dumpster_call", apiData.estimateId, {}));
         }
@@ -213,6 +225,9 @@
         resultAssumptions.innerHTML = "";
         resultActions.innerHTML = "";
         shareLink.href = "#";
+        if (floatingCta) {
+            floatingCta.hidden = true;
+        }
     }
 
     function badge(text, style) {
@@ -221,6 +236,17 @@
 
     function fmt(value) {
         return Number(value).toFixed(2);
+    }
+
+    function recTone(label) {
+        const tone = String(label || "").toLowerCase();
+        if (tone.includes("safe")) {
+            return "safe";
+        }
+        if (tone.includes("budget")) {
+            return "budget";
+        }
+        return "";
     }
 
     function trackEvent(eventName, estimateId, payload) {

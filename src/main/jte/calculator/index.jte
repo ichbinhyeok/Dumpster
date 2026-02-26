@@ -62,18 +62,36 @@
 <body>
 <main class="shell">
     <section class="hero">
-        <p class="eyebrow">Decision Engine</p>
-        <h1>${model.pageTitle()}</h1>
-        <p>Get a range-based size and weight recommendation with overweight risk and next action routing.</p>
-        <div class="hero-tags">
-            <span class="tag">Range, not guess</span>
-            <span class="tag">Weight + volume</span>
-            <span class="tag">Safe vs budget</span>
-            <span class="tag">Heavy debris aware</span>
+        <div class="hero-grid">
+            <div>
+                <p class="eyebrow">Decision Engine</p>
+                <h1>${model.pageTitle()}</h1>
+                <p>Know the safest dumpster strategy in under 60 seconds, before you get hit by overage or haul-limit surprises.</p>
+                <div class="hero-tags">
+                    <span class="tag">Range, not guess</span>
+                    <span class="tag">Weight + volume</span>
+                    <span class="tag">Safe vs budget</span>
+                    <span class="tag">Heavy debris aware</span>
+                </div>
+            </div>
+            <aside class="hero-proof">
+                <h2>Built for trust, not hype</h2>
+                <ul>
+                    <li>Data-backed density ranges with scenario context</li>
+                    <li>Separate signals for pricing risk and haul feasibility</li>
+                    <li>Operator checklist before you place a call</li>
+                </ul>
+            </aside>
         </div>
     </section>
 
-    <section class="panel">
+    <section class="panel trust-strip">
+        <p><strong>Data updated:</strong> 2026-02</p>
+        <p><strong>Sources:</strong> EPA conversion baselines + local table cross-checks</p>
+        <p><strong>Output style:</strong> Safe option, budget option, and risk explanation</p>
+    </section>
+
+    <section class="panel knowledge-panel">
         <div class="link-grid">
             <article class="link-card">
                 <h2>Popular material guides</h2>
@@ -97,93 +115,106 @@
         </div>
     </section>
 
-    <section class="panel">
-        <h2>Quick Input</h2>
-        <form id="estimate-form" class="form-grid">
-            <label>
-                Project
-                <select id="project-id" required>
-                    <option value="roof_tearoff">Roof tear-off</option>
-                    <option value="kitchen_remodel">Kitchen remodel</option>
-                    <option value="bathroom_remodel">Bathroom remodel</option>
-                    <option value="deck_demolition">Deck demolition</option>
-                    <option value="garage_cleanout">Garage cleanout</option>
-                    <option value="estate_cleanout">Estate cleanout</option>
-                    <option value="yard_cleanup">Yard cleanup</option>
-                    <option value="dirt_grading">Dirt grading</option>
-                    <option value="concrete_removal">Concrete removal</option>
-                    <option value="light_commercial_fitout">Light commercial fit-out</option>
-                </select>
-            </label>
-            <label>
-                Persona
-                <select id="persona" required>
-                    <option value="homeowner">Homeowner</option>
-                    <option value="contractor">Contractor</option>
-                    <option value="business">Business</option>
-                </select>
-            </label>
-            <label>
-                Material
-                <select id="material-id" required>
-                    <option value="asphalt_shingles">Asphalt shingles</option>
-                    <option value="concrete">Concrete</option>
-                    <option value="dirt_soil">Dirt/soil</option>
-                    <option value="brick">Brick</option>
-                    <option value="tile_ceramic">Tile/ceramic</option>
-                    <option value="gravel_rock">Gravel/rock</option>
-                    <option value="asphalt_pavement">Asphalt pavement</option>
-                    <option value="plaster">Plaster</option>
-                    <option value="drywall">Drywall</option>
-                    <option value="mixed_cd">Mixed C&D</option>
-                    <option value="household_junk">Household junk</option>
-                    <option value="furniture">Furniture</option>
-                    <option value="carpet_pad">Carpet and pad</option>
-                    <option value="decking_wood">Decking wood</option>
-                    <option value="insulation_wet">Wet insulation</option>
-                    <option value="yard_waste">Yard waste</option>
-                </select>
-            </label>
-            <label>
-                Unit
-                <select id="unit-id" required>
-                    <option value="pickup_load">Pickup load</option>
-                    <option value="truckload_small">Small truckload</option>
-                    <option value="roof_square">Roof square</option>
-                    <option value="sqft_4in">sqft @ 4in</option>
-                    <option value="sqft_2in">sqft @ 2in</option>
-                    <option value="sqft_1in">sqft @ 1in</option>
-                    <option value="contractor_bag">Contractor bag</option>
-                    <option value="drywall_sheet">Drywall sheet</option>
-                    <option value="cubic_yard">Cubic yard</option>
-                </select>
-            </label>
-            <label>
-                Quantity
-                <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
-            </label>
-            <label>
-                Included tons (optional)
-                <input id="allowance-tons" type="number" step="0.1" min="0">
-            </label>
-            <label>
-                Need timing
-                <select id="need-timing">
-                    <option value="research">Researching</option>
-                    <option value="this_week">This week</option>
-                    <option value="48h">48 hours</option>
-                </select>
-            </label>
-            <label class="check">
-                <input id="wet" type="checkbox">
-                Wet load
-            </label>
-            <label class="check">
-                <input id="mixed-load" type="checkbox">
-                Mixed load
-            </label>
-            <button id="submit-button" type="submit">Calculate</button>
-        </form>
+    <section class="panel input-panel">
+        <div class="input-grid">
+            <div>
+                <h2>Quick Input</h2>
+                <form id="estimate-form" class="form-grid">
+                    <label>
+                        Project
+                        <select id="project-id" required>
+                            <option value="roof_tearoff">Roof tear-off</option>
+                            <option value="kitchen_remodel">Kitchen remodel</option>
+                            <option value="bathroom_remodel">Bathroom remodel</option>
+                            <option value="deck_demolition">Deck demolition</option>
+                            <option value="garage_cleanout">Garage cleanout</option>
+                            <option value="estate_cleanout">Estate cleanout</option>
+                            <option value="yard_cleanup">Yard cleanup</option>
+                            <option value="dirt_grading">Dirt grading</option>
+                            <option value="concrete_removal">Concrete removal</option>
+                            <option value="light_commercial_fitout">Light commercial fit-out</option>
+                        </select>
+                    </label>
+                    <label>
+                        Persona
+                        <select id="persona" required>
+                            <option value="homeowner">Homeowner</option>
+                            <option value="contractor">Contractor</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </label>
+                    <label>
+                        Material
+                        <select id="material-id" required>
+                            <option value="asphalt_shingles">Asphalt shingles</option>
+                            <option value="concrete">Concrete</option>
+                            <option value="dirt_soil">Dirt/soil</option>
+                            <option value="brick">Brick</option>
+                            <option value="tile_ceramic">Tile/ceramic</option>
+                            <option value="gravel_rock">Gravel/rock</option>
+                            <option value="asphalt_pavement">Asphalt pavement</option>
+                            <option value="plaster">Plaster</option>
+                            <option value="drywall">Drywall</option>
+                            <option value="mixed_cd">Mixed C&D</option>
+                            <option value="household_junk">Household junk</option>
+                            <option value="furniture">Furniture</option>
+                            <option value="carpet_pad">Carpet and pad</option>
+                            <option value="decking_wood">Decking wood</option>
+                            <option value="insulation_wet">Wet insulation</option>
+                            <option value="yard_waste">Yard waste</option>
+                        </select>
+                    </label>
+                    <label>
+                        Unit
+                        <select id="unit-id" required>
+                            <option value="pickup_load">Pickup load</option>
+                            <option value="truckload_small">Small truckload</option>
+                            <option value="roof_square">Roof square</option>
+                            <option value="sqft_4in">sqft @ 4in</option>
+                            <option value="sqft_2in">sqft @ 2in</option>
+                            <option value="sqft_1in">sqft @ 1in</option>
+                            <option value="contractor_bag">Contractor bag</option>
+                            <option value="drywall_sheet">Drywall sheet</option>
+                            <option value="cubic_yard">Cubic yard</option>
+                        </select>
+                    </label>
+                    <label>
+                        Quantity
+                        <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
+                    </label>
+                    <label>
+                        Included tons (optional)
+                        <input id="allowance-tons" type="number" step="0.1" min="0">
+                    </label>
+                    <label>
+                        Need timing
+                        <select id="need-timing">
+                            <option value="research">Researching</option>
+                            <option value="this_week">This week</option>
+                            <option value="48h">48 hours</option>
+                        </select>
+                    </label>
+                    <label class="check">
+                        <input id="wet" type="checkbox">
+                        Wet load
+                    </label>
+                    <label class="check">
+                        <input id="mixed-load" type="checkbox">
+                        Mixed load
+                    </label>
+                    <button id="submit-button" type="submit">Calculate</button>
+                </form>
+            </div>
+            <aside class="method-card">
+                <h2>How this estimate works</h2>
+                <ul>
+                    <li>Converts your input into volume and weight ranges</li>
+                    <li>Checks risk against allowance and haul feasibility rules</li>
+                    <li>Outputs safe option, budget option, and what to ask vendors</li>
+                </ul>
+                <p><strong>Decision rule:</strong> choose safe when timeline is tight or overage tolerance is low.</p>
+            </aside>
+        </div>
     </section>
 
     <section class="panel result-panel" id="result-panel" hidden>
@@ -208,6 +239,10 @@
         </ol>
     </section>
 </main>
+<div id="floating-cta" class="floating-cta" hidden>
+    <a id="floating-call" href="tel:+18005550123">Call now</a>
+    <a id="floating-quote" href="#dumpster-form">Online quote</a>
+</div>
 <script src="/js/calculator.js"></script>
 </body>
 </html>
