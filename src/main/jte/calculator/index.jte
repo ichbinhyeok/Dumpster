@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.pageTitle()}</title>
     <meta name="description" content="Estimate dumpster size and weight range in under 60 seconds. Compare overweight risk, multi-haul feasibility, and next best action.">
-    <link rel="canonical" href="${model.canonicalPath()}">
+    <link rel="canonical" href="${model.canonicalUrl()}">
     <meta property="og:title" content="${model.pageTitle()}">
     <meta property="og:description" content="Range-based dumpster sizing with weight risk and heavy debris warnings.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="${model.canonicalPath()}">
+    <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.pageTitle()}">
     <meta name="twitter:description" content="Get a safe size recommendation, budget option, and overweight risk signal.">
@@ -23,7 +23,7 @@
           "applicationCategory": "UtilitiesApplication",
           "operatingSystem": "Web",
           "description": "Range-based estimator for dumpster size, debris weight, and overweight risk.",
-          "url": "/dumpster/size-weight-calculator"
+          "url": "${model.canonicalUrl()}"
         }
     </script>
     <script type="application/ld+json">
@@ -78,22 +78,21 @@
             <article class="link-card">
                 <h2>Popular material guides</h2>
                 <ul>
-                    <li><a href="/dumpster/weight/asphalt_shingles">Asphalt shingles weight guide</a></li>
-                    <li><a href="/dumpster/weight/concrete">Concrete dumpster weight guide</a></li>
-                    <li><a href="/dumpster/weight/dirt_soil">Dirt and soil weight guide</a></li>
-                    <li><a href="/dumpster/weight/tile_ceramic">Tile and ceramic weight guide</a></li>
-                    <li><a href="/dumpster/weight/yard_waste">Yard waste weight guide</a></li>
+                    @for(var link : model.featuredMaterialLinks())
+                        <li><a href="${link.href()}">${link.label()}</a></li>
+                    @endfor
                 </ul>
+                <p><a href="/dumpster/material-guides">See all material guides</a></p>
             </article>
             <article class="link-card">
                 <h2>Project quick starts</h2>
                 <ul>
-                    <li><a href="/dumpster/size/roof_tearoff">Roof tear-off preset</a></li>
-                    <li><a href="/dumpster/size/kitchen_remodel">Kitchen remodel preset</a></li>
-                    <li><a href="/dumpster/size/concrete_removal">Concrete removal strategy</a></li>
-                    <li><a href="/dumpster/size/estate_cleanout">Estate cleanout flow</a></li>
+                    @for(var link : model.featuredProjectLinks())
+                        <li><a href="${link.href()}">${link.label()}</a></li>
+                    @endfor
                     <li><a href="/dumpster/heavy-debris-rules">Heavy debris rules</a></li>
                 </ul>
+                <p><a href="/dumpster/project-guides">See all project guides</a></p>
             </article>
         </div>
     </section>

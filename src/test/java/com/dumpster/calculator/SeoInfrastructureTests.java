@@ -23,9 +23,11 @@ class SeoInfrastructureTests {
         String body = response.getBody();
         int urlCount = body.split("<url>").length - 1;
 
-        assertThat(urlCount).isGreaterThanOrEqualTo(30);
+        assertThat(urlCount).isGreaterThanOrEqualTo(34);
         assertThat(body).contains("/dumpster/size-weight-calculator");
         assertThat(body).contains("/dumpster/heavy-debris-rules");
+        assertThat(body).contains("/dumpster/material-guides");
+        assertThat(body).contains("/dumpster/project-guides");
         assertThat(body).contains("/dumpster/weight/asphalt_shingles");
         assertThat(body).contains("/dumpster/weight/metal_scrap_light");
         assertThat(body).contains("/dumpster/size/light_commercial_fitout");

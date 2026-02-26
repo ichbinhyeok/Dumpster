@@ -13,6 +13,36 @@
     const resultActions = document.getElementById("result-actions");
     const shareLink = document.getElementById("share-link");
     const submitButton = document.getElementById("submit-button");
+    const personaSelect = document.getElementById("persona");
+    const materialSelect = document.getElementById("material-id");
+    const allowanceInput = document.getElementById("allowance-tons");
+    const heavyMaterials = new Set([
+        "asphalt_shingles",
+        "concrete",
+        "dirt_soil",
+        "brick",
+        "tile_ceramic",
+        "gravel_rock",
+        "asphalt_pavement",
+        "metal_scrap_light"
+    ]);
+
+    if (personaSelect) {
+        personaSelect.addEventListener("change", () => {
+            trackEvent("persona_selected", null, {persona: personaSelect.value});
+        });
+    }
+
+    if (materialSelect) {
+        materialSelect.addEventListener("change", () => {
+            if (heavyMaterials.has(materialSelect.value)) {
+                trackEvent("heavy_debris_flagged", null, {
+                    materialId: materialSelect.value,
+                    source: "material_selector"
+                });
+            }
+        });
+    }
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -25,6 +55,15 @@
             projectId: payload.projectId,
             persona: payload.persona
         });
+        if (payload.options.allowanceTons !== null) {
+            trackEvent("allowance_entered", null, {allowanceTons: payload.options.allowanceTons});
+        }
+        if (payload.items.some((item) => heavyMaterials.has(item.materialId))) {
+            trackEvent("heavy_debris_flagged", null, {
+                projectId: payload.projectId,
+                source: "submit_payload"
+            });
+        }
 
         try {
             const response = await fetch("/api/estimates", {
@@ -38,6 +77,10 @@
                 throw new Error("Estimate request failed");
             }
             const data = await response.json();
+            trackEvent("calc_completed", data.estimateId, {
+                projectId: payload.projectId,
+                persona: payload.persona
+            });
             renderResult(data);
         } catch (error) {
             resultPanel.hidden = false;
@@ -52,7 +95,7 @@
         const materialId = document.getElementById("material-id").value;
         const unitId = document.getElementById("unit-id").value;
         const quantity = parseFloat(document.getElementById("quantity").value || "0");
-        const allowanceRaw = document.getElementById("allowance-tons").value;
+        const allowanceRaw = allowanceInput.value;
         const mixed = document.getElementById("mixed-load").checked;
         const wet = document.getElementById("wet").checked;
 
@@ -88,6 +131,13 @@
             priceRisk: result.priceRisk,
             feasibility: result.feasibility
         });
+        if (result.usedAssumedAllowance) {
+            trackEvent("used_assumed_allowance", apiData.estimateId, {source: "frontend_render"});
+        }
+        if (result.feasibility !== "OK") {
+            trackEvent("feasibility_not_ok", apiData.estimateId, {feasibility: result.feasibility});
+        }
+        trackEvent("share_estimate_created", apiData.estimateId, {sharePath: shareLink.href});
 
         resultBadges.innerHTML = [
             badge("Risk: " + result.priceRisk, result.priceRisk === "HIGH" ? "danger" : "neutral"),
@@ -136,13 +186,18 @@
 
         resultActions.innerHTML = `
             <a class="button-link primary" id="cta-dumpster-call" href="tel:+18005550123">Call dumpster quote</a>
+            <a class="button-link" id="cta-dumpster-form" href="#dumpster-form">Request online quote</a>
             <a class="button-link" id="cta-junk" href="#junk">Compare junk removal</a>
         `;
 
         const dumpsterCall = document.getElementById("cta-dumpster-call");
+        const dumpsterForm = document.getElementById("cta-dumpster-form");
         const junkCall = document.getElementById("cta-junk");
         if (dumpsterCall) {
             dumpsterCall.addEventListener("click", () => trackEvent("cta_click_dumpster_call", apiData.estimateId, {}));
+        }
+        if (dumpsterForm) {
+            dumpsterForm.addEventListener("click", () => trackEvent("cta_click_dumpster_form", apiData.estimateId, {}));
         }
         if (junkCall) {
             junkCall.addEventListener("click", () => trackEvent("cta_click_junk_call", apiData.estimateId, {}));

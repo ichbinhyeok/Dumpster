@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Heavy Debris Rules</title>
     <meta name="description" content="Heavy debris dumpster rules: why smaller bins and multi-haul strategy can beat larger containers for dense materials.">
-    <link rel="canonical" href="/dumpster/heavy-debris-rules">
+    <link rel="canonical" href="${model.canonicalUrl()}">
     <meta property="og:title" content="Heavy Debris Rules for Dumpster Decisions">
     <meta property="og:description" content="Understand included tons vs haul limits, fill-ratio caps, and operator questions before booking.">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="/dumpster/heavy-debris-rules">
+    <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Heavy Debris Rules">
     <meta name="twitter:description" content="Avoid overweight and rejection scenarios with heavy debris load rules.">
@@ -58,6 +58,8 @@
                 <li>${q}</li>
             @endfor
         </ol>
+        <p><a href="${model.materialGuidesUrl()}">Browse material guides</a></p>
+        <p><a href="${model.projectGuidesUrl()}">Browse project guides</a></p>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
     </section>
 </main>

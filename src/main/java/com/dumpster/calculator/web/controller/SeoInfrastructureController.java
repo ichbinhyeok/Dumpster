@@ -31,6 +31,8 @@ public class SeoInfrastructureController {
                 Allow: /dumpster/heavy-debris-rules
                 Allow: /dumpster/weight/
                 Allow: /dumpster/size/
+                Allow: /dumpster/material-guides
+                Allow: /dumpster/project-guides
                 Disallow: /dumpster/estimate/
                 Disallow: /api/
                 Sitemap: %s/sitemap.xml
@@ -43,7 +45,9 @@ public class SeoInfrastructureController {
         List<String> urls = new ArrayList<>();
         urls.add("/dumpster/size-weight-calculator");
         urls.add("/dumpster/heavy-debris-rules");
-        seoContentService.projectPages().values().forEach(project -> urls.add(project.canonicalPath()));
+        urls.add("/dumpster/material-guides");
+        urls.add("/dumpster/project-guides");
+        urls.addAll(seoContentService.projectIndexPaths());
         seoContentService.indexableMaterialIds().forEach(materialId -> urls.add("/dumpster/weight/" + materialId));
 
         StringBuilder xml = new StringBuilder();
