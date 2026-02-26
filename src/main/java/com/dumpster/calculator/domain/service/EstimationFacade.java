@@ -1,6 +1,7 @@
 package com.dumpster.calculator.domain.service;
 
 import com.dumpster.calculator.domain.model.CostComparisonOption;
+import com.dumpster.calculator.domain.model.CtaRouting;
 import com.dumpster.calculator.domain.model.EstimateCommand;
 import com.dumpster.calculator.domain.model.EstimateResult;
 import com.dumpster.calculator.domain.model.Feasibility;
@@ -28,17 +29,20 @@ public class EstimationFacade {
     private final NormalizationService normalizationService;
     private final DumpsterSizeRepository dumpsterSizeRepository;
     private final CostComparisonService costComparisonService;
+    private final CtaRoutingService ctaRoutingService;
     private final Clock clock;
 
     public EstimationFacade(
             NormalizationService normalizationService,
             DumpsterSizeRepository dumpsterSizeRepository,
             CostComparisonService costComparisonService,
+            CtaRoutingService ctaRoutingService,
             Clock clock
     ) {
         this.normalizationService = normalizationService;
         this.dumpsterSizeRepository = dumpsterSizeRepository;
         this.costComparisonService = costComparisonService;
+        this.ctaRoutingService = ctaRoutingService;
         this.clock = clock;
     }
 
@@ -89,6 +93,7 @@ public class EstimationFacade {
         List<String> hardStops = collectHardStops(evaluations);
         List<String> assumptions = buildAssumptions(usedAssumedAllowance, bulkingFactor);
         List<String> impacts = buildInputImpactSummary(lineItems, usedAssumedAllowance);
+        CtaRouting ctaRouting = ctaRoutingService.decide(command, overallRisk, overallFeasibility, heavyMode);
 
         return new EstimateResult(
                 safeVolume.round2(),
@@ -97,6 +102,7 @@ public class EstimationFacade {
                 overallFeasibility,
                 usedAssumedAllowance,
                 heavyMode,
+                ctaRouting,
                 recommendations,
                 costComparison,
                 hardStops,

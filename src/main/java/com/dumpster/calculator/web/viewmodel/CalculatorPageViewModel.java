@@ -1,4 +1,7 @@
 package com.dumpster.calculator.web.viewmodel;
 
-public record CalculatorPageViewModel(String pageTitle) {
+public record CalculatorPageViewModel(
+        String pageTitle,
+        String canonicalPath
+) {
 }

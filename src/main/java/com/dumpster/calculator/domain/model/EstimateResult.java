@@ -9,6 +9,7 @@ public record EstimateResult(
         Feasibility feasibility,
         boolean usedAssumedAllowance,
         boolean heavyDebrisWarning,
+        CtaRouting ctaRouting,
         List<RecommendationOption> recommendations,
         List<CostComparisonOption> costComparison,
         List<String> hardStopReasons,
@@ -18,4 +19,3 @@ public record EstimateResult(
         String calcEngineVersion
 ) {
 }
-
