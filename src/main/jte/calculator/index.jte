@@ -5,8 +5,59 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.pageTitle()}</title>
+    <meta name="description" content="Estimate dumpster size and weight range in under 60 seconds. Compare overweight risk, multi-haul feasibility, and next best action.">
     <link rel="canonical" href="${model.canonicalPath()}">
+    <meta property="og:title" content="${model.pageTitle()}">
+    <meta property="og:description" content="Range-based dumpster sizing with weight risk and heavy debris warnings.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="${model.canonicalPath()}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="${model.pageTitle()}">
+    <meta name="twitter:description" content="Get a safe size recommendation, budget option, and overweight risk signal.">
     <link rel="stylesheet" href="/css/app.css">
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Dumpster Size and Weight Calculator",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web",
+          "description": "Range-based estimator for dumpster size, debris weight, and overweight risk.",
+          "url": "/dumpster/size-weight-calculator"
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Should I pick dumpster size by volume only?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. Dense debris can exceed weight limits even if volume fits."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why can heavy debris require a smaller dumpster?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Operational haul limits and safety rules can require small bins with multiple hauls."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What should I ask before booking?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Confirm included tons, overage fee per ton, and clean-load requirements for heavy materials."
+              }
+            }
+          ]
+        }
+    </script>
 </head>
 <body>
 <main class="shell">
