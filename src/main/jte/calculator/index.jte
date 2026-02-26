@@ -75,8 +75,14 @@
                 <select id="project-id" required>
                     <option value="roof_tearoff">Roof tear-off</option>
                     <option value="kitchen_remodel">Kitchen remodel</option>
+                    <option value="bathroom_remodel">Bathroom remodel</option>
+                    <option value="deck_demolition">Deck demolition</option>
+                    <option value="garage_cleanout">Garage cleanout</option>
+                    <option value="estate_cleanout">Estate cleanout</option>
                     <option value="yard_cleanup">Yard cleanup</option>
+                    <option value="dirt_grading">Dirt grading</option>
                     <option value="concrete_removal">Concrete removal</option>
+                    <option value="light_commercial_fitout">Light commercial fit-out</option>
                 </select>
             </label>
             <label>
@@ -93,9 +99,18 @@
                     <option value="asphalt_shingles">Asphalt shingles</option>
                     <option value="concrete">Concrete</option>
                     <option value="dirt_soil">Dirt/soil</option>
+                    <option value="brick">Brick</option>
+                    <option value="tile_ceramic">Tile/ceramic</option>
+                    <option value="gravel_rock">Gravel/rock</option>
+                    <option value="asphalt_pavement">Asphalt pavement</option>
+                    <option value="plaster">Plaster</option>
                     <option value="drywall">Drywall</option>
                     <option value="mixed_cd">Mixed C&D</option>
                     <option value="household_junk">Household junk</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="carpet_pad">Carpet and pad</option>
+                    <option value="decking_wood">Decking wood</option>
+                    <option value="insulation_wet">Wet insulation</option>
                     <option value="yard_waste">Yard waste</option>
                 </select>
             </label>
@@ -103,9 +118,13 @@
                 Unit
                 <select id="unit-id" required>
                     <option value="pickup_load">Pickup load</option>
+                    <option value="truckload_small">Small truckload</option>
                     <option value="roof_square">Roof square</option>
                     <option value="sqft_4in">sqft @ 4in</option>
+                    <option value="sqft_2in">sqft @ 2in</option>
+                    <option value="sqft_1in">sqft @ 1in</option>
                     <option value="contractor_bag">Contractor bag</option>
+                    <option value="drywall_sheet">Drywall sheet</option>
                     <option value="cubic_yard">Cubic yard</option>
                 </select>
             </label>

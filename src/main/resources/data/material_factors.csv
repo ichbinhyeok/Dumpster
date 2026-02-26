@@ -4,8 +4,18 @@ concrete,Concrete,heavy,2500,3000,3600,1.02,1.10,high,EPA_SMM,2026-02-01
 dirt_soil,Dirt and soil,heavy,1700,2200,2800,1.10,1.30,medium,County_Conversion,2026-02-01
 brick,Brick and masonry,heavy,1400,1900,2500,1.03,1.10,medium,County_Conversion,2026-02-01
 tile_ceramic,Tile and ceramic,heavy,1200,1700,2400,1.03,1.12,medium,EPA_SMM,2026-02-01
+gravel_rock,Gravel and crushed rock,heavy,1500,2100,2800,1.04,1.15,medium,County_Conversion,2026-02-01
+asphalt_pavement,Asphalt pavement,heavy,1300,1850,2500,1.03,1.12,medium,Operator_Benchmark,2026-02-01
+plaster,Plaster and lath,mixed,550,780,1100,1.06,1.22,medium,EPA_SMM,2026-02-01
 drywall,Drywall,mixed,350,500,720,1.05,1.18,medium,EPA_SMM,2026-02-01
 lumber,Lumber,mixed,220,340,520,1.04,1.15,medium,EPA_SMM,2026-02-01
 mixed_cd,Mixed C&D,mixed,280,520,850,1.06,1.20,low,Operator_Benchmark,2026-02-01
 household_junk,Household junk,mixed,150,290,520,1.06,1.20,low,Operator_Benchmark,2026-02-01
+furniture,Furniture mix,mixed,170,320,560,1.05,1.16,low,Operator_Benchmark,2026-02-01
+carpet_pad,Carpet and pad,mixed,190,310,520,1.05,1.17,medium,Operator_Benchmark,2026-02-01
+decking_wood,Decking and framing wood,mixed,250,390,610,1.04,1.14,medium,Operator_Benchmark,2026-02-01
+insulation_wet,Wet insulation,mixed,70,160,320,1.20,1.45,low,Operator_Benchmark,2026-02-01
 yard_waste,Yard waste,light,90,180,360,1.12,1.35,medium,EPA_SMM,2026-02-01
+green_waste_brush,Brush and green waste,light,80,150,300,1.10,1.30,medium,County_Conversion,2026-02-01
+cardboard_packaging,Cardboard and packaging,light,35,70,140,1.03,1.08,medium,EPA_SMM,2026-02-01
+metal_scrap_light,Light scrap metal,heavy,450,900,1500,1.00,1.06,low,Operator_Benchmark,2026-02-01

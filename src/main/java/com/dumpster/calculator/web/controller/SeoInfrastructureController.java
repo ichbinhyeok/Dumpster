@@ -44,12 +44,7 @@ public class SeoInfrastructureController {
         urls.add("/dumpster/size-weight-calculator");
         urls.add("/dumpster/heavy-debris-rules");
         seoContentService.projectPages().values().forEach(project -> urls.add(project.canonicalPath()));
-        urls.add("/dumpster/weight/asphalt_shingles");
-        urls.add("/dumpster/weight/concrete");
-        urls.add("/dumpster/weight/dirt_soil");
-        urls.add("/dumpster/weight/drywall");
-        urls.add("/dumpster/weight/mixed_cd");
-        urls.add("/dumpster/weight/yard_waste");
+        seoContentService.indexableMaterialIds().forEach(materialId -> urls.add("/dumpster/weight/" + materialId));
 
         StringBuilder xml = new StringBuilder();
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

@@ -55,13 +55,16 @@
     <section class="panel">
         <p class="eyebrow">Material Weight Guide</p>
         <h1>${model.title()}</h1>
+        <p>Category: ${model.categoryLabel()}</p>
         <p>Density range (lbs/yd3): ${model.densityLow()} / ${model.densityTyp()} / ${model.densityHigh()}</p>
         <p>Example: ${model.exampleVolumeYd3()} yd3 is typically about ${model.exampleWeightTypTons()} tons.</p>
+        <p>${model.cautionNote()}</p>
         <p>Source: ${model.source()}</p>
     </section>
     <section class="panel">
         <h2>Common mistake</h2>
         <p>Picking dumpster size by volume only can create overweight fees on dense materials.</p>
+        <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator with this material</a></p>
     </section>
 </main>

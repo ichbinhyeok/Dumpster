@@ -6,7 +6,8 @@ public record ProjectPageViewModel(
         String recommendedUnit,
         String defaultMaterialId,
         String commonMistake,
+        String recommendedStrategy,
+        String operatorQuestion,
         String canonicalPath
 ) {
 }
-
