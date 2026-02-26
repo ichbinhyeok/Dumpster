@@ -6,6 +6,7 @@ import com.dumpster.calculator.domain.model.EstimateResult;
 import com.dumpster.calculator.domain.service.EstimationFacade;
 import com.dumpster.calculator.infra.persistence.EstimateStorageService;
 import com.dumpster.calculator.infra.persistence.StoredEstimate;
+import com.dumpster.calculator.infra.tracking.TrackingService;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +25,28 @@ public class EstimateApiController {
 
     private final EstimationFacade estimationFacade;
     private final EstimateStorageService estimateStorageService;
+    private final TrackingService trackingService;
 
-    public EstimateApiController(EstimationFacade estimationFacade, EstimateStorageService estimateStorageService) {
+    public EstimateApiController(
+            EstimationFacade estimationFacade,
+            EstimateStorageService estimateStorageService,
+            TrackingService trackingService
+    ) {
         this.estimationFacade = estimationFacade;
         this.estimateStorageService = estimateStorageService;
+        this.trackingService = trackingService;
     }
 
     @PostMapping
     public ResponseEntity<EstimateApiResponse> createEstimate(@RequestBody EstimateCommand command) {
         EstimateResult result = estimationFacade.estimate(command);
         StoredEstimate storedEstimate = estimateStorageService.save(command, result);
+        trackingService.track("calc_completed", storedEstimate.estimateId(), Map.of(
+                "projectId", command.projectId(),
+                "persona", command.persona(),
+                "priceRisk", result.priceRisk().name(),
+                "feasibility", result.feasibility().name()
+        ));
         EstimateApiResponse response = new EstimateApiResponse(
                 storedEstimate.estimateId(),
                 storedEstimate.createdAt(),
@@ -46,14 +59,16 @@ public class EstimateApiController {
     @GetMapping("/{estimateId}")
     public ResponseEntity<?> getEstimate(@PathVariable String estimateId) {
         return estimateStorageService.findValidById(estimateId)
-                .<ResponseEntity<?>>map(stored -> ResponseEntity.ok(new EstimateApiResponse(
-                        stored.estimateId(),
-                        stored.createdAt(),
-                        stored.expiresAt(),
-                        stored.payload().result()
-                )))
+                .<ResponseEntity<?>>map(stored -> {
+                    trackingService.track("result_viewed", estimateId, Map.of("source", "api_get"));
+                    return ResponseEntity.ok(new EstimateApiResponse(
+                            stored.estimateId(),
+                            stored.createdAt(),
+                            stored.expiresAt(),
+                            stored.payload().result()
+                    ));
+                })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "estimate_not_found_or_expired")));
     }
 }
-

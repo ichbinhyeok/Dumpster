@@ -21,6 +21,10 @@
         clearResult();
 
         const payload = buildPayload();
+        trackEvent("calc_started", null, {
+            projectId: payload.projectId,
+            persona: payload.persona
+        });
 
         try {
             const response = await fetch("/api/estimates", {
@@ -80,6 +84,10 @@
         const result = apiData.result;
         resultPanel.hidden = false;
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
+        trackEvent("result_viewed", apiData.estimateId, {
+            priceRisk: result.priceRisk,
+            feasibility: result.feasibility
+        });
 
         resultBadges.innerHTML = [
             badge("Risk: " + result.priceRisk, result.priceRisk === "HIGH" ? "danger" : "neutral"),
@@ -127,9 +135,18 @@
         `;
 
         resultActions.innerHTML = `
-            <a class="button-link primary" href="tel:+18005550123">Call dumpster quote</a>
-            <a class="button-link" href="#junk">Compare junk removal</a>
+            <a class="button-link primary" id="cta-dumpster-call" href="tel:+18005550123">Call dumpster quote</a>
+            <a class="button-link" id="cta-junk" href="#junk">Compare junk removal</a>
         `;
+
+        const dumpsterCall = document.getElementById("cta-dumpster-call");
+        const junkCall = document.getElementById("cta-junk");
+        if (dumpsterCall) {
+            dumpsterCall.addEventListener("click", () => trackEvent("cta_click_dumpster_call", apiData.estimateId, {}));
+        }
+        if (junkCall) {
+            junkCall.addEventListener("click", () => trackEvent("cta_click_junk_call", apiData.estimateId, {}));
+        }
     }
 
     function clearResult() {
@@ -150,5 +167,18 @@
     function fmt(value) {
         return Number(value).toFixed(2);
     }
-})();
 
+    function trackEvent(eventName, estimateId, payload) {
+        fetch("/api/events", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                eventName,
+                estimateId,
+                payload: payload || {}
+            })
+        }).catch(() => {});
+    }
+})();
