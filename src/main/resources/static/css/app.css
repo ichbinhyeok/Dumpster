@@ -1,0 +1,50 @@
+:root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #1f2a37;
+    --accent: #0f766e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at top right, #d9f99d 0%, var(--bg) 35%);
+    color: var(--text);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.wrap {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+}
+
+.hero {
+    max-width: 760px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+}
+
+.eyebrow {
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.75rem;
+}
+
+h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+p {
+    margin: 0;
+    line-height: 1.6;
+}
