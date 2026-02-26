@@ -1,0 +1,6 @@
+size_yd,dimensions_approx,included_tons_low,included_tons_typ,included_tons_high,max_haul_tons_low,max_haul_tons_typ,max_haul_tons_high,heavy_debris_max_fill_ratio,clean_load_required_for_heavy
+10,12x8x4,1.5,2.0,2.5,4.0,5.0,6.0,0.40,true
+15,14x8x4.5,2.0,2.5,3.2,5.0,6.0,7.0,0.35,true
+20,22x8x4.5,2.5,3.5,4.5,6.0,8.0,9.0,0.30,true
+30,22x8x6,3.5,4.5,5.5,7.0,9.0,10.5,0.25,true
+40,22x8x8,4.5,5.5,6.5,8.0,10.0,12.0,0.20,true

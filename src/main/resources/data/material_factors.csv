@@ -1,0 +1,11 @@
+material_id,name,category,density_low,density_typ,density_high,wet_multiplier_low,wet_multiplier_high,data_quality,source,source_version_date
+asphalt_shingles,Asphalt shingles,heavy,700,950,1300,1.08,1.25,medium,EPA_SMM,2026-02-01
+concrete,Concrete,heavy,2500,3000,3600,1.02,1.10,high,EPA_SMM,2026-02-01
+dirt_soil,Dirt and soil,heavy,1700,2200,2800,1.10,1.30,medium,County_Conversion,2026-02-01
+brick,Brick and masonry,heavy,1400,1900,2500,1.03,1.10,medium,County_Conversion,2026-02-01
+tile_ceramic,Tile and ceramic,heavy,1200,1700,2400,1.03,1.12,medium,EPA_SMM,2026-02-01
+drywall,Drywall,mixed,350,500,720,1.05,1.18,medium,EPA_SMM,2026-02-01
+lumber,Lumber,mixed,220,340,520,1.04,1.15,medium,EPA_SMM,2026-02-01
+mixed_cd,Mixed C&D,mixed,280,520,850,1.06,1.20,low,Operator_Benchmark,2026-02-01
+household_junk,Household junk,mixed,150,290,520,1.06,1.20,low,Operator_Benchmark,2026-02-01
+yard_waste,Yard waste,light,90,180,360,1.12,1.35,medium,EPA_SMM,2026-02-01

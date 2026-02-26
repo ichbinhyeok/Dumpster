@@ -37,4 +37,4 @@ out/
 .vscode/
 
 # Runtime DB files
-data/
+/data/

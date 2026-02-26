@@ -1,0 +1,7 @@
+size_yd,rental_fee_low,rental_fee_typ,rental_fee_high,overage_fee_per_ton_low,overage_fee_per_ton_typ,overage_fee_per_ton_high,haul_fee_low,haul_fee_typ,haul_fee_high,junk_rate_basis
+0,90,120,170,0,0,0,120,180,240,per_yd_pricing
+10,250,340,460,70,95,140,80,110,150,standard_bin
+15,310,420,560,70,95,140,90,120,160,standard_bin
+20,360,490,650,70,95,140,100,130,180,standard_bin
+30,430,590,770,75,105,150,120,160,220,standard_bin
+40,520,710,920,80,110,160,140,190,260,standard_bin
