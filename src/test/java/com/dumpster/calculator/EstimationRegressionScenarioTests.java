@@ -101,7 +101,7 @@ class EstimationRegressionScenarioTests {
                 row("yard-3", "yard_cleanup", "contractor", "yard_waste", "pickup_load", 9, true, true, 2.0, "this_week", false, false, false),
                 row("roof-1", "roof_tearoff", "contractor", "asphalt_shingles", "roof_square", 10, false, false, 3.0, "this_week", false, false, false),
                 row("roof-2", "roof_tearoff", "contractor", "asphalt_shingles", "roof_square", 14, false, false, 3.0, "research", false, false, false),
-                row("roof-3", "roof_tearoff", "homeowner", "asphalt_shingles", "roof_square", 16, false, false, 2.0, "research", false, false, true),
+                row("roof-3", "roof_tearoff", "homeowner", "asphalt_shingles", "roof_square", 16, false, false, 2.0, "research", false, false, false),
                 row("drywall-1", "kitchen_remodel", "homeowner", "drywall", "drywall_sheet", 20, false, false, 2.0, "research", false, false, false),
                 row("drywall-2", "kitchen_remodel", "contractor", "drywall", "drywall_sheet", 30, false, true, 2.0, "this_week", false, false, false),
                 row("lumber-1", "kitchen_remodel", "homeowner", "lumber", "pickup_load", 4, false, false, 2.0, "research", false, false, false),

@@ -69,6 +69,16 @@ class EstimateApiTests {
     }
 
     @Test
+    void trackingEndpointAcceptsLeadSubmittedEvent() {
+        ResponseEntity<Map<String, Object>> tracked = trackingApiController.track(new TrackingEventRequest(
+                "lead_submitted",
+                "lead-id",
+                Map.of("zipCode", "30339", "contactMethod", "email")
+        ));
+        assertThat(tracked.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     void sharePageSetsNoindexHeader() {
         EstimateCommand command = new EstimateCommand(
                 "yard_cleanup",
@@ -92,4 +102,3 @@ class EstimateApiTests {
         assertThat(modelAndView.getViewName()).isEqualTo("calculator/share-estimate");
     }
 }
-

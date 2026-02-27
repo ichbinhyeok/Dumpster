@@ -125,6 +125,14 @@ p {
     line-height: 1.55;
 }
 
+.answer-first {
+    border: 1px solid #bfe2ff;
+    border-radius: 12px;
+    background: #eef7ff;
+    color: #16486d;
+    padding: 0.72rem 0.8rem;
+}
+
 ul,
 ol {
     margin: 0.38rem 0 0;
@@ -365,6 +373,53 @@ button:disabled {
     display: flex;
     flex-wrap: wrap;
     gap: 0.55rem;
+}
+
+.lead-capture {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-soft);
+    padding: 0.8rem;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.lead-step {
+    display: grid;
+    gap: 0.45rem;
+    grid-template-columns: 1fr;
+}
+
+.lead-step button {
+    justify-self: start;
+}
+
+.lead-hint {
+    font-size: 0.9rem;
+    color: #1f5078;
+}
+
+.faq-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.faq-item {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-soft);
+    padding: 0.52rem 0.62rem;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    color: #1f4060;
+    font-weight: 700;
+}
+
+.faq-item p {
+    margin-top: 0.45rem;
 }
 
 .button-link {

@@ -31,22 +31,17 @@
           "@context": "https://schema.org",
           "@type": "FAQPage",
           "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "Which unit should I enter first?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Start with the recommended unit on this page to reduce conversion uncertainty."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How should I choose between safe and budget options?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Choose budget only if you can tolerate overage risk and possible second haul costs."
-              }
-            }
+            @for(int i = 0; i < model.faqItems().size(); i++)
+                {
+                  "@type": "Question",
+                  "name": "${model.faqItems().get(i).question()}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${model.faqItems().get(i).answer()}"
+                  }
+                }
+                @if(i < model.faqItems().size() - 1),@endif
+            @endfor
           ]
         }
     </script>
@@ -59,6 +54,13 @@
         <p>Recommended quick input unit: ${model.recommendedUnit()}</p>
         <p>Default material preset: ${model.defaultMaterialId()}</p>
         <p>Recommended strategy: ${model.recommendedStrategy()}</p>
+        <p class="answer-first">${model.answerFirst()}</p>
+        <h2>Quick rules</h2>
+        <ul>
+            @for(var rule : model.quickRules())
+                <li>${rule}</li>
+            @endfor
+        </ul>
         <p>${model.sampleInput()}</p>
         <p>${model.sampleDecision()}</p>
     </section>
@@ -72,8 +74,17 @@
                 <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
             @endfor
         </ul>
+        <h3>FAQ</h3>
+        <div class="faq-list">
+            @for(var faq : model.faqItems())
+                <details class="faq-item">
+                    <summary>${faq.question()}</summary>
+                    <p>${faq.answer()}</p>
+                </details>
+            @endfor
+        </div>
         <p><a href="${model.projectGuidesUrl()}">Browse all project guides</a></p>
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Open calculator preset flow</a></p>
+        <p><a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open calculator preset flow</a></p>
     </section>
 </main>
 </body>

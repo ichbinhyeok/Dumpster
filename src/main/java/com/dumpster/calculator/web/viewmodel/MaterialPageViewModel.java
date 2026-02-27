@@ -19,6 +19,9 @@ public record MaterialPageViewModel(
         String operatorQuestion,
         String scenarioInput,
         String scenarioDecision,
+        String answerFirst,
+        List<String> quickRules,
+        List<FaqItemViewModel> faqItems,
         String materialGuidesUrl,
         List<LinkItemViewModel> relatedProjectLinks
 ) {

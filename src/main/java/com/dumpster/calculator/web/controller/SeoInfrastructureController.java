@@ -42,21 +42,38 @@ public class SeoInfrastructureController {
 
     @GetMapping(value = "/sitemap.xml", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> sitemap() {
-        List<String> urls = new ArrayList<>();
-        urls.add("/dumpster/size-weight-calculator");
-        urls.add("/dumpster/heavy-debris-rules");
-        urls.add("/dumpster/material-guides");
-        urls.add("/dumpster/project-guides");
-        urls.addAll(seoContentService.projectIndexPaths());
-        seoContentService.indexableMaterialIds().forEach(materialId -> urls.add("/dumpster/weight/" + materialId));
+        List<SitemapEntry> urls = new ArrayList<>();
+        String defaultLastMod = seoContentService.defaultLastModifiedDate().toString();
+        urls.add(new SitemapEntry("/dumpster/size-weight-calculator", defaultLastMod));
+        urls.add(new SitemapEntry("/dumpster/heavy-debris-rules", defaultLastMod));
+        urls.add(new SitemapEntry("/dumpster/material-guides", defaultLastMod));
+        urls.add(new SitemapEntry("/dumpster/project-guides", defaultLastMod));
+        seoContentService.projectIndexPaths().forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
+        seoContentService.indexableMaterialIds().forEach(materialId -> urls.add(
+                new SitemapEntry(
+                        "/dumpster/weight/" + materialId,
+                        seoContentService.materialLastModifiedDate(materialId).toString()
+                )
+        ));
 
         StringBuilder xml = new StringBuilder();
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         xml.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
-        for (String url : urls) {
-            xml.append("<url><loc>").append(baseUrl).append(url).append("</loc></url>");
+        for (SitemapEntry url : urls) {
+            xml.append("<url><loc>")
+                    .append(baseUrl)
+                    .append(url.path())
+                    .append("</loc><lastmod>")
+                    .append(url.lastMod())
+                    .append("</lastmod></url>");
         }
         xml.append("</urlset>");
         return ResponseEntity.ok(xml.toString());
+    }
+
+    private record SitemapEntry(
+            String path,
+            String lastMod
+    ) {
     }
 }

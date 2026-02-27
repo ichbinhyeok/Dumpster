@@ -14,6 +14,9 @@ public record ProjectPageViewModel(
         String canonicalPath,
         String sampleInput,
         String sampleDecision,
+        String answerFirst,
+        List<String> quickRules,
+        List<FaqItemViewModel> faqItems,
         String projectGuidesUrl,
         List<LinkItemViewModel> relatedMaterialLinks
 ) {

@@ -16,8 +16,10 @@
     const floatingCta = document.getElementById("floating-cta");
     const floatingCall = document.getElementById("floating-call");
     const floatingQuote = document.getElementById("floating-quote");
+    const projectSelect = document.getElementById("project-id");
     const personaSelect = document.getElementById("persona");
     const materialSelect = document.getElementById("material-id");
+    const unitSelect = document.getElementById("unit-id");
     const allowanceInput = document.getElementById("allowance-tons");
     const heavyMaterials = new Set([
         "asphalt_shingles",
@@ -29,6 +31,9 @@
         "asphalt_pavement",
         "metal_scrap_light"
     ]);
+
+    applyPresetFromQuery();
+    syncUnitOptions();
 
     if (personaSelect) {
         personaSelect.addEventListener("change", () => {
@@ -44,6 +49,7 @@
                     source: "material_selector"
                 });
             }
+            syncUnitOptions();
         });
     }
 
@@ -84,7 +90,7 @@
                 projectId: payload.projectId,
                 persona: payload.persona
             });
-            renderResult(data);
+            renderResult(data, payload);
         } catch (error) {
             resultPanel.hidden = false;
             resultSummary.innerHTML = "<p class=\"warn\">Could not calculate estimate. Check inputs and retry.</p>";
@@ -126,7 +132,7 @@
         };
     }
 
-    function renderResult(apiData) {
+    function renderResult(apiData, inputPayload) {
         const result = apiData.result;
         resultPanel.hidden = false;
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
@@ -188,6 +194,25 @@
         `;
 
         resultActions.innerHTML = `
+            <section class="lead-capture">
+                <h3>Get local quotes</h3>
+                <div class="lead-step" id="lead-step-1">
+                    <label for="lead-zip">ZIP code</label>
+                    <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339">
+                    <button type="button" id="lead-next">Next</button>
+                </div>
+                <div class="lead-step" id="lead-step-2" hidden>
+                    <label for="lead-contact-method">Contact preference</label>
+                    <select id="lead-contact-method">
+                        <option value="phone">Phone</option>
+                        <option value="email">Email</option>
+                    </select>
+                    <label for="lead-contact-value" id="lead-contact-label">Phone number</label>
+                    <input id="lead-contact-value" type="tel" placeholder="(555) 555-5555">
+                    <button type="button" id="lead-submit">Submit lead</button>
+                </div>
+                <p class="lead-hint" id="lead-status" aria-live="polite"></p>
+            </section>
             <a class="button-link primary" id="cta-dumpster-call" href="tel:+18005550123">Call dumpster quote</a>
             <a class="button-link" id="cta-dumpster-form" href="#dumpster-form">Request online quote</a>
             <a class="button-link" id="cta-junk" href="#junk">Compare junk removal</a>
@@ -196,6 +221,72 @@
         const dumpsterCall = document.getElementById("cta-dumpster-call");
         const dumpsterForm = document.getElementById("cta-dumpster-form");
         const junkCall = document.getElementById("cta-junk");
+        const leadStep1 = document.getElementById("lead-step-1");
+        const leadStep2 = document.getElementById("lead-step-2");
+        const leadZip = document.getElementById("lead-zip");
+        const leadNext = document.getElementById("lead-next");
+        const leadSubmit = document.getElementById("lead-submit");
+        const leadStatus = document.getElementById("lead-status");
+        const leadContactMethod = document.getElementById("lead-contact-method");
+        const leadContactValue = document.getElementById("lead-contact-value");
+        const leadContactLabel = document.getElementById("lead-contact-label");
+        const prefersPhone = inputPayload.needTiming === "48h";
+        const emitLeadSubmitted = (source) => {
+            if (!leadZip || !leadContactMethod || !leadContactValue) {
+                return;
+            }
+            const zip = sanitizeZip(leadZip.value);
+            const contact = (leadContactValue.value || "").trim();
+            if (!isValidZip(zip) || contact === "") {
+                return;
+            }
+            trackEvent("lead_submitted", apiData.estimateId, {
+                source,
+                zipCode: zip,
+                contactMethod: leadContactMethod.value,
+                needTiming: inputPayload.needTiming,
+                projectId: inputPayload.projectId,
+                primaryCta: result.ctaRouting.primaryCta
+            });
+        };
+        if (leadContactMethod) {
+            leadContactMethod.value = prefersPhone ? "phone" : "email";
+            updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
+            leadContactMethod.addEventListener("change", () => {
+                updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
+            });
+        }
+        if (leadNext && leadZip && leadStep2 && leadStatus) {
+            leadNext.addEventListener("click", () => {
+                const zip = sanitizeZip(leadZip.value);
+                if (!isValidZip(zip)) {
+                    leadStatus.textContent = "Enter a valid 5-digit ZIP code.";
+                    return;
+                }
+                leadStatus.textContent = "";
+                leadStep1.hidden = true;
+                leadStep2.hidden = false;
+                if (leadContactValue) {
+                    leadContactValue.focus();
+                }
+            });
+        }
+        if (leadSubmit && leadZip && leadContactMethod && leadContactValue && leadStatus) {
+            leadSubmit.addEventListener("click", () => {
+                const zip = sanitizeZip(leadZip.value);
+                const contact = (leadContactValue.value || "").trim();
+                if (!isValidZip(zip)) {
+                    leadStatus.textContent = "Enter a valid 5-digit ZIP code.";
+                    return;
+                }
+                if (contact === "") {
+                    leadStatus.textContent = "Enter your contact information.";
+                    return;
+                }
+                emitLeadSubmitted("lead_form_submit");
+                leadStatus.textContent = "Lead submitted. A quote partner can contact you next.";
+            });
+        }
         if (floatingCta) {
             floatingCta.hidden = false;
         }
@@ -206,13 +297,25 @@
             floatingQuote.onclick = () => trackEvent("cta_click_dumpster_form", apiData.estimateId, {source: "floating"});
         }
         if (dumpsterCall) {
-            dumpsterCall.addEventListener("click", () => trackEvent("cta_click_dumpster_call", apiData.estimateId, {}));
+            dumpsterCall.addEventListener("click", () => {
+                trackEvent("cta_click_dumpster_call", apiData.estimateId, {});
+                emitLeadSubmitted("cta_dumpster_call");
+                if (inputPayload.needTiming === "48h") {
+                    trackEvent("call_qualified", apiData.estimateId, {source: "call_click_proxy"});
+                }
+            });
         }
         if (dumpsterForm) {
-            dumpsterForm.addEventListener("click", () => trackEvent("cta_click_dumpster_form", apiData.estimateId, {}));
+            dumpsterForm.addEventListener("click", () => {
+                trackEvent("cta_click_dumpster_form", apiData.estimateId, {});
+                emitLeadSubmitted("cta_dumpster_form");
+            });
         }
         if (junkCall) {
-            junkCall.addEventListener("click", () => trackEvent("cta_click_junk_call", apiData.estimateId, {}));
+            junkCall.addEventListener("click", () => {
+                trackEvent("cta_click_junk_call", apiData.estimateId, {});
+                emitLeadSubmitted("cta_junk");
+            });
         }
     }
 
@@ -261,5 +364,63 @@
                 payload: payload || {}
             })
         }).catch(() => {});
+    }
+
+    function applyPresetFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        const presetProject = params.get("project");
+        const presetMaterial = params.get("material");
+        if (projectSelect && hasOption(projectSelect, presetProject)) {
+            projectSelect.value = presetProject;
+        }
+        if (materialSelect && hasOption(materialSelect, presetMaterial)) {
+            materialSelect.value = presetMaterial;
+        }
+    }
+
+    function syncUnitOptions() {
+        if (!unitSelect || !materialSelect) {
+            return;
+        }
+        const roofSquareOption = unitSelect.querySelector("option[value='roof_square']");
+        if (!roofSquareOption) {
+            return;
+        }
+        const shingles = materialSelect.value === "asphalt_shingles";
+        roofSquareOption.hidden = !shingles;
+        roofSquareOption.disabled = !shingles;
+        if (!shingles && unitSelect.value === "roof_square") {
+            unitSelect.value = "pickup_load";
+        }
+    }
+
+    function hasOption(select, value) {
+        if (!select || !value) {
+            return false;
+        }
+        return Array.from(select.options).some((option) => option.value === value);
+    }
+
+    function sanitizeZip(value) {
+        return String(value || "").replace(/[^0-9]/g, "").slice(0, 5);
+    }
+
+    function isValidZip(value) {
+        return /^[0-9]{5}$/.test(value);
+    }
+
+    function updateLeadContactField(methodEl, valueEl, labelEl) {
+        if (!methodEl || !valueEl || !labelEl) {
+            return;
+        }
+        if (methodEl.value === "email") {
+            valueEl.type = "email";
+            valueEl.placeholder = "name@company.com";
+            labelEl.textContent = "Email";
+        } else {
+            valueEl.type = "tel";
+            valueEl.placeholder = "(555) 555-5555";
+            labelEl.textContent = "Phone number";
+        }
     }
 })();

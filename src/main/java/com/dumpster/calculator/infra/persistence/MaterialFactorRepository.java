@@ -22,7 +22,8 @@ public class MaterialFactorRepository {
             rs.getDouble("wet_multiplier_low"),
             rs.getDouble("wet_multiplier_high"),
             DataQuality.valueOf(rs.getString("data_quality").toUpperCase()),
-            rs.getString("source")
+            rs.getString("source"),
+            rs.getDate("source_version_date") == null ? null : rs.getDate("source_version_date").toLocalDate()
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -44,4 +45,3 @@ public class MaterialFactorRepository {
         return jdbcTemplate.query("select * from material_factors", ROW_MAPPER);
     }
 }
-

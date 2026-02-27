@@ -1,5 +1,7 @@
 package com.dumpster.calculator.domain.reference;
 
+import java.time.LocalDate;
+
 public record MaterialFactor(
         String materialId,
         String name,
@@ -10,7 +12,7 @@ public record MaterialFactor(
         double wetMultiplierLow,
         double wetMultiplierHigh,
         DataQuality dataQuality,
-        String source
+        String source,
+        LocalDate sourceVersionDate
 ) {
 }
-

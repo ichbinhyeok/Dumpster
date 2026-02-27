@@ -31,22 +31,17 @@
           "@context": "https://schema.org",
           "@type": "FAQPage",
           "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "Why is material density shown as a range?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Actual hauled weight changes with moisture, packing, and contamination. A range prevents false certainty."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Can a larger dumpster still be the wrong choice?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. Heavy debris may hit haul limits before volume is filled, so smaller bins with multiple hauls are safer."
-              }
-            }
+            @for(int i = 0; i < model.faqItems().size(); i++)
+                {
+                  "@type": "Question",
+                  "name": "${model.faqItems().get(i).question()}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${model.faqItems().get(i).answer()}"
+                  }
+                }
+                @if(i < model.faqItems().size() - 1),@endif
+            @endfor
           ]
         }
     </script>
@@ -59,6 +54,13 @@
         <p>Category: ${model.categoryLabel()}</p>
         <p>Density range (lbs/yd3): ${model.densityLow()} / ${model.densityTyp()} / ${model.densityHigh()}</p>
         <p>Example: ${model.exampleVolumeYd3()} yd3 is about ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons (typical ${model.exampleWeightTypTons()} tons).</p>
+        <p class="answer-first">${model.answerFirst()}</p>
+        <h2>Quick rules</h2>
+        <ul>
+            @for(var rule : model.quickRules())
+                <li>${rule}</li>
+            @endfor
+        </ul>
         <p>${model.scenarioInput()}</p>
         <p>${model.scenarioDecision()}</p>
         <p>${model.cautionNote()}</p>
@@ -74,8 +76,17 @@
                 <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
             @endfor
         </ul>
+        <h3>FAQ</h3>
+        <div class="faq-list">
+            @for(var faq : model.faqItems())
+                <details class="faq-item">
+                    <summary>${faq.question()}</summary>
+                    <p>${faq.answer()}</p>
+                </details>
+            @endfor
+        </div>
         <p><a href="${model.materialGuidesUrl()}">Browse all material guides</a></p>
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator with this material</a></p>
+        <p><a class="button-link primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}">Run calculator with this material</a></p>
     </section>
 </main>
 </body>

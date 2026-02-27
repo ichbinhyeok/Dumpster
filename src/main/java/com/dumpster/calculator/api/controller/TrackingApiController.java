@@ -29,7 +29,9 @@ public class TrackingApiController {
             "allowance_entered",
             "used_assumed_allowance",
             "feasibility_not_ok",
-            "share_estimate_created"
+            "share_estimate_created",
+            "lead_submitted",
+            "call_qualified"
     );
 
     private final TrackingService trackingService;

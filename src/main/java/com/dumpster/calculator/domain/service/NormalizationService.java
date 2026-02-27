@@ -46,6 +46,7 @@ public class NormalizationService {
                     .orElseThrow(() -> new IllegalArgumentException("Unknown material_id: " + item.materialId()));
             UnitConversion conversion = unitConversionRepository.findById(item.unitId())
                     .orElseThrow(() -> new IllegalArgumentException("Unknown unit_id: " + item.unitId()));
+            validateUnitMaterialCompatibility(conversion.unitId(), material.materialId());
 
             ItemConditions conditions = item.safeConditions();
             Map<String, Double> expression = conversion.parsedExpression();
@@ -115,5 +116,10 @@ public class NormalizationService {
             case HIGH -> 0.90d;
         };
     }
-}
 
+    private static void validateUnitMaterialCompatibility(String unitId, String materialId) {
+        if ("roof_square".equals(unitId) && !"asphalt_shingles".equals(materialId)) {
+            throw new IllegalArgumentException("unit roof_square is only supported for asphalt_shingles");
+        }
+    }
+}

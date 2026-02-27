@@ -69,3 +69,4 @@ create table if not exists tracking_events (
     event_payload clob,
     created_at timestamp not null
 );
+create index if not exists idx_tracking_events_created_at on tracking_events (created_at);
