@@ -16,11 +16,27 @@
     const floatingCta = document.getElementById("floating-cta");
     const floatingCall = document.getElementById("floating-call");
     const floatingQuote = document.getElementById("floating-quote");
-    const projectSelect = document.getElementById("project-id");
-    const personaSelect = document.getElementById("persona");
-    const materialSelect = document.getElementById("material-id");
-    const unitSelect = document.getElementById("unit-id");
+    const quantityInput = document.getElementById("quantity");
     const allowanceInput = document.getElementById("allowance-tons");
+    const wetInput = document.getElementById("wet");
+    const mixedInput = document.getElementById("mixed-load");
+    const quantityInc = document.getElementById("quantity-inc");
+    const quantityDec = document.getElementById("quantity-dec");
+    const liveNote = document.getElementById("live-note");
+    const liveStatus = document.getElementById("live-status");
+    const gaugeWeight = document.getElementById("gauge-weight");
+    const gaugeVolume = document.getElementById("gauge-volume");
+    const gaugeRisk = document.getElementById("gauge-risk");
+    const gaugeWeightLabel = document.getElementById("gauge-weight-label");
+    const gaugeVolumeLabel = document.getElementById("gauge-volume-label");
+    const gaugeRiskLabel = document.getElementById("gauge-risk-label");
+    const projectInput = document.getElementById("project-id");
+    const personaInput = document.getElementById("persona");
+    const materialInput = document.getElementById("material-id");
+    const unitInput = document.getElementById("unit-id");
+    const needTimingInput = document.getElementById("need-timing");
+    const choiceGroups = Array.from(form.querySelectorAll("[data-choice-target]"));
+    const roofSquareChip = form.querySelector("[data-choice-target='unit-id'] [data-choice-value='roof_square']");
     const heavyMaterials = new Set([
         "asphalt_shingles",
         "concrete",
@@ -32,46 +48,121 @@
         "metal_scrap_light"
     ]);
 
-    applyPresetFromQuery();
-    syncUnitOptions();
+    let liveDebounceId = null;
+    let activeRequestController = null;
+    let requestSequence = 0;
 
-    if (personaSelect) {
-        personaSelect.addEventListener("change", () => {
-            trackEvent("persona_selected", null, {persona: personaSelect.value});
+    applyPresetFromQuery();
+    initializeChoiceGroups();
+    syncUnitOptions();
+    bindStepperControls();
+    bindFormControls();
+    queueLiveEstimate();
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        runEstimate("submit");
+    });
+
+    function initializeChoiceGroups() {
+        choiceGroups.forEach((group) => {
+            const targetId = group.getAttribute("data-choice-target");
+            const targetInput = document.getElementById(targetId);
+            if (!targetInput) {
+                return;
+            }
+            const buttons = Array.from(group.querySelectorAll("[data-choice-value]"));
+            buttons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    if (button.disabled) {
+                        return;
+                    }
+                    targetInput.value = button.getAttribute("data-choice-value");
+                    syncChoiceButtons(group);
+                    if (targetId === "material-id") {
+                        if (heavyMaterials.has(targetInput.value)) {
+                            trackEvent("heavy_debris_flagged", null, {
+                                materialId: targetInput.value,
+                                source: "material_chip"
+                            });
+                        }
+                        syncUnitOptions();
+                    }
+                    if (targetId === "persona") {
+                        trackEvent("persona_selected", null, {persona: targetInput.value});
+                    }
+                    queueLiveEstimate();
+                });
+            });
+            syncChoiceButtons(group);
         });
     }
 
-    if (materialSelect) {
-        materialSelect.addEventListener("change", () => {
-            if (heavyMaterials.has(materialSelect.value)) {
+    function bindStepperControls() {
+        if (quantityInc) {
+            quantityInc.addEventListener("click", () => {
+                stepQuantity(1);
+            });
+        }
+        if (quantityDec) {
+            quantityDec.addEventListener("click", () => {
+                stepQuantity(-1);
+            });
+        }
+    }
+
+    function bindFormControls() {
+        const liveInputs = [quantityInput, allowanceInput, wetInput, mixedInput];
+        liveInputs.forEach((input) => {
+            if (!input) {
+                return;
+            }
+            input.addEventListener("input", () => queueLiveEstimate());
+            input.addEventListener("change", () => queueLiveEstimate());
+        });
+    }
+
+    function queueLiveEstimate() {
+        if (liveDebounceId) {
+            window.clearTimeout(liveDebounceId);
+        }
+        if (liveNote) {
+            liveNote.textContent = "Live update is on. Refreshing recommendation...";
+        }
+        liveDebounceId = window.setTimeout(() => {
+            runEstimate("live");
+        }, 360);
+    }
+
+    async function runEstimate(trigger) {
+        if (!isPayloadReady()) {
+            return;
+        }
+        const payload = buildPayload();
+
+        if (activeRequestController) {
+            activeRequestController.abort();
+        }
+        const controller = new AbortController();
+        activeRequestController = controller;
+        const runId = ++requestSequence;
+
+        setLoadingState(true, trigger);
+
+        if (trigger === "submit") {
+            trackEvent("calc_started", null, {
+                projectId: payload.projectId,
+                persona: payload.persona
+            });
+            if (payload.options.allowanceTons !== null) {
+                trackEvent("allowance_entered", null, {allowanceTons: payload.options.allowanceTons});
+            }
+            if (payload.items.some((item) => heavyMaterials.has(item.materialId))) {
                 trackEvent("heavy_debris_flagged", null, {
-                    materialId: materialSelect.value,
-                    source: "material_selector"
+                    projectId: payload.projectId,
+                    source: "submit_payload"
                 });
             }
-            syncUnitOptions();
-        });
-    }
-
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        submitButton.disabled = true;
-        submitButton.textContent = "Calculating...";
-        clearResult();
-
-        const payload = buildPayload();
-        trackEvent("calc_started", null, {
-            projectId: payload.projectId,
-            persona: payload.persona
-        });
-        if (payload.options.allowanceTons !== null) {
-            trackEvent("allowance_entered", null, {allowanceTons: payload.options.allowanceTons});
-        }
-        if (payload.items.some((item) => heavyMaterials.has(item.materialId))) {
-            trackEvent("heavy_debris_flagged", null, {
-                projectId: payload.projectId,
-                source: "submit_payload"
-            });
         }
 
         try {
@@ -80,43 +171,59 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                signal: controller.signal
             });
             if (!response.ok) {
                 throw new Error("Estimate request failed");
             }
             const data = await response.json();
-            trackEvent("calc_completed", data.estimateId, {
-                projectId: payload.projectId,
-                persona: payload.persona
-            });
+            if (runId !== requestSequence) {
+                return;
+            }
+
+            if (trigger === "submit") {
+                trackEvent("calc_completed", data.estimateId, {
+                    projectId: payload.projectId,
+                    persona: payload.persona
+                });
+            }
             renderResult(data, payload);
         } catch (error) {
-            resultPanel.hidden = false;
-            resultSummary.innerHTML = "<p class=\"warn\">Could not calculate estimate. Check inputs and retry.</p>";
+            if (error && error.name === "AbortError") {
+                return;
+            }
+            showCalculationError();
         } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Calculate";
+            if (runId === requestSequence) {
+                setLoadingState(false, trigger);
+            }
         }
-    });
+    }
+
+    function isPayloadReady() {
+        if (!projectInput || !personaInput || !materialInput || !unitInput || !needTimingInput || !quantityInput) {
+            return false;
+        }
+        const quantity = parseFloat(quantityInput.value || "0");
+        return !Number.isNaN(quantity) && quantity > 0;
+    }
 
     function buildPayload() {
-        const materialId = document.getElementById("material-id").value;
-        const unitId = document.getElementById("unit-id").value;
-        const quantity = parseFloat(document.getElementById("quantity").value || "0");
+        const quantity = parseFloat(quantityInput.value || "0");
         const allowanceRaw = allowanceInput.value;
-        const mixed = document.getElementById("mixed-load").checked;
-        const wet = document.getElementById("wet").checked;
+        const mixed = mixedInput.checked;
+        const wet = wetInput.checked;
 
         return {
-            projectId: document.getElementById("project-id").value,
-            persona: document.getElementById("persona").value,
-            needTiming: document.getElementById("need-timing").value,
+            projectId: projectInput.value,
+            persona: personaInput.value,
+            needTiming: needTimingInput.value,
             items: [
                 {
-                    materialId,
+                    materialId: materialInput.value,
                     quantity,
-                    unitId,
+                    unitId: unitInput.value,
                     conditions: {
                         wet,
                         mixedLoad: mixed,
@@ -136,6 +243,7 @@
         const result = apiData.result;
         resultPanel.hidden = false;
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
+
         trackEvent("result_viewed", apiData.estimateId, {
             priceRisk: result.priceRisk,
             feasibility: result.feasibility
@@ -174,7 +282,7 @@
                 <h3>${rec.label} - ${rec.sizeYd}yd</h3>
                 <p>Risk: ${rec.risk} / Feasibility: ${rec.feasibility}</p>
                 <p>Multi-haul: ${rec.multiHaul ? "Yes (" + rec.haulCount + ")" : "No"}</p>
-                <ul>${rec.why.map((reason) => `<li>${reason}</li>`).join("")}</ul>
+                <ul>${rec.why.map((reason) => "<li>" + reason + "</li>").join("")}</ul>
             </article>
         `).join("");
 
@@ -188,9 +296,9 @@
 
         resultAssumptions.innerHTML = `
             <h3>Assumptions</h3>
-            <ul>${result.assumptions.map((item) => `<li>${item}</li>`).join("")}</ul>
+            <ul>${result.assumptions.map((item) => "<li>" + item + "</li>").join("")}</ul>
             <h3>Input Impact</h3>
-            <ul>${result.inputImpactSummary.map((item) => `<li>${item}</li>`).join("")}</ul>
+            <ul>${result.inputImpactSummary.map((item) => "<li>" + item + "</li>").join("")}</ul>
         `;
 
         resultActions.innerHTML = `
@@ -214,10 +322,15 @@
                 <p class="lead-hint" id="lead-status" aria-live="polite"></p>
             </section>
             <a class="button-link primary" id="cta-dumpster-call" href="tel:+18005550123">Call dumpster quote</a>
-            <a class="button-link" id="cta-dumpster-form" href="#dumpster-form">Request online quote</a>
+            <a class="button-link" id="cta-dumpster-form" href="#estimate-form">Request online quote</a>
             <a class="button-link" id="cta-junk" href="#junk">Compare junk removal</a>
         `;
 
+        updateLiveDashboard(result, inputPayload);
+        wireResultActionTracking(apiData, inputPayload, result);
+    }
+
+    function wireResultActionTracking(apiData, inputPayload, result) {
         const dumpsterCall = document.getElementById("cta-dumpster-call");
         const dumpsterForm = document.getElementById("cta-dumpster-form");
         const junkCall = document.getElementById("cta-junk");
@@ -231,6 +344,7 @@
         const leadContactValue = document.getElementById("lead-contact-value");
         const leadContactLabel = document.getElementById("lead-contact-label");
         const prefersPhone = inputPayload.needTiming === "48h";
+
         const emitLeadSubmitted = (source) => {
             if (!leadZip || !leadContactMethod || !leadContactValue) {
                 return;
@@ -249,6 +363,7 @@
                 primaryCta: result.ctaRouting.primaryCta
             });
         };
+
         if (leadContactMethod) {
             leadContactMethod.value = prefersPhone ? "phone" : "email";
             updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
@@ -256,7 +371,7 @@
                 updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
             });
         }
-        if (leadNext && leadZip && leadStep2 && leadStatus) {
+        if (leadNext && leadZip && leadStep1 && leadStep2 && leadStatus) {
             leadNext.addEventListener("click", () => {
                 const zip = sanitizeZip(leadZip.value);
                 if (!isValidZip(zip)) {
@@ -319,26 +434,167 @@
         }
     }
 
-    function clearResult() {
-        resultPanel.hidden = true;
-        resultBadges.innerHTML = "";
-        resultSummary.innerHTML = "";
-        resultRecommendations.innerHTML = "";
-        resultCosts.innerHTML = "";
-        resultAssumptions.innerHTML = "";
-        resultActions.innerHTML = "";
-        shareLink.href = "#";
-        if (floatingCta) {
-            floatingCta.hidden = true;
+    function updateLiveDashboard(result, payload) {
+        const allowance = payload.options.allowanceTons;
+        const weightHigh = Number(result.weightTons.high || 0);
+        const volumeHigh = Number(result.volumeYd3.high || 0);
+        const topRecommendation = Array.isArray(result.recommendations) && result.recommendations.length > 0
+                ? result.recommendations[0]
+                : null;
+        const capacityReference = topRecommendation ? Math.max(Number(topRecommendation.sizeYd || 1), 1) : 30;
+
+        const weightPct = allowance && allowance > 0
+                ? Math.min((weightHigh / allowance) * 100, 100)
+                : riskToPercent(result.priceRisk);
+        const volumePct = Math.min((volumeHigh / capacityReference) * 100, 100);
+        const riskPct = riskToPercent(result.priceRisk);
+
+        setGauge(gaugeWeight, gaugeWeightLabel, weightPct, `High estimate ${fmt(weightHigh)} tons`);
+        setGauge(gaugeVolume, gaugeVolumeLabel, volumePct, `High estimate ${fmt(volumeHigh)} yd3`);
+        setGauge(gaugeRisk, gaugeRiskLabel, riskPct, `Risk tier ${result.priceRisk}`);
+
+        if (liveStatus) {
+            const lead = topRecommendation ? `${topRecommendation.label} ${topRecommendation.sizeYd}yd` : "No recommendation";
+            liveStatus.textContent = `Updated: ${lead} | Feasibility ${result.feasibility}`;
         }
     }
 
+    function setGauge(gaugeEl, labelEl, percent, labelText) {
+        if (!gaugeEl || !labelEl) {
+            return;
+        }
+        const bounded = Math.max(4, Math.min(percent, 100));
+        gaugeEl.style.width = bounded + "%";
+        gaugeEl.classList.remove("warn", "danger");
+        if (bounded >= 80) {
+            gaugeEl.classList.add("danger");
+        } else if (bounded >= 55) {
+            gaugeEl.classList.add("warn");
+        }
+        labelEl.textContent = labelText;
+    }
+
+    function setLoadingState(isLoading, trigger) {
+        if (submitButton) {
+            submitButton.disabled = isLoading;
+            submitButton.textContent = isLoading && trigger === "submit" ? "Calculating..." : "Calculate";
+        }
+        if (liveNote) {
+            liveNote.textContent = isLoading
+                    ? "Live update is on. Refreshing recommendation..."
+                    : "Live update is on. Input changes refresh your recommendation automatically.";
+        }
+    }
+
+    function showCalculationError() {
+        if (resultPanel) {
+            resultPanel.hidden = false;
+        }
+        if (resultSummary) {
+            resultSummary.innerHTML = "<p class=\"warn\">Could not calculate estimate. Check inputs and retry.</p>";
+        }
+        if (liveStatus) {
+            liveStatus.textContent = "Live update failed. Check values and retry.";
+        }
+    }
+
+    function stepQuantity(direction) {
+        if (!quantityInput) {
+            return;
+        }
+        const step = parseFloat(quantityInput.step || "0.1");
+        const min = parseFloat(quantityInput.min || "0.1");
+        const current = parseFloat(quantityInput.value || String(min));
+        const next = Math.max(min, (Number.isNaN(current) ? min : current) + (direction * step));
+        quantityInput.value = next.toFixed(1).replace(/\.0$/, "");
+        queueLiveEstimate();
+    }
+
+    function syncChoiceButtons(group) {
+        const targetId = group.getAttribute("data-choice-target");
+        const targetInput = document.getElementById(targetId);
+        if (!targetInput) {
+            return;
+        }
+        const activeValue = targetInput.value;
+        Array.from(group.querySelectorAll("[data-choice-value]")).forEach((button) => {
+            const value = button.getAttribute("data-choice-value");
+            button.classList.toggle("is-active", value === activeValue);
+        });
+    }
+
+    function syncUnitOptions() {
+        if (!roofSquareChip || !materialInput || !unitInput) {
+            return;
+        }
+        const shingles = materialInput.value === "asphalt_shingles";
+        roofSquareChip.disabled = !shingles;
+        if (!shingles && unitInput.value === "roof_square") {
+            unitInput.value = "pickup_load";
+            const group = roofSquareChip.closest("[data-choice-target]");
+            if (group) {
+                syncChoiceButtons(group);
+            }
+        }
+    }
+
+    function applyPresetFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        setPresetValue(projectInput, params.get("project"), "project-id");
+        setPresetValue(materialInput, params.get("material"), "material-id");
+        setPresetValue(personaInput, params.get("persona"), "persona");
+        setPresetValue(unitInput, params.get("unit"), "unit-id");
+        setPresetValue(needTimingInput, params.get("timing"), "need-timing");
+        setPresetValue(needTimingInput, params.get("need_timing"), "need-timing");
+
+        const quantityParam = params.get("qty") || params.get("quantity");
+        if (quantityInput && quantityParam) {
+            const parsed = parseFloat(quantityParam);
+            if (!Number.isNaN(parsed) && parsed > 0) {
+                quantityInput.value = parsed.toString();
+            }
+        }
+    }
+
+    function setPresetValue(input, value, targetId) {
+        if (!input || !value) {
+            return;
+        }
+        if (!hasChoiceOption(targetId, value)) {
+            return;
+        }
+        input.value = value;
+    }
+
+    function hasChoiceOption(targetId, value) {
+        const group = form.querySelector("[data-choice-target='" + targetId + "']");
+        if (!group || !value) {
+            return false;
+        }
+        return Array.from(group.querySelectorAll("[data-choice-value]"))
+                .some((button) => button.getAttribute("data-choice-value") === value);
+    }
+
+    function riskToPercent(priceRisk) {
+        if (priceRisk === "HIGH") {
+            return 90;
+        }
+        if (priceRisk === "MEDIUM") {
+            return 62;
+        }
+        return 34;
+    }
+
     function badge(text, style) {
-        return `<span class="badge ${style}">${text}</span>`;
+        return "<span class=\"badge " + style + "\">" + text + "</span>";
     }
 
     function fmt(value) {
-        return Number(value).toFixed(2);
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) {
+            return "0.00";
+        }
+        return numeric.toFixed(2);
     }
 
     function recTone(label) {
@@ -363,42 +619,8 @@
                 estimateId,
                 payload: payload || {}
             })
-        }).catch(() => {});
-    }
-
-    function applyPresetFromQuery() {
-        const params = new URLSearchParams(window.location.search);
-        const presetProject = params.get("project");
-        const presetMaterial = params.get("material");
-        if (projectSelect && hasOption(projectSelect, presetProject)) {
-            projectSelect.value = presetProject;
-        }
-        if (materialSelect && hasOption(materialSelect, presetMaterial)) {
-            materialSelect.value = presetMaterial;
-        }
-    }
-
-    function syncUnitOptions() {
-        if (!unitSelect || !materialSelect) {
-            return;
-        }
-        const roofSquareOption = unitSelect.querySelector("option[value='roof_square']");
-        if (!roofSquareOption) {
-            return;
-        }
-        const shingles = materialSelect.value === "asphalt_shingles";
-        roofSquareOption.hidden = !shingles;
-        roofSquareOption.disabled = !shingles;
-        if (!shingles && unitSelect.value === "roof_square") {
-            unitSelect.value = "pickup_load";
-        }
-    }
-
-    function hasOption(select, value) {
-        if (!select || !value) {
-            return false;
-        }
-        return Array.from(select.options).some((option) => option.value === value);
+        }).catch(() => {
+        });
     }
 
     function sanitizeZip(value) {

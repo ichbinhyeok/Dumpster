@@ -29,6 +29,8 @@ class SeoPageRenderingTests {
     void materialPageRendersAnswerQuickRulesFaqAndSchema() throws Exception {
         mockMvc.perform(get("/dumpster/weight/asphalt_shingles"))
                 .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Quick rules")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Asphalt shingles are weight-first debris.")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
@@ -39,6 +41,8 @@ class SeoPageRenderingTests {
     void projectPageRendersAnswerQuickRulesFaqAndSchema() throws Exception {
         mockMvc.perform(get("/dumpster/size/roof_tearoff"))
                 .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Quick rules")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Roof tear-off decisions should be weight-first.")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))

@@ -25,7 +25,27 @@
     </script>
 </head>
 <body>
-<main class="shell">
+<header class="site-header">
+    <div class="shell shell--header">
+        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
+            <span class="brand-mark" aria-hidden="true">DC</span>
+            <span class="brand-copy">
+                <strong>Dumpster Decision OS</strong>
+                <small>Range-based size + weight intelligence</small>
+            </span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+            <a href="/dumpster/material-guides">Material guides</a>
+            <a href="/dumpster/project-guides">Project guides</a>
+            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
+        </nav>
+        <div class="site-header-actions">
+            <span class="trust-pill">Project library</span>
+            <a class="button-link primary" href="/dumpster/size-weight-calculator">Open simulator</a>
+        </div>
+    </div>
+</header>
+<main class="shell shell--main">
     <section class="panel">
         <p class="eyebrow">${model.eyebrow()}</p>
         <h1>${model.pageTitle()}</h1>
@@ -41,5 +61,16 @@
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
     </section>
 </main>
+<footer class="site-footer">
+    <div class="shell shell--footer">
+        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
+        <div class="micro-links">
+            <span>Data sources: EPA baseline conversion references + local table checks</span>
+            <a href="/dumpster/heavy-debris-rules">Methodology</a>
+            <a href="/legal/terms.html">Terms</a>
+            <a href="/legal/privacy.html">Privacy</a>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

@@ -47,14 +47,59 @@
     </script>
 </head>
 <body>
-<main class="shell">
+<header class="site-header">
+    <div class="shell shell--header">
+        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
+            <span class="brand-mark" aria-hidden="true">DC</span>
+            <span class="brand-copy">
+                <strong>Dumpster Decision OS</strong>
+                <small>Range-based size + weight intelligence</small>
+            </span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+            <a href="/dumpster/material-guides">Material guides</a>
+            <a href="/dumpster/project-guides">Project guides</a>
+            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
+        </nav>
+        <div class="site-header-actions">
+            <span class="trust-pill">Project preset</span>
+            <a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open simulator</a>
+        </div>
+    </div>
+</header>
+<main class="shell shell--main">
+    <section class="panel hero-insight">
+        <div class="hero-grid">
+            <div>
+                <p class="eyebrow">Project Guide</p>
+                <h1>${model.title()}</h1>
+                <p class="answer-first">${model.answerFirst()}</p>
+                <p>Recommended quick input unit: ${model.recommendedUnit()}</p>
+                <p>Default material preset: ${model.defaultMaterialId()}</p>
+                <p>Recommended strategy: ${model.recommendedStrategy()}</p>
+            </div>
+            <aside class="hero-proof">
+                <h2>Fast preset launcher</h2>
+                <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
+                    <input type="hidden" name="project" value="${model.projectId()}">
+                    <input type="hidden" name="material" value="${model.defaultMaterialId()}">
+                    <label for="intent-qty-project">Quantity</label>
+                    <input id="intent-qty-project" name="qty" type="number" min="0.1" step="0.1" value="6">
+                    <label for="intent-persona-project">Persona</label>
+                    <select id="intent-persona-project" name="persona">
+                        <option value="homeowner">Homeowner</option>
+                        <option value="contractor">Contractor</option>
+                        <option value="property_manager">Property manager</option>
+                        <option value="investor">Flipper / investor</option>
+                        <option value="business">Facility / business</option>
+                    </select>
+                    <button type="submit">Launch live simulator</button>
+                </form>
+            </aside>
+        </div>
+    </section>
+
     <section class="panel">
-        <p class="eyebrow">Project Guide</p>
-        <h1>${model.title()}</h1>
-        <p>Recommended quick input unit: ${model.recommendedUnit()}</p>
-        <p>Default material preset: ${model.defaultMaterialId()}</p>
-        <p>Recommended strategy: ${model.recommendedStrategy()}</p>
-        <p class="answer-first">${model.answerFirst()}</p>
         <h2>Quick rules</h2>
         <ul>
             @for(var rule : model.quickRules())
@@ -64,10 +109,13 @@
         <p>${model.sampleInput()}</p>
         <p>${model.sampleDecision()}</p>
     </section>
+
     <section class="panel">
-        <h2>Mistake to avoid</h2>
-        <p>${model.commonMistake()}</p>
-        <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
+        <article class="mistake-callout">
+            <h2>Mistake to avoid</h2>
+            <p>${model.commonMistake()}</p>
+            <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
+        </article>
         <h3>Related material guides</h3>
         <ul>
             @for(var link : model.relatedMaterialLinks())
@@ -87,5 +135,16 @@
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open calculator preset flow</a></p>
     </section>
 </main>
+<footer class="site-footer">
+    <div class="shell shell--footer">
+        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
+        <div class="micro-links">
+            <span>Data sources: EPA baseline conversion references + local table checks</span>
+            <a href="/dumpster/heavy-debris-rules">Methodology</a>
+            <a href="/legal/terms.html">Terms</a>
+            <a href="/legal/privacy.html">Privacy</a>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
