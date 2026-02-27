@@ -42,7 +42,7 @@ public class CalculatorPageController {
 
     @GetMapping("/dumpster/estimate/{estimateId}")
     public ModelAndView shareEstimate(
-            @PathVariable String estimateId,
+            @PathVariable("estimateId") String estimateId,
             HttpServletResponse response
     ) {
         response.setHeader("X-Robots-Tag", "noindex, noarchive");

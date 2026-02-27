@@ -79,7 +79,7 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/weight/{materialId}")
-    public ModelAndView materialPage(@PathVariable String materialId) {
+    public ModelAndView materialPage(@PathVariable("materialId") String materialId) {
         MaterialPageViewModel model = seoContentService.materialPage(materialId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/material-page");
@@ -88,7 +88,7 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/size/{projectId}")
-    public ModelAndView projectPage(@PathVariable String projectId) {
+    public ModelAndView projectPage(@PathVariable("projectId") String projectId) {
         ProjectPageViewModel model = seoContentService.projectPage(projectId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/project-page");

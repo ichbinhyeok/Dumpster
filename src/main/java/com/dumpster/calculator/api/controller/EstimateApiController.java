@@ -58,7 +58,7 @@ public class EstimateApiController {
     }
 
     @GetMapping("/{estimateId}")
-    public ResponseEntity<?> getEstimate(@PathVariable String estimateId) {
+    public ResponseEntity<?> getEstimate(@PathVariable("estimateId") String estimateId) {
         return estimateStorageService.findValidById(estimateId)
                 .<ResponseEntity<?>>map(stored -> {
                     trackingService.track("result_viewed", estimateId, Map.of("source", "api_get"));
