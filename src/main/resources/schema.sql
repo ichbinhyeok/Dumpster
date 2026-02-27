@@ -14,6 +14,7 @@ create table if not exists material_factors (
     source_version_date date,
     updated_at timestamp default current_timestamp
 );
+alter table material_factors add column if not exists source_version_date date;
 
 create table if not exists unit_conversions (
     unit_id varchar(120) primary key,
