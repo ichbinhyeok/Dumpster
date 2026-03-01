@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.pageTitle()}</title>
     <meta name="description" content="${model.description()}">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="${model.pageTitle()}">
     <meta property="og:description" content="${model.description()}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="${model.canonicalUrl()}">
+    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/project-guides", "")}/favicon.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.pageTitle()}">
     <meta name="twitter:description" content="${model.description()}">
+    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/project-guides", "")}/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -26,6 +30,27 @@
           "url": "${model.canonicalUrl()}"
         }
     </script>
+    @if(model.hubFaqItems() != null && !model.hubFaqItems().isEmpty())
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            @for(int i = 0; i < model.hubFaqItems().size(); i++)
+                {
+                  "@type": "Question",
+                  "name": "${model.hubFaqItems().get(i).question()}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${model.hubFaqItems().get(i).answer()}"
+                  }
+                }
+                @if(i < model.hubFaqItems().size() - 1),@endif
+            @endfor
+          ]
+        }
+    </script>
+    @endif
 </head>
 <body>
 <header class="site-header">

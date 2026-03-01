@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Heavy Debris Dumpster Rules: Included Tons vs Max Haul Limits</title>
     <meta name="description" content="Heavy debris dumpster rules with size-by-size haul limits, fill-ratio caps, clean-load requirements, and safer multi-haul strategy guidance.">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="Heavy Debris Dumpster Rules: Included Tons vs Max Haul Limits">
     <meta property="og:description" content="Understand included tons vs haul limits, fill-ratio caps, and clean-load constraints before booking.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
+    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/heavy-debris-rules", "")}/favicon.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Heavy Debris Dumpster Rules">
     <meta name="twitter:description" content="Avoid overweight and rejected hauls by comparing heavy-debris limits per dumpster size.">
+    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/heavy-debris-rules", "")}/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -39,6 +43,16 @@
                 "text": "No. Included tons are a pricing threshold, while max haul limits are operational constraints."
               }
             }
+          ]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.canonicalUrl().replace("/dumpster/heavy-debris-rules", "/dumpster/size-weight-calculator")}"},
+            {"@type": "ListItem", "position": 2, "name": "Heavy Debris Rules", "item": "${model.canonicalUrl()}"}
           ]
         }
     </script>

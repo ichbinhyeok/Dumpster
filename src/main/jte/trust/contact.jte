@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.seoTitle()}</title>
     <meta name="description" content="${model.seoDescription()}">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="${model.seoTitle()}">
     <meta property="og:description" content="${model.seoDescription()}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="${model.canonicalUrl()}">
+    <meta property="og:image" content="${model.canonicalUrl().replace("/about/contact", "")}/favicon.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.seoDescription()}">
+    <meta name="twitter:image" content="${model.canonicalUrl().replace("/about/contact", "")}/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">

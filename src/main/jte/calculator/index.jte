@@ -6,14 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.seoTitle()}</title>
     <meta name="description" content="${model.seoDescription()}">
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="${model.seoTitle()}">
     <meta property="og:description" content="${model.seoDescription()}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="${model.canonicalUrl()}">
+    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/favicon.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.seoDescription()}">
+    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -64,14 +68,10 @@
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Dumpster Decision OS",
-          "url": "${model.canonicalUrl()}",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "${model.canonicalUrl()}?material={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.canonicalUrl()}"}
+          ]
         }
     </script>
 </head>
@@ -366,6 +366,24 @@
             <li>What is overage per ton?</li>
             <li>For heavy debris, is clean load required?</li>
         </ol>
+    </section>
+
+    <section class="panel">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary>Should I pick dumpster size by volume only?</summary>
+                <p>No. Dense debris can exceed weight limits even if volume fits.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Why can heavy debris require a smaller dumpster?</summary>
+                <p>Operational haul limits and safety rules can require small bins with multiple hauls.</p>
+            </details>
+            <details class="faq-item">
+                <summary>What should I ask before booking?</summary>
+                <p>Confirm included tons, overage fee per ton, and clean-load requirements for heavy materials.</p>
+            </details>
+        </div>
     </section>
 </main>
 <footer class="site-footer">
