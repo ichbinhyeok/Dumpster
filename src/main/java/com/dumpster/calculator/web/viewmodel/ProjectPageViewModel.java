@@ -22,6 +22,7 @@ public record ProjectPageViewModel(
         List<String> quickRules,
         List<FaqItemViewModel> faqItems,
         String projectGuidesUrl,
-        List<LinkItemViewModel> relatedMaterialLinks
+        List<LinkItemViewModel> relatedMaterialLinks,
+        List<LinkItemViewModel> relatedProjectLinks
 ) {
 }

@@ -237,6 +237,7 @@ public class SeoContentService {
                             copy.quickRules(),
                             copy.faqItems(),
                             absoluteUrl(baseUrl, MATERIAL_GUIDES_PATH),
+                            relatedMaterialsForMaterial(material),
                             relatedProjectsForMaterial(material.materialId())
                     );
                 });
@@ -275,7 +276,8 @@ public class SeoContentService {
                 copy.quickRules(),
                 copy.faqItems(),
                 absoluteUrl(baseUrl, PROJECT_GUIDES_PATH),
-                relatedMaterialsForProject(seed)
+                relatedMaterialsForProject(seed),
+                relatedProjectsForProject(seed)
         ));
     }
 
@@ -603,6 +605,34 @@ public class SeoContentService {
                 .toList();
     }
 
+    private List<LinkItemViewModel> relatedMaterialsForMaterial(MaterialFactor material) {
+        List<MaterialFactor> sameCategory = sortedIndexableMaterials().stream()
+                .filter(candidate -> !candidate.materialId().equals(material.materialId()))
+                .filter(candidate -> candidate.category() == material.category())
+                .limit(3)
+                .toList();
+
+        if (!sameCategory.isEmpty()) {
+            return sameCategory.stream()
+                    .map(candidate -> new LinkItemViewModel(
+                            "/dumpster/weight/" + candidate.materialId(),
+                            candidate.name() + " weight guide",
+                            "Compare " + categoryLabel(candidate.category()).toLowerCase() + " behavior"
+                    ))
+                    .toList();
+        }
+
+        return sortedIndexableMaterials().stream()
+                .filter(candidate -> !candidate.materialId().equals(material.materialId()))
+                .limit(3)
+                .map(candidate -> new LinkItemViewModel(
+                        "/dumpster/weight/" + candidate.materialId(),
+                        candidate.name() + " weight guide",
+                        "Compare density and overage risk profile"
+                ))
+                .toList();
+    }
+
     private List<LinkItemViewModel> relatedMaterialsForProject(ProjectSeed seed) {
         List<MaterialFactor> materials = sortedIndexableMaterials();
         List<LinkItemViewModel> links = materials.stream()
@@ -622,6 +652,33 @@ public class SeoContentService {
                         "/dumpster/weight/" + material.materialId(),
                         material.name() + " weight guide",
                         "Compare against this material profile"
+                ))
+                .toList();
+    }
+
+    private List<LinkItemViewModel> relatedProjectsForProject(ProjectSeed seed) {
+        List<LinkItemViewModel> sameMaterial = projectSeeds.values().stream()
+                .filter(candidate -> !candidate.projectId().equals(seed.projectId()))
+                .filter(candidate -> candidate.defaultMaterialId().equals(seed.defaultMaterialId()))
+                .limit(3)
+                .map(candidate -> new LinkItemViewModel(
+                        "/dumpster/size/" + candidate.projectId(),
+                        candidate.title(),
+                        "Project pattern with similar material mix"
+                ))
+                .toList();
+
+        if (!sameMaterial.isEmpty()) {
+            return sameMaterial;
+        }
+
+        return projectSeeds.values().stream()
+                .filter(candidate -> !candidate.projectId().equals(seed.projectId()))
+                .limit(3)
+                .map(candidate -> new LinkItemViewModel(
+                        "/dumpster/size/" + candidate.projectId(),
+                        candidate.title(),
+                        "Compare strategy and operator constraints"
                 ))
                 .toList();
     }

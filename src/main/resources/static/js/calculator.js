@@ -321,7 +321,7 @@
                 </div>
                 <p class="lead-hint" id="lead-status" aria-live="polite"></p>
             </section>
-            <a class="button-link primary" id="cta-dumpster-call" href="tel:+18005550123">Call dumpster quote</a>
+            <a class="button-link primary" id="cta-dumpster-call" href="/about/contact">Contact for quote</a>
             <a class="button-link" id="cta-dumpster-form" href="#estimate-form">Request online quote</a>
             <a class="button-link" id="cta-junk" href="#junk">Compare junk removal</a>
         `;

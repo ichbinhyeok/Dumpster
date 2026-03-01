@@ -31,6 +31,7 @@ public record MaterialPageViewModel(
         List<String> quickRules,
         List<FaqItemViewModel> faqItems,
         String materialGuidesUrl,
+        List<LinkItemViewModel> relatedMaterialLinks,
         List<LinkItemViewModel> relatedProjectLinks
 ) {
     public record SizeWeightRow(
