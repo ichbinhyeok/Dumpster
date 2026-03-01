@@ -14,6 +14,9 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.metaDescription()}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
@@ -42,6 +45,31 @@
                 }
                 @if(i < model.faqItems().size() - 1),@endif
             @endfor
+          ]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": "How to estimate dumpster weight for ${model.materialName()}",
+          "description": "Use density range and size-level overage risk to choose a safer dumpster strategy.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Set material and quantity",
+              "text": "Start with ${model.materialName()} and enter a measured quantity in the simulator."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Check size-by-size weight table",
+              "text": "Compare low, typical, and high weight ranges against included tons for each dumpster size."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Select safer booking strategy",
+              "text": "If overage risk is medium or high, use safer sizing or plan multi-haul."
+            }
           ]
         }
     </script>
@@ -94,6 +122,12 @@
                 </form>
             </aside>
         </div>
+    </section>
+
+    <section class="panel">
+        <h2>How much does ${model.materialName()} weigh in a dumpster?</h2>
+        <p><strong>Direct answer:</strong> ${model.materialName()} is typically ${model.densityTyp()} lbs/yd3.</p>
+        <p>A ${model.exampleVolumeYd3()} yd3 load is usually ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons, with a typical estimate of ${model.exampleWeightTypTons()} tons.</p>
     </section>
 
     <section class="panel">

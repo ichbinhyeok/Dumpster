@@ -14,6 +14,9 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.metaDescription()}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
@@ -42,6 +45,31 @@
                 }
                 @if(i < model.faqItems().size() - 1),@endif
             @endfor
+          ]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": "How to choose dumpster size for ${model.title()}",
+          "description": "Follow project preset, compare strategy, and confirm operator constraints before booking.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Start from project preset",
+              "text": "Use ${model.title()} preset with ${model.defaultMaterialName()} as baseline material."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Use the recommended input unit",
+              "text": "Enter quantity in ${model.recommendedUnit()} and review safe versus budget outcomes."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Validate vendor constraints",
+              "text": "Before booking, confirm included tons, overage fee, and haul-limit policy."
+            }
           ]
         }
     </script>
@@ -97,6 +125,12 @@
                 </form>
             </aside>
         </div>
+    </section>
+
+    <section class="panel">
+        <h2>What dumpster strategy is recommended for ${model.title()}?</h2>
+        <p><strong>Direct answer:</strong> Start with ${model.recommendedStrategy()}</p>
+        <p>Use ${model.defaultMaterialName()} as the default material profile and validate assumptions with ${model.recommendedUnit()} input before final booking.</p>
     </section>
 
     <section class="panel">

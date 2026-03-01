@@ -55,9 +55,9 @@ public class SeoPageController {
     @GetMapping("/dumpster/material-guides")
     public ModelAndView materialGuidesHub() {
         GuideHubPageViewModel model = new GuideHubPageViewModel(
-                "Dumpster Material Weight Guides",
+                "Dumpster Material Weight Guides: Density Chart + Live Calculator",
                 seoContentService.materialGuidesUrl(baseUrl),
-                "Browse material-specific weight ranges and decision notes before choosing dumpster size.",
+                "Compare material density ranges, sample tonnage, and overage risk before choosing a dumpster size.",
                 "Material Guides",
                 seoContentService.materialGuideLinks(),
                 seoContentService.materialGroupsByCategory(),
@@ -72,9 +72,9 @@ public class SeoPageController {
     @GetMapping("/dumpster/project-guides")
     public ModelAndView projectGuidesHub() {
         GuideHubPageViewModel model = new GuideHubPageViewModel(
-                "Dumpster Project Guides",
+                "Dumpster Project Guides: Size Strategy by Job Type",
                 seoContentService.projectGuidesUrl(baseUrl),
-                "Use project presets and scenario-based advice to choose safe vs budget strategies.",
+                "Use project-based presets to pick safer dumpster strategies and avoid overage surprises by timeline.",
                 "Project Guides",
                 seoContentService.projectGuideLinks(),
                 null,

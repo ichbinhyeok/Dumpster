@@ -33,6 +33,9 @@ public class CalculatorPageController {
         ModelAndView modelAndView = new ModelAndView("calculator/index");
         modelAndView.addObject("model", new CalculatorPageViewModel(
                 "Dumpster Size & Weight Calculator",
+                "Dumpster Size & Weight Calculator | Overage Risk + Haul Limit Checks",
+                "Estimate dumpster size and weight range with live overage risk and haul feasibility signals."
+                        + " Compare safe vs budget decisions before booking.",
                 baseUrl + "/dumpster/size-weight-calculator",
                 seoContentService.featuredMaterialLinks(6),
                 seoContentService.featuredProjectLinks(6)

@@ -210,6 +210,7 @@ public class SeoContentService {
                             : material.sourceVersionDate().format(SOURCE_MONTH_YEAR);
                     return new MaterialPageViewModel(
                             material.materialId(),
+                            material.name(),
                             material.name() + " Dumpster Weight Guide",
                             seoTitle,
                             metaDescription,

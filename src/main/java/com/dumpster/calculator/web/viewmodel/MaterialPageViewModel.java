@@ -4,6 +4,7 @@ import java.util.List;
 
 public record MaterialPageViewModel(
         String materialId,
+        String materialName,
         String title,
         String seoTitle,
         String metaDescription,

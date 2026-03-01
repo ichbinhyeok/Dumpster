@@ -4,16 +4,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${model.pageTitle()}</title>
-    <meta name="description" content="Estimate dumpster size and weight range in under 60 seconds. Compare overweight risk, multi-haul feasibility, and next best action.">
+    <title>${model.seoTitle()}</title>
+    <meta name="description" content="${model.seoDescription()}">
     <link rel="canonical" href="${model.canonicalUrl()}">
-    <meta property="og:title" content="${model.pageTitle()}">
-    <meta property="og:description" content="Range-based dumpster sizing with weight risk and heavy debris warnings.">
+    <meta property="og:title" content="${model.seoTitle()}">
+    <meta property="og:description" content="${model.seoDescription()}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="${model.pageTitle()}">
-    <meta name="twitter:description" content="Get a safe size recommendation, budget option, and overweight risk signal.">
+    <meta name="twitter:title" content="${model.seoTitle()}">
+    <meta name="twitter:description" content="${model.seoDescription()}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
@@ -56,6 +59,19 @@
               }
             }
           ]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Dumpster Decision OS",
+          "url": "${model.canonicalUrl()}",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "${model.canonicalUrl()}?material={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
         }
     </script>
 </head>
