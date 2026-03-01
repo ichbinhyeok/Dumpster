@@ -13,11 +13,11 @@
     <meta property="og:description" content="${model.metaDescription()}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
-    <meta property="og:image" content="${model.calculatorAbsoluteUrl().replace("/dumpster/size-weight-calculator", "")}/favicon.png">
+    <meta property="og:image" content="${model.calculatorAbsoluteUrl().replace("/dumpster/size-weight-calculator", "")}/og-image.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.metaDescription()}">
-    <meta name="twitter:image" content="${model.calculatorAbsoluteUrl().replace("/dumpster/size-weight-calculator", "")}/favicon.png">
+    <meta name="twitter:image" content="${model.calculatorAbsoluteUrl().replace("/dumpster/size-weight-calculator", "")}/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -214,6 +214,12 @@
         <h3>Related project guides</h3>
         <ul>
             @for(var link : model.relatedProjectLinks())
+                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+            @endfor
+        </ul>
+        <h3>Related material guides</h3>
+        <ul>
+            @for(var link : model.relatedMaterialLinks())
                 <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
             @endfor
         </ul>

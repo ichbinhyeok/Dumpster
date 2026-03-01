@@ -13,11 +13,11 @@
     <meta property="og:description" content="${model.seoDescription()}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="${model.canonicalUrl()}">
-    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/favicon.png">
+    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/og-image.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.seoDescription()}">
-    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/favicon.png">
+    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -63,6 +63,14 @@
               }
             }
           ]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Dumpster Decision OS",
+          "url": "${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}"
         }
     </script>
     <script type="application/ld+json">
@@ -400,7 +408,7 @@
     </div>
 </footer>
 <div id="floating-cta" class="floating-cta" hidden>
-    <a id="floating-call" href="tel:+18005550123">Call now</a>
+    <a id="floating-call" href="/about/contact">Contact now</a>
     <a id="floating-quote" href="#estimate-form">Online quote</a>
 </div>
 <script src="/js/calculator.js"></script>

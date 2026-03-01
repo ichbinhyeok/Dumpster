@@ -13,11 +13,11 @@
     <meta property="og:description" content="${model.seoDescription()}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
-    <meta property="og:image" content="${model.canonicalUrl().replace("/about/editorial-policy", "")}/favicon.png">
+    <meta property="og:image" content="${model.canonicalUrl().replace("/about/editorial-policy", "")}/og-image.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.seoDescription()}">
-    <meta name="twitter:image" content="${model.canonicalUrl().replace("/about/editorial-policy", "")}/favicon.png">
+    <meta name="twitter:image" content="${model.canonicalUrl().replace("/about/editorial-policy", "")}/og-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
