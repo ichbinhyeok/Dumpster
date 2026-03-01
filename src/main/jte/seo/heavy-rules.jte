@@ -95,6 +95,34 @@
         </ul>
     </section>
     <section class="panel">
+        <h2>Included tons vs max haul tons</h2>
+        <p>${model.includedVsMaxExplanation()}</p>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Dumpster</th>
+                <th>Dimensions</th>
+                <th>Max haul (typ)</th>
+                <th>Heavy fill ratio</th>
+                <th>Effective yd3</th>
+                <th>Clean load required</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for(var row : model.heavyLimits())
+                <tr>
+                    <td>${row.sizeYd()} yd</td>
+                    <td>${row.dimensions()}</td>
+                    <td>${row.maxHaulTonsTyp()} tons</td>
+                    <td>${row.fillRatioPercent()}%</td>
+                    <td>${row.effectiveYd3()}</td>
+                    <td>@if(row.cleanLoadRequired()) Yes @else No @endif</td>
+                </tr>
+            @endfor
+            </tbody>
+        </table>
+    </section>
+    <section class="panel">
         <article class="mistake-callout">
             <h2>Questions to ask before booking</h2>
             <ol>

@@ -4,23 +4,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${model.title()}</title>
-    <meta name="description" content="Density and weight range reference for ${model.title()}. Includes typical mistakes and calculator flow.">
+    <title>${model.seoTitle()}</title>
+    <meta name="description" content="${model.metaDescription()}">
     <link rel="canonical" href="${model.canonicalUrl()}">
-    <meta property="og:title" content="${model.title()}">
-    <meta property="og:description" content="Material density range, example tonnage, and heavy-load warning.">
+    <meta property="og:title" content="${model.seoTitle()}">
+    <meta property="og:description" content="${model.metaDescription()}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="${model.title()}">
-    <meta name="twitter:description" content="Use this material profile to avoid overweight dumpster selections.">
+    <meta name="twitter:title" content="${model.seoTitle()}">
+    <meta name="twitter:description" content="${model.metaDescription()}">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "/dumpster/size-weight-calculator"},
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorAbsoluteUrl()}"},
             {"@type": "ListItem", "position": 2, "name": "Material Guides", "item": "${model.materialGuidesUrl()}"},
             {"@type": "ListItem", "position": 3, "name": "Material Weight", "item": "${model.canonicalUrl()}"}
           ]
@@ -97,6 +97,43 @@
     </section>
 
     <section class="panel">
+        <h2>Estimated weight by dumpster size</h2>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Dumpster</th>
+                <th>Dimensions</th>
+                <th>Effective yd3</th>
+                <th>Weight low</th>
+                <th>Weight typical</th>
+                <th>Weight high</th>
+                <th>Included tons</th>
+                <th>Overage risk</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for(var row : model.sizeWeightTable())
+                <tr>
+                    <td>${row.sizeYd()} yd</td>
+                    <td>${row.dimensions()}</td>
+                    <td>${row.effectiveVolumeYd3()}</td>
+                    <td>${row.weightLowTons()} tons</td>
+                    <td>${row.weightTypTons()} tons</td>
+                    <td>${row.weightHighTons()} tons</td>
+                    <td>${row.includedTonsTyp()} tons</td>
+                    <td>${row.overageRisk()}</td>
+                </tr>
+            @endfor
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>How moisture affects weight</h2>
+        <p>Wet loads can increase weight by ${(int) ((model.wetMultiplierLow() - 1) * 100)}% to ${(int) ((model.wetMultiplierHigh() - 1) * 100)}% for this material profile.</p>
+    </section>
+
+    <section class="panel">
         <h2>Quick rules</h2>
         <ul>
             @for(var rule : model.quickRules())
@@ -106,7 +143,7 @@
         <p>${model.scenarioInput()}</p>
         <p>${model.scenarioDecision()}</p>
         <p>${model.cautionNote()}</p>
-        <p>Source: ${model.source()}</p>
+        <p>Source: ${model.source()} (updated ${model.sourceDateDisplay()})</p>
     </section>
 
     <section class="panel">

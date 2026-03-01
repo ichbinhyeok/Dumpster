@@ -43,7 +43,9 @@ public class SeoPageController {
                         "What is the max haul limit per container in my area?",
                         "Do you require clean-load separation for heavy debris?",
                         "How do overage fees apply when weight crosses included tons?"
-                )
+                ),
+                seoContentService.heavyLimitRows(),
+                seoContentService.heavyRulesIncludedVsMaxExplanation()
         );
         ModelAndView modelAndView = new ModelAndView("seo/heavy-rules");
         modelAndView.addObject("model", model);
@@ -57,7 +59,10 @@ public class SeoPageController {
                 seoContentService.materialGuidesUrl(baseUrl),
                 "Browse material-specific weight ranges and decision notes before choosing dumpster size.",
                 "Material Guides",
-                seoContentService.materialGuideLinks()
+                seoContentService.materialGuideLinks(),
+                seoContentService.materialGroupsByCategory(),
+                seoContentService.materialComparisonTable(),
+                seoContentService.materialHubFaq()
         );
         ModelAndView modelAndView = new ModelAndView("seo/material-guides");
         modelAndView.addObject("model", model);
@@ -71,7 +76,10 @@ public class SeoPageController {
                 seoContentService.projectGuidesUrl(baseUrl),
                 "Use project presets and scenario-based advice to choose safe vs budget strategies.",
                 "Project Guides",
-                seoContentService.projectGuideLinks()
+                seoContentService.projectGuideLinks(),
+                null,
+                null,
+                seoContentService.projectHubFaq()
         );
         ModelAndView modelAndView = new ModelAndView("seo/project-guides");
         modelAndView.addObject("model", model);

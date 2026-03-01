@@ -7,6 +7,17 @@ public record HeavyRulesViewModel(
         String materialGuidesUrl,
         String projectGuidesUrl,
         List<String> rules,
-        List<String> operatorQuestions
+        List<String> operatorQuestions,
+        List<HeavyLimitRow> heavyLimits,
+        String includedVsMaxExplanation
 ) {
+    public record HeavyLimitRow(
+            int sizeYd,
+            String dimensions,
+            double maxHaulTonsTyp,
+            double fillRatioPercent,
+            double effectiveYd3,
+            boolean cleanLoadRequired
+    ) {
+    }
 }

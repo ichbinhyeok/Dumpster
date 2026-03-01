@@ -4,23 +4,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${model.title()}</title>
-    <meta name="description" content="Project-specific dumpster guidance for ${model.title()}. Includes recommended input unit, default material, and common mistake warnings.">
+    <title>${model.seoTitle()}</title>
+    <meta name="description" content="${model.metaDescription()}">
     <link rel="canonical" href="${model.canonicalUrl()}">
-    <meta property="og:title" content="${model.title()}">
-    <meta property="og:description" content="Project guide with input presets and risk-aware dumpster strategy.">
+    <meta property="og:title" content="${model.seoTitle()}">
+    <meta property="og:description" content="${model.metaDescription()}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="${model.title()}">
-    <meta name="twitter:description" content="Use this project preset to avoid common dumpster sizing mistakes.">
+    <meta name="twitter:title" content="${model.seoTitle()}">
+    <meta name="twitter:description" content="${model.metaDescription()}">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "/dumpster/size-weight-calculator"},
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorAbsoluteUrl()}"},
             {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${model.projectGuidesUrl()}"},
             {"@type": "ListItem", "position": 3, "name": "Project Guide", "item": "${model.canonicalUrl()}"}
           ]
@@ -75,7 +75,7 @@
                 <h1>${model.title()}</h1>
                 <p class="answer-first">${model.answerFirst()}</p>
                 <p>Recommended quick input unit: ${model.recommendedUnit()}</p>
-                <p>Default material preset: ${model.defaultMaterialId()}</p>
+                <p>Default material preset: ${model.defaultMaterialName()}</p>
                 <p>Recommended strategy: ${model.recommendedStrategy()}</p>
             </div>
             <aside class="hero-proof">

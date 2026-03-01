@@ -777,6 +777,31 @@ button:disabled {
     margin-top: 0.45rem;
 }
 
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid var(--line);
+    padding: 0.52rem 0.65rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.data-table th {
+    background: #f2f7ff;
+    color: var(--ink);
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.data-table tr:nth-child(even) td {
+    background: rgba(244, 247, 251, 0.5);
+}
+
 .mistake-callout {
     border: 1px solid #efc6c1;
     border-radius: 14px;
@@ -959,6 +984,15 @@ button:disabled {
     .floating-cta a {
         font-size: 0.9rem;
         padding: 0.52rem 0.45rem;
+    }
+
+    .data-table {
+        font-size: 0.82rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.38rem 0.42rem;
     }
 }
 

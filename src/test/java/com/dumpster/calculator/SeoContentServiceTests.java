@@ -35,4 +35,16 @@ class SeoContentServiceTests {
         assertThat(project.quickRules()).hasSize(3);
         assertThat(project.faqItems()).hasSize(3);
     }
+
+    @Test
+    void materialPageIncludesSizeWeightTableAndSeoFields() {
+        var material = seoContentService.materialPage("asphalt_shingles", "http://localhost:8080").orElseThrow();
+
+        assertThat(material.sizeWeightTable()).hasSize(5);
+        assertThat(material.sizeWeightTable().getFirst().sizeYd()).isEqualTo(10);
+        assertThat(material.sizeWeightTable().getFirst().weightTypTons()).isGreaterThan(0.0d);
+        assertThat(material.seoTitle()).contains("lbs/yd3");
+        assertThat(material.metaDescription()).contains("tons");
+        assertThat(material.calculatorAbsoluteUrl()).startsWith("http");
+    }
 }

@@ -48,4 +48,30 @@ class SeoPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles")));
     }
+
+    @Test
+    void materialPageRendersWeightTable() throws Exception {
+        mockMvc.perform(get("/dumpster/weight/asphalt_shingles"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Estimated weight by dumpster size")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Overage risk")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("tons")));
+    }
+
+    @Test
+    void materialGuidesHubRendersComparisonTable() throws Exception {
+        mockMvc.perform(get("/dumpster/material-guides"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Heavy Debris")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")));
+    }
+
+    @Test
+    void heavyRulesPageRendersLimitTable() throws Exception {
+        mockMvc.perform(get("/dumpster/heavy-debris-rules"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Max haul")));
+    }
 }

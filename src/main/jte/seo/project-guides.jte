@@ -50,6 +50,7 @@
         <p class="eyebrow">${model.eyebrow()}</p>
         <h1>${model.pageTitle()}</h1>
         <p>${model.description()}</p>
+        <p>Each guide maps a real project type to safer input defaults, operator questions, and risk-first booking strategy.</p>
     </section>
     <section class="panel">
         <h2>All project guides</h2>
@@ -58,6 +59,17 @@
                 <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
             @endfor
         </ul>
+        @if(model.hubFaqItems() != null)
+            <h3>FAQ</h3>
+            <div class="faq-list">
+                @for(var faq : model.hubFaqItems())
+                    <details class="faq-item">
+                        <summary>${faq.question()}</summary>
+                        <p>${faq.answer()}</p>
+                    </details>
+                @endfor
+            </div>
+        @endif
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
     </section>
 </main>

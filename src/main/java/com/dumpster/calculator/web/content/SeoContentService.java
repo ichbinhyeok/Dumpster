@@ -2,15 +2,20 @@ package com.dumpster.calculator.web.content;
 
 import com.dumpster.calculator.domain.reference.MaterialCategory;
 import com.dumpster.calculator.domain.reference.MaterialFactor;
+import com.dumpster.calculator.infra.persistence.DumpsterSizeRepository;
 import com.dumpster.calculator.infra.persistence.MaterialFactorRepository;
 import com.dumpster.calculator.web.viewmodel.FaqItemViewModel;
+import com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel;
+import com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel;
 import com.dumpster.calculator.web.viewmodel.LinkItemViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
+import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -19,7 +24,10 @@ import org.springframework.stereotype.Service;
 public class SeoContentService {
 
     private final MaterialFactorRepository materialFactorRepository;
+    private final DumpsterSizeRepository dumpsterSizeRepository;
     private final Map<String, ProjectSeed> projectSeeds = new LinkedHashMap<>();
+    private static final DateTimeFormatter SOURCE_MONTH_YEAR = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US);
+    private static final LocalDate DEFAULT_SEO_LAST_MODIFIED = LocalDate.of(2026, 3, 1);
     private static final List<String> MATERIAL_PRIORITY = List.of(
             "asphalt_shingles",
             "concrete",
@@ -49,8 +57,12 @@ public class SeoContentService {
     private static final Map<String, CopyBlock> MATERIAL_COPY = buildMaterialCopy();
     private static final Map<String, CopyBlock> PROJECT_COPY = buildProjectCopy();
 
-    public SeoContentService(MaterialFactorRepository materialFactorRepository) {
+    public SeoContentService(
+            MaterialFactorRepository materialFactorRepository,
+            DumpsterSizeRepository dumpsterSizeRepository
+    ) {
         this.materialFactorRepository = materialFactorRepository;
+        this.dumpsterSizeRepository = dumpsterSizeRepository;
         addProject(
                 "roof_tearoff",
                 "Dumpster Size for Roof Tear-off",
@@ -170,11 +182,7 @@ public class SeoContentService {
                     double lowWeight = (exampleVolume * material.densityLow()) / 2000.0d;
                     double typWeight = (exampleVolume * material.densityTyp()) / 2000.0d;
                     double highWeight = (exampleVolume * material.densityHigh()) / 2000.0d;
-                    String categoryLabel = switch (material.category()) {
-                        case HEAVY -> "Heavy debris";
-                        case MIXED -> "Mixed debris";
-                        default -> "Light debris";
-                    };
+                    String categoryLabel = categoryLabel(material.category());
                     String cautionNote = switch (material.category()) {
                         case HEAVY -> "High density can hit haul limits before the container is visually full.";
                         case MIXED -> "Packing inefficiency can increase required volume by 10% to 20%.";
@@ -187,24 +195,44 @@ public class SeoContentService {
                     };
                     MaterialScenario scenario = materialScenario(material);
                     CopyBlock copy = materialCopyFor(material);
+                    List<MaterialPageViewModel.SizeWeightRow> sizeWeightTable = sizeWeightRows(material);
+                    String exampleRange = round2(lowWeight) + " to " + round2(highWeight) + " tons";
+                    String answerFirst = material.name() + " is typically " + (int) material.densityTyp() + " lbs/yd3."
+                            + " A " + (int) exampleVolume + " yd3 load is about " + exampleRange
+                            + " (typical " + round2(typWeight) + " tons). " + copy.answerFirst();
+                    String seoTitle = material.name() + " Dumpster Weight: " + (int) material.densityTyp()
+                            + " lbs/yd3 Typical | Size & Overage Chart";
+                    String metaDescription = material.name() + " weighs around " + (int) material.densityTyp()
+                            + " lbs/yd3. A " + (int) exampleVolume + " yd3 load is "
+                            + exampleRange + ". Compare dumpster-size weight ranges and overage risk.";
+                    String sourceDateDisplay = material.sourceVersionDate() == null
+                            ? "Not specified"
+                            : material.sourceVersionDate().format(SOURCE_MONTH_YEAR);
                     return new MaterialPageViewModel(
                             material.materialId(),
                             material.name() + " Dumpster Weight Guide",
+                            seoTitle,
+                            metaDescription,
                             absoluteUrl(baseUrl, "/dumpster/weight/" + material.materialId()),
+                            absoluteUrl(baseUrl, CALCULATOR_PATH),
                             categoryLabel,
                             material.densityLow(),
                             material.densityTyp(),
                             material.densityHigh(),
+                            material.wetMultiplierLow(),
+                            material.wetMultiplierHigh(),
                             exampleVolume,
                             round2(lowWeight),
-                            Math.round(typWeight * 100.0d) / 100.0d,
+                            round2(typWeight),
                             round2(highWeight),
+                            sourceDateDisplay,
                             material.source(),
                             cautionNote,
                             operatorQuestion,
                             scenario.input(),
                             scenario.decision(),
-                            copy.answerFirst(),
+                            answerFirst,
+                            sizeWeightTable,
                             copy.quickRules(),
                             copy.faqItems(),
                             absoluteUrl(baseUrl, MATERIAL_GUIDES_PATH),
@@ -220,12 +248,22 @@ public class SeoContentService {
         }
         CopyBlock copy = projectCopyFor(seed);
         String canonicalPath = "/dumpster/size/" + seed.projectId();
+        String defaultMaterialName = materialFactorRepository.findById(seed.defaultMaterialId())
+                .map(MaterialFactor::name)
+                .orElse(seed.defaultMaterialId().replace('_', ' '));
+        String seoTitle = seed.title() + " | Dumpster Strategy + Live Calculator";
+        String metaDescription = seed.title() + " guide with " + seed.recommendedUnit()
+                + " input defaults, " + defaultMaterialName + " baseline, and risk-aware recommendation notes.";
         return Optional.of(new ProjectPageViewModel(
                 seed.projectId(),
                 seed.title(),
+                seoTitle,
+                metaDescription,
                 absoluteUrl(baseUrl, canonicalPath),
+                absoluteUrl(baseUrl, CALCULATOR_PATH),
                 seed.recommendedUnit(),
                 seed.defaultMaterialId(),
+                defaultMaterialName,
                 seed.commonMistake(),
                 seed.recommendedStrategy(),
                 seed.operatorQuestion(),
@@ -302,6 +340,93 @@ public class SeoContentService {
                 .toList();
     }
 
+    public List<GuideHubPageViewModel.MaterialGroupViewModel> materialGroupsByCategory() {
+        List<MaterialFactor> materials = sortedIndexableMaterials();
+        return List.of(
+                new GuideHubPageViewModel.MaterialGroupViewModel(
+                        "Heavy Debris",
+                        "Heavy debris reaches haul limits quickly. Plan by tonnage first and assume conservative fill ratios.",
+                        materials.stream()
+                                .filter(material -> material.category() == MaterialCategory.HEAVY)
+                                .map(material -> new LinkItemViewModel(
+                                        "/dumpster/weight/" + material.materialId(),
+                                        material.name() + " weight guide",
+                                        "Typical density " + (int) material.densityTyp() + " lbs/yd3"
+                                ))
+                                .toList()
+                ),
+                new GuideHubPageViewModel.MaterialGroupViewModel(
+                        "Mixed Debris",
+                        "Mixed loads shift with composition and packing inefficiency. Safe recommendations work better for uncertain mixes.",
+                        materials.stream()
+                                .filter(material -> material.category() == MaterialCategory.MIXED)
+                                .map(material -> new LinkItemViewModel(
+                                        "/dumpster/weight/" + material.materialId(),
+                                        material.name() + " weight guide",
+                                        "Typical density " + (int) material.densityTyp() + " lbs/yd3"
+                                ))
+                                .toList()
+                ),
+                new GuideHubPageViewModel.MaterialGroupViewModel(
+                        "Light Debris",
+                        "Light debris is usually volume-driven, but moisture and odd-shaped items still create surprises.",
+                        materials.stream()
+                                .filter(material -> material.category() == MaterialCategory.LIGHT)
+                                .map(material -> new LinkItemViewModel(
+                                        "/dumpster/weight/" + material.materialId(),
+                                        material.name() + " weight guide",
+                                        "Typical density " + (int) material.densityTyp() + " lbs/yd3"
+                                ))
+                                .toList()
+                )
+        );
+    }
+
+    public List<GuideHubPageViewModel.MaterialSummaryRow> materialComparisonTable() {
+        return sortedIndexableMaterials().stream()
+                .map(material -> {
+                    double exampleVolume = material.category() == MaterialCategory.HEAVY ? 4.0d : 8.0d;
+                    double exampleWeight = round2((exampleVolume * material.densityTyp()) / 2000.0d);
+                    return new GuideHubPageViewModel.MaterialSummaryRow(
+                            material.name(),
+                            "/dumpster/weight/" + material.materialId(),
+                            categoryLabel(material.category()),
+                            material.densityTyp(),
+                            exampleWeight
+                    );
+                })
+                .toList();
+    }
+
+    public List<FaqItemViewModel> materialHubFaq() {
+        return List.of(
+                faq("What matters most for heavy debris planning?", "Check max haul tons, heavy fill ratio, and clean-load requirements first."),
+                faq("Why do included tons and haul limits differ?", "Included tons are pricing thresholds; haul limits are operational transport constraints."),
+                faq("How can I reduce overage risk?", "Use weight-first assumptions and compare safe versus budget options before booking.")
+        );
+    }
+
+    public List<FaqItemViewModel> projectHubFaq() {
+        return List.of(
+                faq("Should I choose project preset or manual material input?", "Start with project preset, then adjust material mix if your load is unusual."),
+                faq("When should I plan multi-haul upfront?", "Plan multi-haul when dense material share is high or timeline risk is critical."),
+                faq("What should I ask the vendor before booking?", "Ask included tons, overage fee per ton, and same-day swap availability.")
+        );
+    }
+
+    public List<HeavyRulesViewModel.HeavyLimitRow> heavyLimitRows() {
+        return dumpsterSizeRepository.findAllOrdered().stream()
+                .map(policy -> new HeavyRulesViewModel.HeavyLimitRow(
+                        policy.sizeYd(),
+                        policy.dimensionsApprox(),
+                        round2(policy.maxHaulTonsTyp()),
+                        round2(policy.heavyDebrisMaxFillRatio() * 100.0d),
+                        round2(policy.sizeYd() * policy.heavyDebrisMaxFillRatio()),
+                        policy.cleanLoadRequiredForHeavy()
+                ))
+                .toList();
+    }
+
     public String calculatorUrl(String baseUrl) {
         return absoluteUrl(baseUrl, CALCULATOR_PATH);
     }
@@ -316,6 +441,11 @@ public class SeoContentService {
 
     public String heavyRulesUrl(String baseUrl) {
         return absoluteUrl(baseUrl, HEAVY_RULES_PATH);
+    }
+
+    public String heavyRulesIncludedVsMaxExplanation() {
+        return "Included tons are pricing allowances in your quote, while max haul tons are transport limits that can reject pickup."
+                + " A load can stay within included tons and still fail operational haul limits.";
     }
 
     public String materialAnswerFirst(String materialId) {
@@ -356,12 +486,12 @@ public class SeoContentService {
 
     public LocalDate materialLastModifiedDate(String materialId) {
         return materialFactorRepository.findById(materialId)
-                .map(material -> material.sourceVersionDate() == null ? LocalDate.now() : material.sourceVersionDate())
-                .orElse(LocalDate.now());
+                .map(material -> material.sourceVersionDate() == null ? DEFAULT_SEO_LAST_MODIFIED : material.sourceVersionDate())
+                .orElse(DEFAULT_SEO_LAST_MODIFIED);
     }
 
     public LocalDate defaultLastModifiedDate() {
-        return LocalDate.now();
+        return DEFAULT_SEO_LAST_MODIFIED;
     }
 
     private void addProject(
@@ -399,6 +529,47 @@ public class SeoContentService {
                         .thenComparing(material -> material.materialId()))
                 .limit(20)
                 .toList();
+    }
+
+    private List<MaterialPageViewModel.SizeWeightRow> sizeWeightRows(MaterialFactor material) {
+        return dumpsterSizeRepository.findAllOrdered().stream()
+                .map(policy -> {
+                    double effectiveVolume = material.category() == MaterialCategory.HEAVY
+                            ? policy.sizeYd() * policy.heavyDebrisMaxFillRatio()
+                            : policy.sizeYd();
+                    double weightLow = round2((effectiveVolume * material.densityLow()) / 2000.0d);
+                    double weightTyp = round2((effectiveVolume * material.densityTyp()) / 2000.0d);
+                    double weightHigh = round2((effectiveVolume * material.densityHigh()) / 2000.0d);
+                    return new MaterialPageViewModel.SizeWeightRow(
+                            policy.sizeYd(),
+                            policy.dimensionsApprox(),
+                            round2(effectiveVolume),
+                            weightLow,
+                            weightTyp,
+                            weightHigh,
+                            round2(policy.includedTonsTyp()),
+                            overageRiskLabel(weightLow, weightHigh, policy.includedTonsTyp())
+                    );
+                })
+                .toList();
+    }
+
+    private static String overageRiskLabel(double weightLow, double weightHigh, double includedTonsTyp) {
+        if (weightHigh <= includedTonsTyp) {
+            return "Low";
+        }
+        if (weightLow > includedTonsTyp) {
+            return "High";
+        }
+        return "Medium";
+    }
+
+    private static String categoryLabel(MaterialCategory category) {
+        return switch (category) {
+            case HEAVY -> "Heavy debris";
+            case MIXED -> "Mixed debris";
+            case LIGHT -> "Light debris";
+        };
     }
 
     private List<LinkItemViewModel> relatedProjectsForMaterial(String materialId) {

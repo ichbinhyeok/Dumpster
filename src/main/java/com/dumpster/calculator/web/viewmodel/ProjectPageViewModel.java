@@ -5,9 +5,13 @@ import java.util.List;
 public record ProjectPageViewModel(
         String projectId,
         String title,
+        String seoTitle,
+        String metaDescription,
         String canonicalUrl,
+        String calculatorAbsoluteUrl,
         String recommendedUnit,
         String defaultMaterialId,
+        String defaultMaterialName,
         String commonMistake,
         String recommendedStrategy,
         String operatorQuestion,

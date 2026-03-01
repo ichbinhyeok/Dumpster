@@ -32,4 +32,14 @@ class SeoInfrastructureTests {
         assertThat(body).contains("/dumpster/weight/metal_scrap_light");
         assertThat(body).contains("/dumpster/size/light_commercial_fitout");
     }
+
+    @Test
+    void sitemapUsesStableLastmodForDefaultPages() {
+        ResponseEntity<String> response = seoInfrastructureController.sitemap();
+        String body = response.getBody();
+        assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>2026-03-01</lastmod>");
+        assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>2026-03-01</lastmod>");
+        assertThat(body).contains("/dumpster/material-guides</loc><lastmod>2026-03-01</lastmod>");
+        assertThat(body).contains("/dumpster/project-guides</loc><lastmod>2026-03-01</lastmod>");
+    }
 }

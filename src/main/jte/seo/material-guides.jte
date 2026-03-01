@@ -50,7 +50,49 @@
         <p class="eyebrow">${model.eyebrow()}</p>
         <h1>${model.pageTitle()}</h1>
         <p>${model.description()}</p>
+        <p>Use these guides to benchmark density, compare overage risk, and launch the simulator with better defaults in one click.</p>
     </section>
+
+    @if(model.materialGroups() != null)
+        @for(var group : model.materialGroups())
+            <section class="panel">
+                <h2>${group.categoryLabel()}</h2>
+                <p>${group.categoryIntro()}</p>
+                <ul>
+                    @for(var link : group.materials())
+                        <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    @endfor
+                </ul>
+            </section>
+        @endfor
+    @endif
+
+    @if(model.comparisonTable() != null)
+        <section class="panel">
+            <h2>Material density comparison chart</h2>
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Category</th>
+                    <th>Typical density</th>
+                    <th>Example weight</th>
+                </tr>
+                </thead>
+                <tbody>
+                @for(var row : model.comparisonTable())
+                    <tr>
+                        <td><a href="${row.materialHref()}">${row.materialName()}</a></td>
+                        <td>${row.category()}</td>
+                        <td>${(int) row.densityTyp()} lbs/yd3</td>
+                        <td>${row.exampleWeightTons()} tons</td>
+                    </tr>
+                @endfor
+                </tbody>
+            </table>
+        </section>
+    @endif
+
     <section class="panel">
         <h2>All material guides</h2>
         <ul>
@@ -58,6 +100,17 @@
                 <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
             @endfor
         </ul>
+        @if(model.hubFaqItems() != null)
+            <h3>FAQ</h3>
+            <div class="faq-list">
+                @for(var faq : model.hubFaqItems())
+                    <details class="faq-item">
+                        <summary>${faq.question()}</summary>
+                        <p>${faq.answer()}</p>
+                    </details>
+                @endfor
+            </div>
+        @endif
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
     </section>
 </main>
