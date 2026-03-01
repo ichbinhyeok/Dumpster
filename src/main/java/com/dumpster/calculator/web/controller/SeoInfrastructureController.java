@@ -33,6 +33,7 @@ public class SeoInfrastructureController {
                 Allow: /dumpster/size/
                 Allow: /dumpster/material-guides
                 Allow: /dumpster/project-guides
+                Allow: /about/
                 Disallow: /dumpster/estimate/
                 Disallow: /api/
                 Sitemap: %s/sitemap.xml
@@ -48,6 +49,9 @@ public class SeoInfrastructureController {
         urls.add(new SitemapEntry("/dumpster/heavy-debris-rules", defaultLastMod));
         urls.add(new SitemapEntry("/dumpster/material-guides", defaultLastMod));
         urls.add(new SitemapEntry("/dumpster/project-guides", defaultLastMod));
+        urls.add(new SitemapEntry("/about/methodology", defaultLastMod));
+        urls.add(new SitemapEntry("/about/editorial-policy", defaultLastMod));
+        urls.add(new SitemapEntry("/about/contact", defaultLastMod));
         seoContentService.projectIndexPaths().forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
         seoContentService.indexableMaterialIds().forEach(materialId -> urls.add(
                 new SitemapEntry(

@@ -134,6 +134,18 @@
     </section>
 
     <section class="panel">
+        <h2>What size dumpster is typical for ${model.title()}?</h2>
+        <p><strong>Quick answer:</strong> ${model.sampleDecision()}</p>
+        <p>If your load mix is uncertain or schedule risk is high, keep the safe recommendation instead of downgrading by volume alone.</p>
+    </section>
+
+    <section class="panel">
+        <h2>How many loads should I plan for ${model.title()}?</h2>
+        <p>${model.sampleInput()}</p>
+        <p>Use this as a baseline, then confirm included tons, overage fee, and swap timing with your local operator before booking.</p>
+    </section>
+
+    <section class="panel">
         <h2>Quick rules</h2>
         <ul>
             @for(var rule : model.quickRules())
@@ -174,7 +186,9 @@
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
         <div class="micro-links">
             <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/dumpster/heavy-debris-rules">Methodology</a>
+            <a href="/about/methodology">Methodology</a>
+            <a href="/about/editorial-policy">Editorial policy</a>
+            <a href="/about/contact">Contact</a>
             <a href="/legal/terms.html">Terms</a>
             <a href="/legal/privacy.html">Privacy</a>
         </div>

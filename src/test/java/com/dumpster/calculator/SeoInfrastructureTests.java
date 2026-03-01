@@ -28,6 +28,9 @@ class SeoInfrastructureTests {
         assertThat(body).contains("/dumpster/heavy-debris-rules");
         assertThat(body).contains("/dumpster/material-guides");
         assertThat(body).contains("/dumpster/project-guides");
+        assertThat(body).contains("/about/methodology");
+        assertThat(body).contains("/about/editorial-policy");
+        assertThat(body).contains("/about/contact");
         assertThat(body).contains("/dumpster/weight/asphalt_shingles");
         assertThat(body).contains("/dumpster/weight/metal_scrap_light");
         assertThat(body).contains("/dumpster/size/light_commercial_fitout");

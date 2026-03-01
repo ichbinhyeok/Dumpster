@@ -131,6 +131,27 @@
     </section>
 
     <section class="panel">
+        <h2>Best dumpster sizes for ${model.materialName()}</h2>
+        <p>Low and medium overage-risk sizes are usually the safest starting points when timeline certainty matters.</p>
+        <ul>
+            @for(var row : model.sizeWeightTable())
+                @if(row.overageRisk().equals("Low") || row.overageRisk().equals("Medium"))
+                    <li>${row.sizeYd()} yd: ${row.overageRisk()} overage risk at ${row.weightLowTons()} to ${row.weightHighTons()} tons.</li>
+                @endif
+            @endfor
+        </ul>
+    </section>
+
+    <section class="panel">
+        <h2>Can ${model.materialName()} fit in a 10, 20, or 30-yard dumpster?</h2>
+        @for(var row : model.sizeWeightTable())
+            @if(row.sizeYd() == 10 || row.sizeYd() == 20 || row.sizeYd() == 30)
+                <p><strong>${row.sizeYd()}-yard dumpster:</strong> ${row.overageRisk()} overage risk (typical ${row.weightTypTons()} tons vs ${row.includedTonsTyp()} included tons).</p>
+            @endif
+        @endfor
+    </section>
+
+    <section class="panel">
         <h2>Estimated weight by dumpster size</h2>
         <table class="data-table">
             <thead>
@@ -210,7 +231,9 @@
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
         <div class="micro-links">
             <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/dumpster/heavy-debris-rules">Methodology</a>
+            <a href="/about/methodology">Methodology</a>
+            <a href="/about/editorial-policy">Editorial policy</a>
+            <a href="/about/contact">Contact</a>
             <a href="/legal/terms.html">Terms</a>
             <a href="/legal/privacy.html">Privacy</a>
         </div>

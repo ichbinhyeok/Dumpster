@@ -144,7 +144,9 @@
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
         <div class="micro-links">
             <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/dumpster/heavy-debris-rules">Methodology</a>
+            <a href="/about/methodology">Methodology</a>
+            <a href="/about/editorial-policy">Editorial policy</a>
+            <a href="/about/contact">Contact</a>
             <a href="/legal/terms.html">Terms</a>
             <a href="/legal/privacy.html">Privacy</a>
         </div>

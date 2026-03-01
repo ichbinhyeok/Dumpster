@@ -1,31 +1,23 @@
-@param com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel model
+@param com.dumpster.calculator.web.viewmodel.TrustPageViewModel model
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${model.pageTitle()}</title>
-    <meta name="description" content="${model.description()}">
+    <title>${model.seoTitle()}</title>
+    <meta name="description" content="${model.seoDescription()}">
     <link rel="canonical" href="${model.canonicalUrl()}">
-    <meta property="og:title" content="${model.pageTitle()}">
-    <meta property="og:description" content="${model.description()}">
-    <meta property="og:type" content="website">
+    <meta property="og:title" content="${model.seoTitle()}">
+    <meta property="og:description" content="${model.seoDescription()}">
+    <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="${model.pageTitle()}">
-    <meta name="twitter:description" content="${model.description()}">
+    <meta name="twitter:title" content="${model.seoTitle()}">
+    <meta name="twitter:description" content="${model.seoDescription()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
-    <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "${model.pageTitle()}",
-          "url": "${model.canonicalUrl()}"
-        }
-    </script>
 </head>
 <body>
 <header class="site-header">
@@ -43,37 +35,36 @@
             <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
         </nav>
         <div class="site-header-actions">
-            <span class="trust-pill">Project library</span>
+            <span class="trust-pill">Editorial</span>
             <a class="button-link primary" href="/dumpster/size-weight-calculator">Open simulator</a>
         </div>
     </div>
 </header>
 <main class="shell shell--main">
     <section class="panel">
-        <p class="eyebrow">${model.eyebrow()}</p>
+        <p class="eyebrow">Editorial Policy</p>
         <h1>${model.pageTitle()}</h1>
-        <p>${model.description()}</p>
-        <p>Each guide maps a real project type to safer input defaults, operator questions, and risk-first booking strategy.</p>
+        <p>Guides are written to support decision clarity, not traffic inflation. Every page should be specific, testable, and operationally useful.</p>
     </section>
+
     <section class="panel">
-        <h2>All project guides</h2>
+        <h2>Content standards</h2>
         <ul>
-            @for(var link : model.links())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
-            @endfor
+            <li>Use measurable ranges and explicit assumptions.</li>
+            <li>Differentiate pricing allowance from operational haul constraints.</li>
+            <li>Avoid unsupported guarantees or universal claims.</li>
+            <li>Prefer practical operator questions over generic advice.</li>
         </ul>
-        @if(model.hubFaqItems() != null)
-            <h3>FAQ</h3>
-            <div class="faq-list">
-                @for(var faq : model.hubFaqItems())
-                    <details class="faq-item">
-                        <summary>${faq.question()}</summary>
-                        <p>${faq.answer()}</p>
-                    </details>
-                @endfor
-            </div>
-        @endif
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
+    </section>
+
+    <section class="panel">
+        <h2>Update and correction process</h2>
+        <ol>
+            <li>Review source tables and conversion factors after data updates.</li>
+            <li>Rebuild pages when material profiles or size policies change.</li>
+            <li>Apply corrections when users or partners report factual errors.</li>
+        </ol>
+        <p>To request a correction, use <a href="/about/contact">the contact page</a>.</p>
     </section>
 </main>
 <footer class="site-footer">

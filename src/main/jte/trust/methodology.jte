@@ -1,31 +1,23 @@
-@param com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel model
+@param com.dumpster.calculator.web.viewmodel.TrustPageViewModel model
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${model.pageTitle()}</title>
-    <meta name="description" content="${model.description()}">
+    <title>${model.seoTitle()}</title>
+    <meta name="description" content="${model.seoDescription()}">
     <link rel="canonical" href="${model.canonicalUrl()}">
-    <meta property="og:title" content="${model.pageTitle()}">
-    <meta property="og:description" content="${model.description()}">
-    <meta property="og:type" content="website">
+    <meta property="og:title" content="${model.seoTitle()}">
+    <meta property="og:description" content="${model.seoDescription()}">
+    <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="${model.pageTitle()}">
-    <meta name="twitter:description" content="${model.description()}">
+    <meta name="twitter:title" content="${model.seoTitle()}">
+    <meta name="twitter:description" content="${model.seoDescription()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
-    <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "${model.pageTitle()}",
-          "url": "${model.canonicalUrl()}"
-        }
-    </script>
 </head>
 <body>
 <header class="site-header">
@@ -43,37 +35,41 @@
             <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
         </nav>
         <div class="site-header-actions">
-            <span class="trust-pill">Project library</span>
+            <span class="trust-pill">Methodology</span>
             <a class="button-link primary" href="/dumpster/size-weight-calculator">Open simulator</a>
         </div>
     </div>
 </header>
 <main class="shell shell--main">
     <section class="panel">
-        <p class="eyebrow">${model.eyebrow()}</p>
+        <p class="eyebrow">Methodology</p>
         <h1>${model.pageTitle()}</h1>
-        <p>${model.description()}</p>
-        <p>Each guide maps a real project type to safer input defaults, operator questions, and risk-first booking strategy.</p>
+        <p>This calculator uses a range-based model instead of a single-point estimate to reflect real-world variation in debris loading.</p>
     </section>
+
     <section class="panel">
-        <h2>All project guides</h2>
+        <h2>How the estimate is built</h2>
+        <ol>
+            <li>Normalize user input into comparable volume and weight units.</li>
+            <li>Apply material density range and scenario modifiers (wet load, mixed load, compaction).</li>
+            <li>Compare resulting weight range against included tons and max haul constraints by dumpster size.</li>
+            <li>Generate safe and budget recommendations with feasibility and price-risk flags.</li>
+        </ol>
+    </section>
+
+    <section class="panel">
+        <h2>What each risk signal means</h2>
         <ul>
-            @for(var link : model.links())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
-            @endfor
+            <li><strong>Price risk:</strong> likelihood of overage costs relative to included tons.</li>
+            <li><strong>Feasibility:</strong> likelihood that haul operations succeed under max-haul constraints.</li>
+            <li><strong>Multi-haul:</strong> strategy when dense loads are safer with smaller containers and swaps.</li>
         </ul>
-        @if(model.hubFaqItems() != null)
-            <h3>FAQ</h3>
-            <div class="faq-list">
-                @for(var faq : model.hubFaqItems())
-                    <details class="faq-item">
-                        <summary>${faq.question()}</summary>
-                        <p>${faq.answer()}</p>
-                    </details>
-                @endfor
-            </div>
-        @endif
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
+    </section>
+
+    <section class="panel">
+        <h2>Source and update policy</h2>
+        <p>Source references and version dates are tracked per material profile. Content and assumptions are reviewed when source tables or policy data changes.</p>
+        <p><a href="/about/editorial-policy">Read editorial policy</a></p>
     </section>
 </main>
 <footer class="site-footer">

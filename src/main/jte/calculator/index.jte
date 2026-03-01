@@ -325,6 +325,16 @@
         </div>
     </section>
 
+    <section class="panel">
+        <h2>How to use this dumpster size calculator</h2>
+        <ol>
+            <li>Select project and material presets that match your job.</li>
+            <li>Enter quantity using the most reliable unit you have.</li>
+            <li>Review safe versus budget recommendations with risk and feasibility together.</li>
+            <li>Use the vendor checklist before booking to avoid overage and haul-limit surprises.</li>
+        </ol>
+    </section>
+
     <section class="panel knowledge-panel">
         <div class="link-grid">
             <article class="link-card">
@@ -363,7 +373,9 @@
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
         <div class="micro-links">
             <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/dumpster/heavy-debris-rules">Methodology</a>
+            <a href="/about/methodology">Methodology</a>
+            <a href="/about/editorial-policy">Editorial policy</a>
+            <a href="/about/contact">Contact</a>
             <a href="/legal/terms.html">Terms</a>
             <a href="/legal/privacy.html">Privacy</a>
         </div>
