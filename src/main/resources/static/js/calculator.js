@@ -5,17 +5,25 @@
     }
 
     const resultPanel = document.getElementById("result-panel");
+    const resultStateBanner = document.getElementById("result-state-banner");
+    const resultHardStops = document.getElementById("result-hard-stops");
+    const resultVerdict = document.getElementById("result-verdict");
     const resultSummary = document.getElementById("result-summary");
     const resultBadges = document.getElementById("result-badges");
+    const resultInputImpact = document.getElementById("result-input-impact");
     const resultRecommendations = document.getElementById("result-recommendations");
     const resultCosts = document.getElementById("result-costs");
     const resultAssumptions = document.getElementById("result-assumptions");
+    const trustDrawer = document.getElementById("trust-drawer");
     const resultActions = document.getElementById("result-actions");
     const shareLink = document.getElementById("share-link");
     const submitButton = document.getElementById("submit-button");
     const floatingCta = document.getElementById("floating-cta");
     const floatingCall = document.getElementById("floating-call");
     const floatingQuote = document.getElementById("floating-quote");
+    const mobileResultDock = document.getElementById("mobile-result-dock");
+    const mobileResultVerdict = document.getElementById("mobile-result-verdict");
+    const mobilePrimaryCta = document.getElementById("mobile-primary-cta");
     const quantityInput = document.getElementById("quantity");
     const allowanceInput = document.getElementById("allowance-tons");
     const wetInput = document.getElementById("wet");
@@ -41,6 +49,7 @@
     const needTimingInput = document.getElementById("need-timing");
     const choiceGroups = Array.from(form.querySelectorAll("[data-choice-target]"));
     const roofSquareChip = form.querySelector("[data-choice-target='unit-id'] [data-choice-value='roof_square']");
+
     const heavyMaterials = new Set([
         "asphalt_shingles",
         "concrete",
@@ -51,6 +60,12 @@
         "asphalt_pavement",
         "metal_scrap_light"
     ]);
+
+    const loadingNarratives = [
+        "Checking material density ranges",
+        "Estimating low, typical, and high weight window",
+        "Comparing container options and haul feasibility"
+    ];
 
     let liveDebounceId = null;
     let activeRequestController = null;
@@ -93,7 +108,7 @@
                         syncUnitOptions();
                     }
                     if (targetId === "persona") {
-                        trackEvent("persona_selected", null, {persona: targetInput.value});
+                        trackEvent("persona_selected", null, { persona: targetInput.value });
                     }
                     queueLiveEstimate();
                 });
@@ -151,7 +166,7 @@
         activeRequestController = controller;
         const runId = ++requestSequence;
 
-        setLoadingState(true, trigger);
+        setLoadingState(true, trigger, runId);
 
         if (trigger === "submit") {
             trackEvent("calc_started", null, {
@@ -159,7 +174,7 @@
                 persona: payload.persona
             });
             if (payload.options.allowanceTons !== null) {
-                trackEvent("allowance_entered", null, {allowanceTons: payload.options.allowanceTons});
+                trackEvent("allowance_entered", null, { allowanceTons: payload.options.allowanceTons });
             }
             if (payload.items.some((item) => heavyMaterials.has(item.materialId))) {
                 trackEvent("heavy_debris_flagged", null, {
@@ -200,7 +215,7 @@
             showCalculationError();
         } finally {
             if (runId === requestSequence) {
-                setLoadingState(false, trigger);
+                setLoadingState(false, trigger, runId);
             }
         }
     }
@@ -245,10 +260,33 @@
 
     function renderResult(apiData, inputPayload) {
         const result = apiData.result;
+        const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
+        const costOptions = Array.isArray(result.costComparison) ? result.costComparison : [];
+        const assumptions = Array.isArray(result.assumptions) ? result.assumptions : [];
+        const inputImpactSummary = Array.isArray(result.inputImpactSummary) ? result.inputImpactSummary : [];
+        const hardStops = Array.isArray(result.hardStopReasons) ? result.hardStopReasons : [];
+
+        const topRecommendation = recommendations.length > 0
+            ? recommendations[0]
+            : null;
+        const verdictText = topRecommendation
+            ? `You likely need a ${topRecommendation.sizeYd}-yard dumpster.`
+            : "No recommendation returned. Check inputs and retry.";
+
         resultPanel.hidden = false;
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
         if (liveNote) {
             liveNote.classList.remove("is-error");
+        }
+
+        if (resultVerdict) {
+            resultVerdict.textContent = verdictText;
+        }
+        if (mobileResultVerdict) {
+            mobileResultVerdict.textContent = verdictText;
+        }
+        if (mobileResultDock) {
+            mobileResultDock.hidden = false;
         }
 
         trackEvent("result_viewed", apiData.estimateId, {
@@ -256,57 +294,115 @@
             feasibility: result.feasibility
         });
         if (result.usedAssumedAllowance) {
-            trackEvent("used_assumed_allowance", apiData.estimateId, {source: "frontend_render"});
+            trackEvent("used_assumed_allowance", apiData.estimateId, { source: "frontend_render" });
         }
         if (result.feasibility !== "OK") {
-            trackEvent("feasibility_not_ok", apiData.estimateId, {feasibility: result.feasibility});
+            trackEvent("feasibility_not_ok", apiData.estimateId, { feasibility: result.feasibility });
         }
-        trackEvent("share_estimate_created", apiData.estimateId, {sharePath: shareLink.href});
+        trackEvent("share_estimate_created", apiData.estimateId, { sharePath: shareLink.href });
+
+        const primaryCtaKey = resolvePrimaryCta(result, inputPayload);
+        const primaryCta = ctaConfig(primaryCtaKey);
+        const secondaryCtas = ["dumpster_call", "dumpster_form", "junk_call"]
+            .filter((key) => key !== primaryCtaKey)
+            .map((key) => ctaConfig(key));
+
+        const impactLine = inputImpactSummary.length > 0
+            ? inputImpactSummary[0]
+            : "Input assumptions are stable.";
+        const feasibilityText = translateFeasibility(result.feasibility);
+        const riskText = translatePriceRisk(result.priceRisk);
+
+        if (resultStateBanner) {
+            resultStateBanner.hidden = false;
+            resultStateBanner.className = "result-state-banner " + stateBannerTone(result.feasibility, result.priceRisk);
+            resultStateBanner.innerHTML = `
+                <strong>${feasibilityText}</strong>
+                <p>${riskText}</p>
+            `;
+        }
+
+        if (resultHardStops) {
+            if (hardStops.length > 0) {
+                resultHardStops.hidden = false;
+                resultHardStops.innerHTML = `
+                    <strong>Hard stop reasons</strong>
+                    <ul>${hardStops.map((reason) => "<li>" + reason + "</li>").join("")}</ul>
+                `;
+            } else {
+                resultHardStops.hidden = true;
+                resultHardStops.innerHTML = "";
+            }
+        }
 
         resultBadges.innerHTML = [
-            badge("Risk: " + result.priceRisk, result.priceRisk === "HIGH" ? "danger" : "neutral"),
+            badge("Risk: " + result.priceRisk, toneForRisk(result.priceRisk)),
             badge("Feasibility: " + result.feasibility, result.feasibility === "OK" ? "ok" : "warn"),
-            result.usedAssumedAllowance ? badge("Allowance assumed", "warn") : badge("Allowance provided", "ok")
+            result.usedAssumedAllowance ? badge("Allowance assumed", "warn") : badge("Allowance provided", "ok"),
+            result.heavyDebrisWarning ? badge("Heavy debris policy active", "warn") : ""
         ].join("");
+
+        if (resultInputImpact) {
+            if (inputImpactSummary.length > 0) {
+                resultInputImpact.hidden = false;
+                resultInputImpact.innerHTML = `<ul>${inputImpactSummary.map((item) => "<li>" + item + "</li>").join("")}</ul>`;
+            } else {
+                resultInputImpact.hidden = true;
+                resultInputImpact.innerHTML = "";
+            }
+        }
 
         resultSummary.innerHTML = `
             <article class="stat">
-                <h3>Volume (yd3)</h3>
-                <p>${fmt(result.volumeYd3.low)} - ${fmt(result.volumeYd3.high)}</p>
+                <h3>Verdict</h3>
+                <p>${topRecommendation ? topRecommendation.label + " " + topRecommendation.sizeYd + "yd" : "No verdict"}</p>
             </article>
             <article class="stat">
-                <h3>Weight (tons)</h3>
-                <p>${fmt(result.weightTons.low)} - ${fmt(result.weightTons.high)}</p>
+                <h3>Volume range</h3>
+                <p>${fmt(result.volumeYd3.low)} - ${fmt(result.volumeYd3.high)} yd3</p>
             </article>
             <article class="stat">
-                <h3>CTA Route</h3>
-                <p>${result.ctaRouting.primaryCta} -> ${result.ctaRouting.secondaryCta}</p>
+                <h3>Weight range</h3>
+                <p>${fmt(result.weightTons.low)} - ${fmt(result.weightTons.high)} tons</p>
+            </article>
+            <article class="stat">
+                <h3>Input impact</h3>
+                <p>${impactLine}</p>
             </article>
         `;
 
-        resultRecommendations.innerHTML = result.recommendations.map((rec) => `
+        resultRecommendations.innerHTML = recommendations.map((rec) => `
             <article class="result-card ${recTone(rec.label)}">
-                <h3>${rec.label} - ${rec.sizeYd}yd</h3>
-                <p>Risk: ${rec.risk} / Feasibility: ${rec.feasibility}</p>
-                <p>Multi-haul: ${rec.multiHaul ? "Yes (" + rec.haulCount + ")" : "No"}</p>
-                <ul>${rec.why.map((reason) => "<li>" + reason + "</li>").join("")}</ul>
+                <h3>${rec.label}: ${rec.sizeYd}yd</h3>
+                <p>${translateRisk(rec.risk)} / ${translateFeasibility(rec.feasibility)}</p>
+                <p>${rec.multiHaul ? "Conditional fit: multi-haul recommended (" + rec.haulCount + " runs)" : "Suitable for single-haul scenarios"}</p>
+                <ul>${(Array.isArray(rec.why) ? rec.why : []).map((reason) => "<li>" + reason + "</li>").join("")}</ul>
             </article>
         `).join("");
 
-        resultCosts.innerHTML = result.costComparison.map((cost) => `
+        resultCosts.innerHTML = costOptions.map((cost) => `
             <article class="result-card">
                 <h3>${cost.title}</h3>
                 <p>${cost.summary}</p>
                 <p>${cost.available ? "$" + fmt(cost.estimatedTotalCostUsd.low) + " - $" + fmt(cost.estimatedTotalCostUsd.high) : "Unavailable"}</p>
+                <p>${cost.available ? "Suitable for comparison" : "Availability depends on market and constraints"}</p>
             </article>
         `).join("");
 
         resultAssumptions.innerHTML = `
             <h3>Assumptions</h3>
-            <ul>${result.assumptions.map((item) => "<li>" + item + "</li>").join("")}</ul>
-            <h3>Input Impact</h3>
-            <ul>${result.inputImpactSummary.map((item) => "<li>" + item + "</li>").join("")}</ul>
+            <ul>${assumptions.map((item) => "<li>" + item + "</li>").join("")}</ul>
+            <h3>Input impact summary</h3>
+            <ul>${inputImpactSummary.map((item) => "<li>" + item + "</li>").join("")}</ul>
+            <h3>Source and engine meta</h3>
+            <ul>
+                <li>Engine version: ${escapeHtml(result.calcEngineVersion || "unknown")}</li>
+                <li>Data version: ${escapeHtml(result.dataVersion || "unknown")}</li>
+            </ul>
         `;
+        if (trustDrawer) {
+            trustDrawer.open = false;
+        }
 
         resultActions.innerHTML = `
             <section class="lead-capture">
@@ -328,10 +424,17 @@
                 </div>
                 <p class="lead-hint" id="lead-status" aria-live="polite"></p>
             </section>
-            <a class="button-link primary" id="cta-dumpster-call" href="/about/contact">Contact for quote</a>
-            <a class="button-link" id="cta-dumpster-form" href="#estimate-form">Request online quote</a>
-            <a class="button-link" id="cta-junk" href="#junk">Compare junk removal</a>
+            <a class="ui-button ui-button--primary result-primary-cta" id="${primaryCta.id}" href="${primaryCta.href}">${primaryCta.label}</a>
+            <div class="result-secondary-links">
+                ${secondaryCtas.map((item) => `<a class="ui-button ui-button--ghost" id="${item.id}" href="${item.href}">${item.label}</a>`).join("")}
+            </div>
+            ${inputPayload.persona === "contractor" ? '<p class="lead-hint">Contractor mode: use the share link to send estimate context to your team or vendor.</p>' : ""}
         `;
+
+        if (mobilePrimaryCta) {
+            mobilePrimaryCta.href = primaryCta.href;
+            mobilePrimaryCta.textContent = primaryCta.label;
+        }
 
         updateLiveDashboard(result, inputPayload);
         wireResultActionTracking(apiData, inputPayload, result);
@@ -378,6 +481,7 @@
                 updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
             });
         }
+
         if (leadNext && leadZip && leadStep1 && leadStep2 && leadStatus) {
             leadNext.addEventListener("click", () => {
                 const zip = sanitizeZip(leadZip.value);
@@ -393,6 +497,7 @@
                 }
             });
         }
+
         if (leadSubmit && leadZip && leadContactMethod && leadContactValue && leadStatus) {
             leadSubmit.addEventListener("click", () => {
                 const zip = sanitizeZip(leadZip.value);
@@ -409,30 +514,34 @@
                 leadStatus.textContent = "Lead submitted. A quote partner can contact you next.";
             });
         }
+
         if (floatingCta) {
             floatingCta.hidden = false;
         }
         if (floatingCall) {
-            floatingCall.onclick = () => trackEvent("cta_click_dumpster_call", apiData.estimateId, {source: "floating"});
+            floatingCall.onclick = () => trackEvent("cta_click_dumpster_call", apiData.estimateId, { source: "floating" });
         }
         if (floatingQuote) {
-            floatingQuote.onclick = () => trackEvent("cta_click_dumpster_form", apiData.estimateId, {source: "floating"});
+            floatingQuote.onclick = () => trackEvent("cta_click_dumpster_form", apiData.estimateId, { source: "floating" });
         }
+
         if (dumpsterCall) {
             dumpsterCall.addEventListener("click", () => {
                 trackEvent("cta_click_dumpster_call", apiData.estimateId, {});
                 emitLeadSubmitted("cta_dumpster_call");
                 if (inputPayload.needTiming === "48h") {
-                    trackEvent("call_qualified", apiData.estimateId, {source: "call_click_proxy"});
+                    trackEvent("call_qualified", apiData.estimateId, { source: "call_click_proxy" });
                 }
             });
         }
+
         if (dumpsterForm) {
             dumpsterForm.addEventListener("click", () => {
                 trackEvent("cta_click_dumpster_form", apiData.estimateId, {});
                 emitLeadSubmitted("cta_dumpster_form");
             });
         }
+
         if (junkCall) {
             junkCall.addEventListener("click", () => {
                 trackEvent("cta_click_junk_call", apiData.estimateId, {});
@@ -446,13 +555,13 @@
         const weightHigh = Number(result.weightTons.high || 0);
         const volumeHigh = Number(result.volumeYd3.high || 0);
         const topRecommendation = Array.isArray(result.recommendations) && result.recommendations.length > 0
-                ? result.recommendations[0]
-                : null;
+            ? result.recommendations[0]
+            : null;
         const capacityReference = topRecommendation ? Math.max(Number(topRecommendation.sizeYd || 1), 1) : 30;
 
         const weightPct = allowance && allowance > 0
-                ? Math.min((weightHigh / allowance) * 100, 100)
-                : riskToPercent(result.priceRisk);
+            ? Math.min((weightHigh / allowance) * 100, 100)
+            : riskToPercent(result.priceRisk);
         const volumePct = Math.min((volumeHigh / capacityReference) * 100, 100);
         const riskPct = riskToPercent(result.priceRisk);
 
@@ -497,19 +606,24 @@
         labelEl.textContent = labelText;
     }
 
-    function setLoadingState(isLoading, trigger) {
+    function setLoadingState(isLoading, trigger, runId) {
+        const narrative = loadingNarratives[(runId - 1) % loadingNarratives.length];
+
         if (form) {
             form.setAttribute("aria-busy", isLoading ? "true" : "false");
         }
         if (submitButton) {
             submitButton.disabled = isLoading;
-            submitButton.textContent = isLoading && trigger === "submit" ? "Running..." : "Run decision engine";
+            submitButton.textContent = isLoading && trigger === "submit" ? "Calculating..." : "Calculate";
         }
         if (liveNote) {
             liveNote.classList.toggle("is-loading", isLoading);
             liveNote.textContent = isLoading
-                    ? "Live update is on. Refreshing recommendation..."
-                    : "Live update is on. Any change refreshes the recommendation automatically.";
+                ? `Calculating: ${narrative}`
+                : "Live update is on. Any change refreshes the recommendation automatically.";
+        }
+        if (liveStatus && isLoading) {
+            liveStatus.textContent = narrative;
         }
     }
 
@@ -517,8 +631,23 @@
         if (resultPanel) {
             resultPanel.hidden = false;
         }
+        if (resultStateBanner) {
+            resultStateBanner.hidden = true;
+            resultStateBanner.innerHTML = "";
+        }
+        if (resultHardStops) {
+            resultHardStops.hidden = true;
+            resultHardStops.innerHTML = "";
+        }
+        if (resultInputImpact) {
+            resultInputImpact.hidden = true;
+            resultInputImpact.innerHTML = "";
+        }
+        if (resultVerdict) {
+            resultVerdict.textContent = "Could not calculate estimate. Check inputs and retry.";
+        }
         if (resultSummary) {
-            resultSummary.innerHTML = "<p class=\"warn\">Could not calculate estimate. Check inputs and retry.</p>";
+            resultSummary.innerHTML = '<p class="warn">Could not calculate estimate. Check inputs and retry.</p>';
         }
         if (liveStatus) {
             liveStatus.textContent = "Live update failed. Check values and retry.";
@@ -528,21 +657,11 @@
             liveNote.classList.add("is-error");
             liveNote.textContent = "Live update failed. Verify inputs and try again.";
         }
-        if (heroKpiPlan) {
-            heroKpiPlan.textContent = "Unavailable";
-            heroKpiPlan.dataset.tone = "warn";
+        if (mobileResultVerdict) {
+            mobileResultVerdict.textContent = "Live update failed. Verify inputs and try again.";
         }
-        if (heroKpiRisk) {
-            heroKpiRisk.textContent = "Unavailable";
-            heroKpiRisk.dataset.tone = "warn";
-        }
-        if (heroKpiFeasibility) {
-            heroKpiFeasibility.textContent = "Unavailable";
-            heroKpiFeasibility.dataset.tone = "warn";
-        }
-        if (heroKpiCost) {
-            heroKpiCost.textContent = "Unavailable";
-            heroKpiCost.dataset.tone = "warn";
+        if (mobileResultDock) {
+            mobileResultDock.hidden = false;
         }
     }
 
@@ -620,7 +739,7 @@
             return false;
         }
         return Array.from(group.querySelectorAll("[data-choice-value]"))
-                .some((button) => button.getAttribute("data-choice-value") === value);
+            .some((button) => button.getAttribute("data-choice-value") === value);
     }
 
     function riskToPercent(priceRisk) {
@@ -646,8 +765,98 @@
         return "neutral";
     }
 
+    function toneForRisk(priceRisk) {
+        if (priceRisk === "HIGH") {
+            return "danger";
+        }
+        if (priceRisk === "MEDIUM") {
+            return "warn";
+        }
+        return "neutral";
+    }
+
+    function translateRisk(risk) {
+        if (String(risk).toUpperCase() === "LOW") {
+            return "Lower overage risk";
+        }
+        if (String(risk).toUpperCase() === "MEDIUM") {
+            return "Allowance could be crossed";
+        }
+        return "Overage likely under current assumptions";
+    }
+
+    function translateFeasibility(feasibility) {
+        if (String(feasibility).toUpperCase() === "OK") {
+            return "Operationally feasible";
+        }
+        if (String(feasibility).toUpperCase().includes("MULTI")) {
+            return "Likely needs multiple hauls";
+        }
+        return "Not recommended as a single load";
+    }
+
+    function translatePriceRisk(priceRisk) {
+        const risk = String(priceRisk || "").toUpperCase();
+        if (risk === "LOW") {
+            return "Overage unlikely under current assumptions.";
+        }
+        if (risk === "MEDIUM") {
+            return "Allowance could be crossed depending on mix or moisture.";
+        }
+        if (risk === "HIGH") {
+            return "Overage likely; compare junk removal or staged multi-haul.";
+        }
+        return "Risk signal unavailable for this scenario.";
+    }
+
+    function stateBannerTone(feasibility, priceRisk) {
+        if (String(feasibility).toUpperCase() !== "OK") {
+            return "is-danger";
+        }
+        if (String(priceRisk).toUpperCase() === "HIGH") {
+            return "is-warn";
+        }
+        return "is-ok";
+    }
+
+    function resolvePrimaryCta(result, inputPayload) {
+        const feasibility = String(result.feasibility || "").toUpperCase();
+        const risk = String(result.priceRisk || "").toUpperCase();
+        const timing = String(inputPayload.needTiming || "").toLowerCase();
+
+        if (feasibility !== "OK") {
+            return "junk_call";
+        }
+        if (timing === "48h") {
+            return "dumpster_call";
+        }
+        if (risk === "HIGH") {
+            return "junk_call";
+        }
+        const routed = normalizeCtaKey(result.ctaRouting && result.ctaRouting.primaryCta);
+        return routed || "dumpster_call";
+    }
+
+    function normalizeCtaKey(value) {
+        const key = String(value || "").toLowerCase();
+        if (key === "dumpster_call" || key === "dumpster_form" || key === "junk_call") {
+            return key;
+        }
+        return "";
+    }
+
+    function ctaConfig(key) {
+        if (key === "dumpster_form") {
+            return { id: "cta-dumpster-form", href: "#estimate-form", label: "Request online quote" };
+        }
+        if (key === "junk_call") {
+            return { id: "cta-junk", href: "#junk", label: "Compare junk removal" };
+        }
+        return { id: "cta-dumpster-call", href: "/about/contact", label: "Contact for quote" };
+    }
+
     function badge(text, style) {
-        return "<span class=\"badge " + style + "\">" + text + "</span>";
+        return '<span class="badge ' + style + '">' + text + '</span>';
     }
 
     function fmt(value) {
@@ -721,5 +930,14 @@
             valueEl.placeholder = "(555) 555-5555";
             labelEl.textContent = "Phone number";
         }
+    }
+
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
     }
 })();

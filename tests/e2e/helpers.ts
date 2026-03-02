@@ -1,6 +1,15 @@
 import { expect, type APIRequestContext, type Page } from "@playwright/test";
 
 export async function selectChip(page: Page, target: string, value: string) {
+  const targetGroup = page.locator(`[data-choice-target='${target}']`).first();
+  if ((await targetGroup.count()) > 0) {
+    const parentDetails = targetGroup.locator("xpath=ancestor::details[1]");
+    if ((await parentDetails.count()) > 0) {
+      await parentDetails.evaluate((node) => {
+        (node as HTMLDetailsElement).open = true;
+      });
+    }
+  }
   await page.locator(`[data-choice-target='${target}'] [data-choice-value='${value}']`).click();
   await expect(page.locator(`#${target}`)).toHaveValue(value);
 }
