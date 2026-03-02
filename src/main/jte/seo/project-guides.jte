@@ -20,8 +20,10 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/calculator-modern.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -62,7 +64,7 @@
     </script>
     @endif
 </head>
-<body>
+<body class="neo-body neo-content">
 <header class="site-header">
     <div class="shell shell--header">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
@@ -83,42 +85,69 @@
         </div>
     </div>
 </header>
+
 <main class="shell shell--main">
-    <section class="panel">
-        <p class="eyebrow">${model.eyebrow()}</p>
-        <h1>${model.pageTitle()}</h1>
-        <p>${model.description()}</p>
-        <p>Each guide maps a real project type to safer input defaults, operator questions, and risk-first booking strategy.</p>
+    <section class="hero-insight">
+        <div class="hero-grid">
+            <div>
+                <p class="eyebrow">${model.eyebrow()}</p>
+                <h1 class="font-display">${model.pageTitle()}</h1>
+                <p class="answer-first"><strong>Direct answer:</strong> pick the project preset first, then validate with material profile and tonnage risk. This avoids defaulting to volume-only guesses.</p>
+                <p>${model.description()}</p>
+            </div>
+            <aside class="hero-proof">
+                <h2 class="font-display">How to use this hub</h2>
+                <ul>
+                    <li>Find the job type that matches your actual scope.</li>
+                    <li>Use the preset unit to reduce conversion noise.</li>
+                    <li>Launch simulator with one click for live risk signals.</li>
+                </ul>
+            </aside>
+        </div>
     </section>
+
     <section class="panel">
-        <h2>All project guides</h2>
-        <ul>
+        <h2 class="font-display">All project guides</h2>
+        <ul class="link-grid">
             @for(var link : model.links())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                <li>
+                    <a href="${link.href()}">${link.label()}</a>
+                    <span>${link.summary()}</span>
+                </li>
             @endfor
         </ul>
-        @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
-            <h3>Intent-driven guide cluster</h3>
-            <ul>
+    </section>
+
+    @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
+        <section class="panel">
+            <h2 class="font-display">Intent-driven guide cluster</h2>
+            <ul class="link-grid">
                 @for(var link : model.intentClusterLinks())
-                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
                 @endfor
             </ul>
-        @endif
-        @if(model.hubFaqItems() != null)
-            <h3>FAQ</h3>
-            <div class="faq-list">
+        </section>
+    @endif
+
+    <section class="panel">
+        <h2 class="font-display">FAQ</h2>
+        <div class="faq-list">
+            @if(model.hubFaqItems() != null)
                 @for(var faq : model.hubFaqItems())
                     <details class="faq-item">
                         <summary>${faq.question()}</summary>
                         <p>${faq.answer()}</p>
                     </details>
                 @endfor
-            </div>
-        @endif
+            @endif
+        </div>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
     </section>
 </main>
+
 <footer class="site-footer">
     <div class="shell shell--footer">
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
@@ -134,5 +163,3 @@
 </footer>
 </body>
 </html>
-
-

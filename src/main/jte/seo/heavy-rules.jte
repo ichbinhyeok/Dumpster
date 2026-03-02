@@ -20,8 +20,10 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/calculator-modern.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -71,7 +73,7 @@
         }
     </script>
 </head>
-<body>
+<body class="neo-body neo-content">
 <header class="site-header">
     <div class="shell shell--header">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
@@ -92,18 +94,19 @@
         </div>
     </div>
 </header>
+
 <main class="shell shell--main">
-    <section class="panel hero-insight">
+    <section class="hero-insight">
         <div class="hero-grid">
             <div>
                 <p class="eyebrow">Heavy Debris</p>
-                <h1>Heavy Debris Rules for Dumpster Decisions</h1>
+                <h1 class="font-display">Heavy Debris Rules for Dumpster Decisions</h1>
                 <p class="answer-first"><strong>Direct answer:</strong> heavy debris jobs usually need smaller bins, reduced fill ratio, and staged pulls. Included tons control pricing, but max haul tons control pickup feasibility, so both limits must be checked before loading.</p>
                 <p>Dense materials behave differently from light cleanouts. Use these rules to avoid rejected hauls and surprise overage costs.</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </div>
             <aside class="hero-proof">
-                <h2>Quick simulator jump</h2>
+                <h2 class="font-display">Quick simulator jump</h2>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="material" value="concrete">
                     <input type="hidden" name="project" value="concrete_removal">
@@ -120,15 +123,21 @@
             </aside>
         </div>
     </section>
+
     <section class="panel">
-        <ul>
+        <h2 class="font-display">Core heavy-debris rules</h2>
+        <div class="rule-grid">
             @for(var rule : model.rules())
-                <li>${rule}</li>
+                <article class="rule-card">
+                    <h3>Rule</h3>
+                    <p>${rule}</p>
+                </article>
             @endfor
-        </ul>
+        </div>
     </section>
+
     <section class="panel">
-        <h2>Included tons vs max haul tons</h2>
+        <h2 class="font-display">Included tons vs max haul tons</h2>
         <p>${model.includedVsMaxExplanation()}</p>
         <div class="table-scroll">
             <table class="data-table" aria-label="Heavy debris haul limits by dumpster size">
@@ -158,8 +167,9 @@
             </table>
         </div>
     </section>
+
     <section class="panel">
-        <h2>Frequently asked questions</h2>
+        <h2 class="font-display">Frequently asked questions</h2>
         <div class="faq-list">
             <details class="faq-item">
                 <summary>Why do heavy materials often require smaller dumpsters?</summary>
@@ -171,6 +181,7 @@
             </details>
         </div>
     </section>
+
     <section class="panel">
         <article class="mistake-callout">
             <h2>Questions to ask before booking</h2>
@@ -185,6 +196,7 @@
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
     </section>
 </main>
+
 <footer class="site-footer">
     <div class="shell shell--footer">
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
@@ -200,5 +212,3 @@
 </footer>
 </body>
 </html>
-
-

@@ -20,8 +20,10 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/calculator-modern.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -92,7 +94,7 @@
         }
     </script>
 </head>
-<body>
+<body class="neo-body neo-content">
 <header class="site-header">
     <div class="shell shell--header">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
@@ -113,20 +115,35 @@
         </div>
     </div>
 </header>
+
 <main class="shell shell--main">
-    <section class="panel hero-insight">
+    <section class="hero-insight">
         <div class="hero-grid">
             <div>
-                <p class="eyebrow">Material Weight Guide</p>
-                <h1>${model.title()}</h1>
-                <p>Category: ${model.categoryLabel()}</p>
+                <p class="eyebrow">Material Guide</p>
+                <h1 class="font-display">${model.title()}</h1>
                 <p class="answer-first">${model.answerFirst()}</p>
-                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
-                <p>Density range (lbs/yd3): ${model.densityLow()} / ${model.densityTyp()} / ${model.densityHigh()}</p>
-                <p>Example: ${model.exampleVolumeYd3()} yd3 is about ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons (typical ${model.exampleWeightTypTons()} tons).</p>
+                <p>${model.materialName()} belongs to <strong>${model.categoryLabel()}</strong>. This page turns density data into booking-ready decisions with overage visibility by dumpster size.</p>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()} | Source snapshot: ${model.sourceDateDisplay()}</p>
+                <div class="rule-grid">
+                    <article class="rule-card">
+                        <h3>Typical density</h3>
+                        <p>${model.densityTyp()} lbs/yd3</p>
+                    </article>
+                    <article class="rule-card">
+                        <h3>Example load</h3>
+                        <p>${model.exampleVolumeYd3()} yd3 ~= ${model.exampleWeightTypTons()} tons</p>
+                    </article>
+                    <article class="rule-card">
+                        <h3>Wet load swing</h3>
+                        <p>${(int) ((model.wetMultiplierLow() - 1) * 100)}% to ${(int) ((model.wetMultiplierHigh() - 1) * 100)}%</p>
+                    </article>
+                </div>
             </div>
+
             <aside class="hero-proof">
-                <h2>Jump into live simulator</h2>
+                <h2 class="font-display">Launch this scenario</h2>
+                <p>Set quantity and jump directly into the live decision board with this material preloaded.</p>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="material" value="${model.materialId()}">
                     <label for="intent-qty-material">Quantity</label>
@@ -144,34 +161,7 @@
     </section>
 
     <section class="panel">
-        <h2>How much does ${model.materialName()} weigh in a dumpster?</h2>
-        <p><strong>Direct answer:</strong> ${model.materialName()} is typically ${model.densityTyp()} lbs/yd3.</p>
-        <p>A ${model.exampleVolumeYd3()} yd3 load is usually ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons, with a typical estimate of ${model.exampleWeightTypTons()} tons.</p>
-    </section>
-
-    <section class="panel">
-        <h2>Best dumpster sizes for ${model.materialName()}</h2>
-        <p>Low and medium overage-risk sizes are usually the safest starting points when timeline certainty matters.</p>
-        <ul>
-            @for(var row : model.sizeWeightTable())
-                @if(row.overageRisk().equals("Low") || row.overageRisk().equals("Medium"))
-                    <li>${row.sizeYd()} yd: ${row.overageRisk()} overage risk at ${row.weightLowTons()} to ${row.weightHighTons()} tons.</li>
-                @endif
-            @endfor
-        </ul>
-    </section>
-
-    <section class="panel">
-        <h2>Can ${model.materialName()} fit in a 10, 20, or 30-yard dumpster?</h2>
-        @for(var row : model.sizeWeightTable())
-            @if(row.sizeYd() == 10 || row.sizeYd() == 20 || row.sizeYd() == 30)
-                <p><strong>${row.sizeYd()}-yard dumpster:</strong> ${row.overageRisk()} overage risk (typical ${row.weightTypTons()} tons vs ${row.includedTonsTyp()} included tons).</p>
-            @endif
-        @endfor
-    </section>
-
-    <section class="panel">
-        <h2>Estimated weight by dumpster size</h2>
+        <h2 class="font-display">Estimated weight by dumpster size</h2>
         <div class="table-scroll">
             <table class="data-table" aria-label="Dumpster size weight comparison table for ${model.materialName()}">
                 <caption>Estimated load tonnage and overage risk by dumpster size for ${model.materialName()}</caption>
@@ -206,49 +196,93 @@
     </section>
 
     <section class="panel">
-        <h2>How moisture affects weight</h2>
-        <p>Wet loads can increase weight by ${(int) ((model.wetMultiplierLow() - 1) * 100)}% to ${(int) ((model.wetMultiplierHigh() - 1) * 100)}% for this material profile.</p>
+        <h2 class="font-display">Decision highlights</h2>
+        <div class="rule-grid">
+            <article class="rule-card">
+                <h3>How much does ${model.materialName()} weigh?</h3>
+                <p><strong>Direct answer:</strong> ${model.materialName()} is typically ${model.densityTyp()} lbs/yd3. A ${model.exampleVolumeYd3()} yd3 load is usually ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons.</p>
+            </article>
+            <article class="rule-card">
+                <h3>Best starting sizes</h3>
+                <ul>
+                    @for(var row : model.sizeWeightTable())
+                        @if(row.overageRisk().equals("Low") || row.overageRisk().equals("Medium"))
+                            <li>${row.sizeYd()} yd: ${row.overageRisk()} risk (${row.weightLowTons()} to ${row.weightHighTons()} tons)</li>
+                        @endif
+                    @endfor
+                </ul>
+            </article>
+            <article class="rule-card">
+                <h3>10 vs 20 vs 30 yard quick read</h3>
+                @for(var row : model.sizeWeightTable())
+                    @if(row.sizeYd() == 10 || row.sizeYd() == 20 || row.sizeYd() == 30)
+                        <p><strong>${row.sizeYd()} yd:</strong> ${row.overageRisk()} risk (typ ${row.weightTypTons()} tons vs ${row.includedTonsTyp()} included).</p>
+                    @endif
+                @endfor
+            </article>
+        </div>
     </section>
 
     <section class="panel">
-        <h2>Quick rules</h2>
-        <ul>
-            @for(var rule : model.quickRules())
-                <li>${rule}</li>
-            @endfor
-        </ul>
-        <p>${model.scenarioInput()}</p>
-        <p>${model.scenarioDecision()}</p>
-        <p>${model.cautionNote()}</p>
-        <p>Source: ${model.source()} (updated ${model.sourceDateDisplay()})</p>
+        <h2 class="font-display">Quick rules and risk context</h2>
+        <div class="rule-grid">
+            <article class="rule-card">
+                <h3>Quick rules</h3>
+                <ul>
+                    @for(var rule : model.quickRules())
+                        <li>${rule}</li>
+                    @endfor
+                </ul>
+            </article>
+            <article class="rule-card">
+                <h3>Scenario notes</h3>
+                <p>${model.scenarioInput()}</p>
+                <p>${model.scenarioDecision()}</p>
+                <p>${model.cautionNote()}</p>
+                <p>Source: ${model.source()} (updated ${model.sourceDateDisplay()})</p>
+            </article>
+            <article class="mistake-callout">
+                <h3>Mistake to avoid</h3>
+                <p>Picking size by volume only can create heavy overage fees.</p>
+                <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
+            </article>
+        </div>
     </section>
 
     <section class="panel">
-        <article class="mistake-callout">
-            <h2>Common mistake</h2>
-            <p>Picking dumpster size by volume only can create overweight fees on dense materials.</p>
-            <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
-        </article>
+        <h2 class="font-display">Related guides and FAQ</h2>
         <h3>Related project guides</h3>
-        <ul>
+        <ul class="link-grid">
             @for(var link : model.relatedProjectLinks())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                <li>
+                    <a href="${link.href()}">${link.label()}</a>
+                    <span>${link.summary()}</span>
+                </li>
             @endfor
         </ul>
+
         @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
             <h3>Long-tail intent guides</h3>
-            <ul>
+            <ul class="link-grid">
                 @for(var link : model.intentClusterLinks())
-                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
                 @endfor
             </ul>
         @endif
+
         <h3>Related material guides</h3>
-        <ul>
+        <ul class="link-grid">
             @for(var link : model.relatedMaterialLinks())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                <li>
+                    <a href="${link.href()}">${link.label()}</a>
+                    <span>${link.summary()}</span>
+                </li>
             @endfor
         </ul>
+
         <h3>FAQ</h3>
         <div class="faq-list">
             @for(var faq : model.faqItems())
@@ -258,10 +292,12 @@
                 </details>
             @endfor
         </div>
+
         <p><a href="${model.materialGuidesUrl()}">Browse all material guides</a></p>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}">Run calculator with this material</a></p>
     </section>
 </main>
+
 <footer class="site-footer">
     <div class="shell shell--footer">
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
@@ -277,5 +313,3 @@
 </footer>
 </body>
 </html>
-
-

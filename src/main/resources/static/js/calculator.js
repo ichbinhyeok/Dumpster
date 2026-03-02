@@ -247,6 +247,9 @@
         const result = apiData.result;
         resultPanel.hidden = false;
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
+        if (liveNote) {
+            liveNote.classList.remove("is-error");
+        }
 
         trackEvent("result_viewed", apiData.estimateId, {
             priceRisk: result.priceRisk,
@@ -495,11 +498,15 @@
     }
 
     function setLoadingState(isLoading, trigger) {
+        if (form) {
+            form.setAttribute("aria-busy", isLoading ? "true" : "false");
+        }
         if (submitButton) {
             submitButton.disabled = isLoading;
             submitButton.textContent = isLoading && trigger === "submit" ? "Running..." : "Run decision engine";
         }
         if (liveNote) {
+            liveNote.classList.toggle("is-loading", isLoading);
             liveNote.textContent = isLoading
                     ? "Live update is on. Refreshing recommendation..."
                     : "Live update is on. Any change refreshes the recommendation automatically.";
@@ -515,6 +522,11 @@
         }
         if (liveStatus) {
             liveStatus.textContent = "Live update failed. Check values and retry.";
+        }
+        if (liveNote) {
+            liveNote.classList.remove("is-loading");
+            liveNote.classList.add("is-error");
+            liveNote.textContent = "Live update failed. Verify inputs and try again.";
         }
         if (heroKpiPlan) {
             heroKpiPlan.textContent = "Unavailable";

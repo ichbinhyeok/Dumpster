@@ -11,8 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/calculator-modern.css">
 </head>
-<body>
+<body class="neo-body neo-content">
 <header class="site-header">
     <div class="shell shell--header">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
@@ -56,6 +57,9 @@
 </footer>
 </body>
 </html>
+
+
+
 
 
 

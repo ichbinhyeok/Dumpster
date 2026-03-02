@@ -20,8 +20,10 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/calculator-modern.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -92,7 +94,7 @@
         }
     </script>
 </head>
-<body>
+<body class="neo-body neo-content">
 <header class="site-header">
     <div class="shell shell--header">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
@@ -113,20 +115,34 @@
         </div>
     </div>
 </header>
+
 <main class="shell shell--main">
-    <section class="panel hero-insight">
+    <section class="hero-insight">
         <div class="hero-grid">
             <div>
                 <p class="eyebrow">Project Guide</p>
-                <h1>${model.title()}</h1>
+                <h1 class="font-display">${model.title()}</h1>
                 <p class="answer-first">${model.answerFirst()}</p>
+                <p>Use this page as the default strategy for scope, unit, and vendor checks before final booking.</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
-                <p>Recommended quick input unit: ${model.recommendedUnit()}</p>
-                <p>Default material preset: ${model.defaultMaterialName()}</p>
-                <p>Recommended strategy: ${model.recommendedStrategy()}</p>
+                <div class="rule-grid">
+                    <article class="rule-card">
+                        <h3>Recommended unit</h3>
+                        <p>${model.recommendedUnit()}</p>
+                    </article>
+                    <article class="rule-card">
+                        <h3>Default material</h3>
+                        <p>${model.defaultMaterialName()}</p>
+                    </article>
+                    <article class="rule-card">
+                        <h3>Primary strategy</h3>
+                        <p>${model.recommendedStrategy()}</p>
+                    </article>
+                </div>
             </div>
             <aside class="hero-proof">
-                <h2>Fast preset launcher</h2>
+                <h2 class="font-display">Fast preset launcher</h2>
+                <p>Jump into the simulator with project + material preselected.</p>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="project" value="${model.projectId()}">
                     <input type="hidden" name="material" value="${model.defaultMaterialId()}">
@@ -147,25 +163,28 @@
     </section>
 
     <section class="panel">
-        <h2>What dumpster strategy is recommended for ${model.title()}?</h2>
-        <p><strong>Direct answer:</strong> Start with ${model.recommendedStrategy()}</p>
-        <p>Use ${model.defaultMaterialName()} as the default material profile and validate assumptions with ${model.recommendedUnit()} input before final booking.</p>
+        <h2 class="font-display">Decision summary for ${model.title()}</h2>
+        <div class="rule-grid">
+            <article class="rule-card">
+                <h3>Recommended strategy</h3>
+                <p><strong>Direct answer:</strong> ${model.recommendedStrategy()}</p>
+                <p>${model.sampleDecision()}</p>
+            </article>
+            <article class="rule-card">
+                <h3>Typical load planning</h3>
+                <p>${model.sampleInput()}</p>
+                <p>Use this as baseline, then confirm included tons and haul limits with vendor.</p>
+            </article>
+            <article class="mistake-callout">
+                <h3>Mistake to avoid</h3>
+                <p>${model.commonMistake()}</p>
+                <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
+            </article>
+        </div>
     </section>
 
     <section class="panel">
-        <h2>What size dumpster is typical for ${model.title()}?</h2>
-        <p><strong>Quick answer:</strong> ${model.sampleDecision()}</p>
-        <p>If your load mix is uncertain or schedule risk is high, keep the safe recommendation instead of downgrading by volume alone.</p>
-    </section>
-
-    <section class="panel">
-        <h2>How many loads should I plan for ${model.title()}?</h2>
-        <p>${model.sampleInput()}</p>
-        <p>Use this as a baseline, then confirm included tons, overage fee, and swap timing with your local operator before booking.</p>
-    </section>
-
-    <section class="panel">
-        <h2>Quick rules</h2>
+        <h2 class="font-display">Quick rules</h2>
         <ul>
             @for(var rule : model.quickRules())
                 <li>${rule}</li>
@@ -176,31 +195,39 @@
     </section>
 
     <section class="panel">
-        <article class="mistake-callout">
-            <h2>Mistake to avoid</h2>
-            <p>${model.commonMistake()}</p>
-            <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
-        </article>
+        <h2 class="font-display">Related guides and FAQ</h2>
         <h3>Related material guides</h3>
-        <ul>
+        <ul class="link-grid">
             @for(var link : model.relatedMaterialLinks())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                <li>
+                    <a href="${link.href()}">${link.label()}</a>
+                    <span>${link.summary()}</span>
+                </li>
             @endfor
         </ul>
+
         @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
             <h3>Long-tail intent guides</h3>
-            <ul>
+            <ul class="link-grid">
                 @for(var link : model.intentClusterLinks())
-                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
                 @endfor
             </ul>
         @endif
+
         <h3>Related project guides</h3>
-        <ul>
+        <ul class="link-grid">
             @for(var link : model.relatedProjectLinks())
-                <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                <li>
+                    <a href="${link.href()}">${link.label()}</a>
+                    <span>${link.summary()}</span>
+                </li>
             @endfor
         </ul>
+
         <h3>FAQ</h3>
         <div class="faq-list">
             @for(var faq : model.faqItems())
@@ -210,10 +237,12 @@
                 </details>
             @endfor
         </div>
+
         <p><a href="${model.projectGuidesUrl()}">Browse all project guides</a></p>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open calculator preset flow</a></p>
     </section>
 </main>
+
 <footer class="site-footer">
     <div class="shell shell--footer">
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
@@ -229,5 +258,3 @@
 </footer>
 </body>
 </html>
-
-

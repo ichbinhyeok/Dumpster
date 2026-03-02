@@ -20,8 +20,10 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/calculator-modern.css">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -68,7 +70,7 @@
         }
     </script>
 </head>
-<body>
+<body class="neo-body neo-content">
 <header class="site-header">
     <div class="shell shell--header">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
@@ -89,19 +91,20 @@
         </div>
     </div>
 </header>
+
 <main class="shell shell--main">
-    <section class="panel hero-insight">
+    <section class="hero-insight">
         <div class="hero-grid">
             <div>
                 <p class="eyebrow">Intent Guide</p>
-                <h1>${model.pageTitle()}</h1>
+                <h1 class="font-display">${model.pageTitle()}</h1>
                 <p class="answer-first"><strong>Direct answer:</strong> ${model.directAnswer()}</p>
                 <p>${model.intentSummary()}</p>
                 <p>${model.evidenceNote()}</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </div>
             <aside class="hero-proof">
-                <h2>Scenario launcher</h2>
+                <h2 class="font-display">Scenario launcher</h2>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="project" value="${model.projectId()}">
                     <input type="hidden" name="material" value="${model.materialId()}">
@@ -120,7 +123,7 @@
     </section>
 
     <section class="panel">
-        <h2>Size-by-size load comparison</h2>
+        <h2 class="font-display">Size-by-size load comparison</h2>
         <div class="table-scroll">
             <table class="data-table" aria-label="Intent-specific dumpster load comparison table">
                 <caption>Size-by-size load and overage comparison for this project and material scenario</caption>
@@ -153,16 +156,19 @@
     </section>
 
     <section class="panel">
-        <h2>Decision checklist</h2>
-        <ol>
+        <h2 class="font-display">Decision checklist</h2>
+        <div class="rule-grid">
             @for(var item : model.decisionChecklist())
-                <li>${item}</li>
+                <article class="rule-card">
+                    <h3>Checklist item</h3>
+                    <p>${item}</p>
+                </article>
             @endfor
-        </ol>
+        </div>
     </section>
 
     <section class="panel">
-        <h2>Frequently asked questions</h2>
+        <h2 class="font-display">Frequently asked questions</h2>
         <div class="faq-list">
             @for(var faq : model.faqItems())
                 <details class="faq-item">
@@ -175,10 +181,13 @@
 
     @if(model.relatedIntentLinks() != null && !model.relatedIntentLinks().isEmpty())
         <section class="panel">
-            <h2>Related intent guides</h2>
-            <ul>
+            <h2 class="font-display">Related intent guides</h2>
+            <ul class="link-grid">
                 @for(var link : model.relatedIntentLinks())
-                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
                 @endfor
             </ul>
             <p><a href="${model.materialGuidesUrl()}">Browse material guides</a> | <a href="${model.projectGuidesUrl()}">Browse project guides</a></p>
@@ -187,10 +196,13 @@
 
     @if(model.relatedMaterialLinks() != null && !model.relatedMaterialLinks().isEmpty())
         <section class="panel">
-            <h2>Related material guides</h2>
-            <ul>
+            <h2 class="font-display">Related material guides</h2>
+            <ul class="link-grid">
                 @for(var link : model.relatedMaterialLinks())
-                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
                 @endfor
             </ul>
         </section>
@@ -198,15 +210,19 @@
 
     @if(model.relatedProjectLinks() != null && !model.relatedProjectLinks().isEmpty())
         <section class="panel">
-            <h2>Related project guides</h2>
-            <ul>
+            <h2 class="font-display">Related project guides</h2>
+            <ul class="link-grid">
                 @for(var link : model.relatedProjectLinks())
-                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
                 @endfor
             </ul>
         </section>
     @endif
 </main>
+
 <footer class="site-footer">
     <div class="shell shell--footer">
         <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
@@ -222,5 +238,3 @@
 </footer>
 </body>
 </html>
-
-
