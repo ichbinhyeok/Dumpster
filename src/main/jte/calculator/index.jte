@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
@@ -95,277 +95,229 @@
     </script>
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">Live decision engine</span>
-            <a class="button-link primary" href="#estimate-form">Request quote</a>
-        </div>
-    </div>
-</header>
+@template.components.appHeader(trustLabel = "Range-based, heavy-debris aware", primaryHref = "#estimate-form", primaryLabel = "Request quote")
 
-<main class="neo-app shell shell--main">
-    <section class="neo-hero">
-        <article class="neo-hero-main">
-            <p class="neo-eyebrow">Planning Cockpit</p>
+<main class="app-container app-main calc-page">
+    <section class="calc-hero">
+        <div class="calc-hero__head">
+            <p class="eyebrow">Dumpster sizing tool</p>
             <h1 class="font-display">${model.pageTitle()}</h1>
-            <p class="answer-first"><strong>Direct answer:</strong> set your scenario once and this cockpit streams safe size, budget option, weight pressure, and haul feasibility in real time.</p>
-            <p>Built for homeowners and contractors who need a confident booking decision before calling vendors.</p>
-            <div class="neo-pill-group">
-                <span class="neo-pill">Live recommendations</span>
-                <span class="neo-pill">Risk-first sizing</span>
-                <span class="neo-pill">Overage visibility</span>
-                <span class="neo-pill">Feasibility checks</span>
-            </div>
-            <div class="neo-kpi-grid">
-                <article class="neo-kpi-card">
-                    <span>Primary plan</span>
-                    <strong id="hero-kpi-plan">Waiting</strong>
-                </article>
-                <article class="neo-kpi-card">
-                    <span>Price risk</span>
-                    <strong id="hero-kpi-risk">Waiting</strong>
-                </article>
-                <article class="neo-kpi-card">
-                    <span>Feasibility</span>
-                    <strong id="hero-kpi-feasibility">Waiting</strong>
-                </article>
-                <article class="neo-kpi-card">
-                    <span>Cost window</span>
-                    <strong id="hero-kpi-cost">Waiting</strong>
-                </article>
-            </div>
-        </article>
+            <p>Get a size recommendation, overage risk, and next action in about 60 seconds.</p>
+        </div>
+        <div class="calc-benefits">
+            <article class="calc-benefit">
+                <strong>Decision first</strong>
+                <p>Safe fit and budget fit shown side by side.</p>
+            </article>
+            <article class="calc-benefit">
+                <strong>Risk visible</strong>
+                <p>Weight and allowance risk shown as ranges, not guesses.</p>
+            </article>
+            <article class="calc-benefit">
+                <strong>Actionable output</strong>
+                <p>Primary route, backup route, and vendor checklist in one view.</p>
+            </article>
+        </div>
+    </section>
 
-        <aside class="neo-hero-side">
-            <h2 class="font-display">What makes this different</h2>
-            <ul>
-                <li>Separates price allowance and pickup feasibility instead of mixing both into one vague score.</li>
-                <li>Surfaces low/typ/high ranges so uncertainty is visible before you book.</li>
-                <li>Converts dense-material scenarios into safer multi-haul strategy when needed.</li>
-            </ul>
-            <div class="mini-metrics">
-                <article class="mini-metric">
-                    <span>Mode</span>
-                    <strong>Real-time simulation</strong>
+    <section class="calc-layout">
+        <form id="estimate-form" class="calc-workflow">
+            <input id="project-id" type="hidden" value="roof_tearoff">
+            <input id="persona" type="hidden" value="homeowner">
+            <input id="material-id" type="hidden" value="asphalt_shingles">
+            <input id="unit-id" type="hidden" value="pickup_load">
+            <input id="need-timing" type="hidden" value="research">
+
+            <div class="calc-stepper">
+                <section class="calc-step" data-choice-target="project-id">
+                    <div class="calc-step__head">
+                        <div>
+                            <h2 class="calc-step__title">Project scope</h2>
+                            <p class="calc-step__hint">Choose the closest job type.</p>
+                        </div>
+                    </div>
+                    <div class="choice-grid">
+                        <button type="button" class="choice-chip is-active" data-choice-value="roof_tearoff">Roof tear-off</button>
+                        <button type="button" class="choice-chip" data-choice-value="kitchen_remodel">Kitchen remodel</button>
+                        <button type="button" class="choice-chip" data-choice-value="bathroom_remodel">Bathroom remodel</button>
+                        <button type="button" class="choice-chip" data-choice-value="deck_demolition">Deck demo</button>
+                        <button type="button" class="choice-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
+                        <button type="button" class="choice-chip" data-choice-value="estate_cleanout">Estate cleanout</button>
+                        <button type="button" class="choice-chip" data-choice-value="yard_cleanup">Yard cleanup</button>
+                        <button type="button" class="choice-chip" data-choice-value="dirt_grading">Dirt grading</button>
+                        <button type="button" class="choice-chip" data-choice-value="concrete_removal">Concrete removal</button>
+                        <button type="button" class="choice-chip" data-choice-value="light_commercial_fitout">Light commercial fit-out</button>
+                    </div>
+                </section>
+
+                <section class="calc-step" data-choice-target="material-id">
+                    <div class="calc-step__head">
+                        <div>
+                            <h2 class="calc-step__title">Material profile</h2>
+                            <p class="calc-step__hint">Weight behavior changes the recommendation fastest.</p>
+                        </div>
+                    </div>
+                    <div class="choice-grid">
+                        <button type="button" class="choice-chip is-active" data-choice-value="asphalt_shingles">Asphalt shingles</button>
+                        <button type="button" class="choice-chip" data-choice-value="concrete">Concrete</button>
+                        <button type="button" class="choice-chip" data-choice-value="dirt_soil">Dirt / soil</button>
+                        <button type="button" class="choice-chip" data-choice-value="brick">Brick</button>
+                        <button type="button" class="choice-chip" data-choice-value="tile_ceramic">Tile / ceramic</button>
+                        <button type="button" class="choice-chip" data-choice-value="gravel_rock">Gravel / rock</button>
+                        <button type="button" class="choice-chip" data-choice-value="asphalt_pavement">Asphalt pavement</button>
+                        <button type="button" class="choice-chip" data-choice-value="plaster">Plaster</button>
+                        <button type="button" class="choice-chip" data-choice-value="drywall">Drywall</button>
+                        <button type="button" class="choice-chip" data-choice-value="mixed_cd">Mixed C&amp;D</button>
+                        <button type="button" class="choice-chip" data-choice-value="household_junk">Household junk</button>
+                        <button type="button" class="choice-chip" data-choice-value="furniture">Furniture</button>
+                        <button type="button" class="choice-chip" data-choice-value="carpet_pad">Carpet and pad</button>
+                        <button type="button" class="choice-chip" data-choice-value="decking_wood">Decking wood</button>
+                        <button type="button" class="choice-chip" data-choice-value="insulation_wet">Wet insulation</button>
+                        <button type="button" class="choice-chip" data-choice-value="yard_waste">Yard waste</button>
+                    </div>
+                </section>
+
+                <section class="calc-step">
+                    <div class="calc-step__head">
+                        <div>
+                            <h2 class="calc-step__title">Quantity and unit</h2>
+                            <p class="calc-step__hint">Pick the unit you can estimate confidently.</p>
+                        </div>
+                    </div>
+                    <div class="choice-grid choice-grid--compact" data-choice-target="unit-id">
+                        <button type="button" class="choice-chip is-active" data-choice-value="pickup_load">Pickup load</button>
+                        <button type="button" class="choice-chip" data-choice-value="truckload_small">Small truckload</button>
+                        <button type="button" class="choice-chip" data-choice-value="roof_square" data-shingle-only="true">Roof square</button>
+                        <button type="button" class="choice-chip" data-choice-value="sqft_4in">sqft @ 4in</button>
+                        <button type="button" class="choice-chip" data-choice-value="sqft_2in">sqft @ 2in</button>
+                        <button type="button" class="choice-chip" data-choice-value="sqft_1in">sqft @ 1in</button>
+                        <button type="button" class="choice-chip" data-choice-value="contractor_bag">Contractor bag</button>
+                        <button type="button" class="choice-chip" data-choice-value="drywall_sheet">Drywall sheet</button>
+                        <button type="button" class="choice-chip" data-choice-value="cubic_yard">Cubic yard</button>
+                    </div>
+                    <div class="calc-quantity">
+                        <label class="ui-field__label" for="quantity">Quantity</label>
+                        <div class="calc-quantity-stepper">
+                            <button type="button" id="quantity-dec" class="calc-stepper-btn" aria-label="Decrease quantity">-</button>
+                            <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
+                            <button type="button" id="quantity-inc" class="calc-stepper-btn" aria-label="Increase quantity">+</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="calc-step">
+                    <div class="calc-step__head">
+                        <div>
+                            <h2 class="calc-step__title">Context and modifiers</h2>
+                            <p class="calc-step__hint">Keep defaults for quick mode. Open only if needed.</p>
+                        </div>
+                    </div>
+                    <details class="ui-accordion">
+                        <summary>
+                            <span>Persona and timing</span>
+                            <small>Optional routing signal</small>
+                        </summary>
+                        <div class="ui-accordion__body">
+                            <div class="choice-grid choice-grid--compact" data-choice-target="persona">
+                                <button type="button" class="choice-chip is-active" data-choice-value="homeowner">Homeowner</button>
+                                <button type="button" class="choice-chip" data-choice-value="contractor">Contractor</button>
+                                <button type="button" class="choice-chip" data-choice-value="property_manager">Property manager</button>
+                                <button type="button" class="choice-chip" data-choice-value="investor">Flipper / investor</button>
+                                <button type="button" class="choice-chip" data-choice-value="business">Facility / business</button>
+                            </div>
+                            <div class="choice-grid choice-grid--compact" data-choice-target="need-timing">
+                                <button type="button" class="choice-chip is-active" data-choice-value="research">Researching</button>
+                                <button type="button" class="choice-chip" data-choice-value="this_week">This week</button>
+                                <button type="button" class="choice-chip" data-choice-value="48h">48 hours</button>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="ui-accordion">
+                        <summary>
+                            <span>Advanced modifiers</span>
+                            <small>Optional load adjustments</small>
+                        </summary>
+                        <div class="ui-accordion__body">
+                            <div class="rule-grid">
+                                <label class="switch-field">
+                                    <input id="wet" type="checkbox">
+                                    <span class="switch-ui" aria-hidden="true"></span>
+                                    <span>Wet load</span>
+                                </label>
+                                <label class="switch-field">
+                                    <input id="mixed-load" type="checkbox">
+                                    <span class="switch-ui" aria-hidden="true"></span>
+                                    <span>Mixed load</span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+
+                    <div class="ui-field">
+                        <label class="ui-field__label" for="allowance-tons">Included tons (optional)</label>
+                        <input id="allowance-tons" type="number" step="0.1" min="0" placeholder="e.g. 3.0">
+                    </div>
+                </section>
+            </div>
+
+            <div class="calc-actions">
+                <button id="submit-button" type="submit" class="calc-submit">Calculate</button>
+                <p id="live-note" aria-live="polite">Live update is on. Any change refreshes the recommendation automatically.</p>
+            </div>
+        </form>
+
+        <aside class="result-rail" id="live-dashboard">
+            <div class="result-rail__header">
+                <p class="eyebrow">Result summary</p>
+                <h2 class="font-display">Decision board</h2>
+                <p id="live-status" class="result-status">Change any input to see the estimate update.</p>
+            </div>
+
+            <div class="gauge-list">
+                <article class="gauge-card">
+                    <h3>Weight pressure</h3>
+                    <div class="gauge-track"><span id="gauge-weight" class="gauge-fill"></span></div>
+                    <p id="gauge-weight-label">Waiting for estimate</p>
                 </article>
-                <article class="mini-metric">
-                    <span>Last updated</span>
-                    <strong>${model.lastUpdatedIso()}</strong>
+                <article class="gauge-card">
+                    <h3>Volume load</h3>
+                    <div class="gauge-track"><span id="gauge-volume" class="gauge-fill"></span></div>
+                    <p id="gauge-volume-label">Waiting for estimate</p>
                 </article>
-                <article class="mini-metric">
-                    <span>Coverage</span>
-                    <strong>Material + project presets</strong>
+                <article class="gauge-card">
+                    <h3>Overage risk</h3>
+                    <div class="gauge-track"><span id="gauge-risk" class="gauge-fill"></span></div>
+                    <p id="gauge-risk-label">Waiting for estimate</p>
                 </article>
             </div>
+
+            <section class="result-panel" id="result-panel" hidden>
+                <div class="result-header">
+                    <h3 class="font-display">Decision output</h3>
+                    <a id="share-link" href="#" rel="nofollow">Open share page</a>
+                </div>
+                <div id="result-state-banner" class="result-state-banner" hidden></div>
+                <div id="result-hard-stops" class="result-hard-stops" hidden></div>
+                <p id="result-verdict" class="result-verdict">Verdict will appear here after calculation.</p>
+                <div id="result-badges" class="badges"></div>
+                <div id="result-input-impact" class="input-impact-list"></div>
+                <div id="result-summary" class="summary-grid"></div>
+                <div id="result-recommendations" class="cards"></div>
+                <div id="result-costs" class="cards"></div>
+                <details id="trust-drawer" class="trust-drawer">
+                    <summary>Assumptions and source detail</summary>
+                    <div class="trust-drawer__body">
+                        <div id="result-assumptions" class="notes"></div>
+                    </div>
+                </details>
+                <div id="result-actions" class="cta"></div>
+            </section>
         </aside>
     </section>
 
-    <section class="neo-cockpit">
-        <div class="neo-cockpit-head">
-            <p class="neo-eyebrow">Scenario Builder</p>
-            <h2 class="font-display">Configure inputs and watch the decision board react</h2>
-            <p>No submit-wait cycle. Every meaningful input change updates strategy, risk, and route instantly.</p>
-        </div>
-
-        <div class="neo-cockpit-grid">
-            <form id="estimate-form" class="neo-form-surface">
-                <input id="project-id" type="hidden" value="roof_tearoff">
-                <input id="persona" type="hidden" value="homeowner">
-                <input id="material-id" type="hidden" value="asphalt_shingles">
-                <input id="unit-id" type="hidden" value="pickup_load">
-                <input id="need-timing" type="hidden" value="research">
-
-                <section class="neo-form-group" data-choice-target="project-id">
-                    <div class="neo-group-head">
-                        <h3>Project type</h3>
-                        <p>Choose the closest real-world scope.</p>
-                    </div>
-                    <div class="neo-chip-grid">
-                        <button type="button" class="choice-chip neo-chip is-active" data-choice-value="roof_tearoff">Roof tear-off</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="kitchen_remodel">Kitchen remodel</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="bathroom_remodel">Bathroom remodel</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="deck_demolition">Deck demo</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="estate_cleanout">Estate cleanout</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="yard_cleanup">Yard cleanup</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="dirt_grading">Dirt grading</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="concrete_removal">Concrete removal</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="light_commercial_fitout">Light commercial fit-out</button>
-                    </div>
-                </section>
-
-                <section class="neo-form-group" data-choice-target="material-id">
-                    <div class="neo-group-head">
-                        <h3>Material profile</h3>
-                        <p>Material density usually drives the largest decision delta.</p>
-                    </div>
-                    <div class="neo-chip-grid">
-                        <button type="button" class="choice-chip neo-chip is-active" data-choice-value="asphalt_shingles">Asphalt shingles</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="concrete">Concrete</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="dirt_soil">Dirt / soil</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="brick">Brick</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="tile_ceramic">Tile / ceramic</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="gravel_rock">Gravel / rock</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="asphalt_pavement">Asphalt pavement</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="plaster">Plaster</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="drywall">Drywall</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="mixed_cd">Mixed C&amp;D</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="household_junk">Household junk</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="furniture">Furniture</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="carpet_pad">Carpet and pad</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="decking_wood">Decking wood</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="insulation_wet">Wet insulation</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="yard_waste">Yard waste</button>
-                    </div>
-                </section>
-
-                <section class="neo-form-group" data-choice-target="unit-id">
-                    <div class="neo-group-head">
-                        <h3>Input unit</h3>
-                        <p>Use the unit you can estimate confidently.</p>
-                    </div>
-                    <div class="neo-chip-grid neo-chip-grid--compact">
-                        <button type="button" class="choice-chip neo-chip is-active" data-choice-value="pickup_load">Pickup load</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="truckload_small">Small truckload</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="roof_square" data-shingle-only="true">Roof square</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="sqft_4in">sqft @ 4in</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="sqft_2in">sqft @ 2in</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="sqft_1in">sqft @ 1in</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="contractor_bag">Contractor bag</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="drywall_sheet">Drywall sheet</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="cubic_yard">Cubic yard</button>
-                    </div>
-                </section>
-
-                <section class="neo-form-group neo-quantity-group">
-                    <div class="neo-group-head">
-                        <h3>Quantity</h3>
-                        <p>Step rapidly through scenarios.</p>
-                    </div>
-                    <label for="quantity" class="neo-label">Quantity amount</label>
-                    <div class="neo-quantity-stepper">
-                        <button type="button" id="quantity-dec" class="neo-stepper" aria-label="Decrease quantity">-</button>
-                        <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
-                        <button type="button" id="quantity-inc" class="neo-stepper" aria-label="Increase quantity">+</button>
-                    </div>
-                </section>
-
-                <details class="neo-form-group neo-fold" data-choice-target="persona">
-                    <summary>
-                        <span>Persona context</span>
-                        <small>Optional routing signal</small>
-                    </summary>
-                    <div class="neo-chip-grid neo-chip-grid--compact">
-                        <button type="button" class="choice-chip neo-chip is-active" data-choice-value="homeowner">Homeowner</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="contractor">Contractor</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="property_manager">Property manager</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="investor">Flipper / investor</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="business">Facility / business</button>
-                    </div>
-                </details>
-
-                <details class="neo-form-group neo-fold" data-choice-target="need-timing">
-                    <summary>
-                        <span>Need timing</span>
-                        <small>Optional urgency signal</small>
-                    </summary>
-                    <div class="neo-chip-grid neo-chip-grid--compact">
-                        <button type="button" class="choice-chip neo-chip is-active" data-choice-value="research">Researching</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="this_week">This week</button>
-                        <button type="button" class="choice-chip neo-chip" data-choice-value="48h">48 hours</button>
-                    </div>
-                </details>
-
-                <details class="neo-form-group neo-fold advanced-group">
-                    <summary>
-                        <span>Advanced modifiers</span>
-                        <small>Optional load adjustments</small>
-                    </summary>
-                    <div class="rule-grid">
-                        <label class="switch-field">
-                            <input id="wet" type="checkbox">
-                            <span class="switch-ui" aria-hidden="true"></span>
-                            <span>Wet load</span>
-                        </label>
-                        <label class="switch-field">
-                            <input id="mixed-load" type="checkbox">
-                            <span class="switch-ui" aria-hidden="true"></span>
-                            <span>Mixed load</span>
-                        </label>
-                    </div>
-                </details>
-
-                <section class="neo-form-group">
-                    <div class="neo-group-head">
-                        <h3>Allowance</h3>
-                        <p>Optional included tonnage from your quote.</p>
-                    </div>
-                    <label for="allowance-tons" class="neo-label">Included tons</label>
-                    <input id="allowance-tons" type="number" step="0.1" min="0" placeholder="e.g. 3.0">
-                </section>
-
-                <div class="neo-actions">
-                    <button id="submit-button" type="submit" class="neo-primary-btn">Run decision engine</button>
-                    <p id="live-note" aria-live="polite">Live update is on. Any change refreshes the recommendation automatically.</p>
-                </div>
-            </form>
-
-            <aside class="neo-dashboard" id="live-dashboard">
-                <div>
-                    <p class="neo-eyebrow">Decision Board</p>
-                    <h2 class="font-display">Risk + feasibility stream</h2>
-                    <p id="live-status">Change any input to see the estimate update.</p>
-                </div>
-
-                <div class="neo-gauges">
-                    <article class="neo-gauge-card">
-                        <h3>Weight pressure</h3>
-                        <div class="gauge-track"><span id="gauge-weight" class="gauge-fill"></span></div>
-                        <p id="gauge-weight-label">Waiting for estimate</p>
-                    </article>
-                    <article class="neo-gauge-card">
-                        <h3>Volume load</h3>
-                        <div class="gauge-track"><span id="gauge-volume" class="gauge-fill"></span></div>
-                        <p id="gauge-volume-label">Waiting for estimate</p>
-                    </article>
-                    <article class="neo-gauge-card">
-                        <h3>Overage risk</h3>
-                        <div class="gauge-track"><span id="gauge-risk" class="gauge-fill"></span></div>
-                        <p id="gauge-risk-label">Waiting for estimate</p>
-                    </article>
-                </div>
-
-                <section class="result-panel" id="result-panel" hidden>
-                    <div class="result-header">
-                        <h3 class="font-display">Decision output</h3>
-                        <a id="share-link" href="#" rel="nofollow">Open share page</a>
-                    </div>
-                    <div id="result-badges" class="badges"></div>
-                    <div id="result-summary" class="summary-grid"></div>
-                    <div id="result-recommendations" class="cards"></div>
-                    <div id="result-costs" class="cards"></div>
-                    <div id="result-assumptions" class="notes"></div>
-                    <div id="result-actions" class="cta"></div>
-                </section>
-            </aside>
-        </div>
-    </section>
-
-    <section class="neo-support-grid">
-        <article class="neo-support-card">
+    <section class="calc-support-grid">
+        <article class="calc-support-card">
             <h2 class="font-display">Vendor checklist</h2>
             <ol>
                 <li>What included tons are in this quote?</li>
@@ -375,26 +327,26 @@
             </ol>
         </article>
 
-        <article class="neo-support-card">
+        <article class="calc-support-card">
             <h2 class="font-display">Frequently asked questions</h2>
             <div class="faq-list">
                 <details class="faq-item">
                     <summary>Should I pick dumpster size by volume only?</summary>
-                    <p>No. Volume-only planning can fail when dense debris pushes tonnage beyond included allowance even if space appears available. Treat weight and volume as paired constraints, then choose a size that keeps high-side tonnage below both pricing and haul-limit thresholds.</p>
+                    <p>No. Volume-only planning can fail when dense debris pushes tonnage beyond included allowance even if space appears available. Treat weight and volume as paired constraints.</p>
                 </details>
                 <details class="faq-item">
                     <summary>Why can heavy debris require a smaller dumpster?</summary>
-                    <p>Large containers are not always safer for heavy materials because transport rules can cap pickup weight and fill ratio. In those cases, operators often prefer smaller containers with planned multi-haul because it lowers rejection risk and keeps loading within operational limits.</p>
+                    <p>Large containers are not always safer for heavy materials because transport rules can cap pickup weight and fill ratio. Smaller bins with planned multi-haul are often safer.</p>
                 </details>
                 <details class="faq-item">
                     <summary>What should I ask before booking?</summary>
-                    <p>Confirm included tons, overage fee per ton, max haul limits, clean-load requirements, and swap timing. Those five checks determine whether your selected strategy can actually be executed at pickup time without avoidable extra charges.</p>
+                    <p>Confirm included tons, overage fee per ton, max haul limits, clean-load rules, and swap timing before booking.</p>
                 </details>
             </div>
         </article>
 
-        <article class="neo-support-card">
-            <h2 class="font-display">Knowledge links</h2>
+        <article class="calc-support-card">
+            <h2 class="font-display">Preset guides</h2>
             <div>
                 <h3>Popular material guides</h3>
                 <ul>
@@ -418,19 +370,14 @@
     </section>
 </main>
 
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
+@template.components.appFooter()
+
+<div id="mobile-result-dock" class="mobile-result-dock" hidden>
+    <div class="mobile-result-dock__row">
+        <p id="mobile-result-verdict">Run calculation to see recommendation.</p>
+        <a id="mobile-primary-cta" class="ui-button ui-button--primary" href="#estimate-form">View result</a>
     </div>
-</footer>
+</div>
 
 <div id="floating-cta" class="floating-cta" hidden>
     <a id="floating-call" href="/about/contact">Contact now</a>
