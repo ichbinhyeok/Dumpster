@@ -42,7 +42,7 @@ public class EstimateApiController {
     public ResponseEntity<EstimateApiResponse> createEstimate(@Valid @RequestBody EstimateCommand command) {
         EstimateResult result = estimationFacade.estimate(command);
         StoredEstimate storedEstimate = estimateStorageService.save(command, result);
-        trackingService.track("calc_completed", storedEstimate.estimateId(), Map.of(
+        trackingService.track("calc_completed_server", storedEstimate.estimateId(), Map.of(
                 "projectId", command.projectId(),
                 "persona", command.persona(),
                 "priceRisk", result.priceRisk().name(),

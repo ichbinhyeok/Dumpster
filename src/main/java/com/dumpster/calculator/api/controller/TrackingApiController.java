@@ -20,6 +20,8 @@ public class TrackingApiController {
     private static final Set<String> ALLOWED_EVENTS = Set.of(
             "calc_started",
             "calc_completed",
+            "calc_completed_server",
+            "calc_completed_client",
             "result_viewed",
             "cta_click_dumpster_call",
             "cta_click_dumpster_form",

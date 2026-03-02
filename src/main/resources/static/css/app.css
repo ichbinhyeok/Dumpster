@@ -291,6 +291,7 @@ button {
     border: 0;
     border-radius: 11px;
     padding: 0.63rem 0.9rem;
+    min-height: 44px;
     font-weight: 800;
     color: #ffffff;
     background: linear-gradient(135deg, #0b7369, #0b6b84);
@@ -317,6 +318,7 @@ button:disabled {
     text-decoration: none;
     font-weight: 800;
     padding: 0.56rem 0.86rem;
+    min-height: 44px;
     color: var(--ink);
     background: #ffffff;
     transition: transform 130ms ease, box-shadow 130ms ease;
@@ -842,12 +844,16 @@ button:disabled {
 
 .floating-cta a {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     text-decoration: none;
     color: #ffffff;
     font-weight: 800;
     border-radius: 8px;
     padding: 0.5rem 0.62rem;
+    min-height: 44px;
     border: 1px solid rgba(175, 216, 244, 0.3);
 }
 

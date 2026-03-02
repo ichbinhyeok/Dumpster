@@ -3,6 +3,7 @@ package com.dumpster.calculator.web.controller;
 import com.dumpster.calculator.web.content.SeoContentService;
 import com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel;
 import com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel;
+import com.dumpster.calculator.web.viewmodel.IntentPageViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
 import java.util.List;
@@ -32,6 +33,8 @@ public class SeoPageController {
     public ModelAndView heavyRulesPage() {
         HeavyRulesViewModel model = new HeavyRulesViewModel(
                 seoContentService.heavyRulesUrl(baseUrl),
+                seoContentService.calculatorUrl(baseUrl),
+                seoContentService.ogImageUrl(baseUrl),
                 seoContentService.materialGuidesUrl(baseUrl),
                 seoContentService.projectGuidesUrl(baseUrl),
                 List.of(
@@ -57,12 +60,15 @@ public class SeoPageController {
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Material Weight Guides: Density Chart + Live Calculator",
                 seoContentService.materialGuidesUrl(baseUrl),
+                seoContentService.calculatorUrl(baseUrl),
+                seoContentService.ogImageUrl(baseUrl),
                 "Compare material density ranges, sample tonnage, and overage risk before choosing a dumpster size.",
                 "Material Guides",
                 seoContentService.materialGuideLinks(),
                 seoContentService.materialGroupsByCategory(),
                 seoContentService.materialComparisonTable(),
-                seoContentService.materialHubFaq()
+                seoContentService.materialHubFaq(),
+                seoContentService.intentClusterLinksForMaterialHub()
         );
         ModelAndView modelAndView = new ModelAndView("seo/material-guides");
         modelAndView.addObject("model", model);
@@ -74,12 +80,15 @@ public class SeoPageController {
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Project Guides: Size Strategy by Job Type",
                 seoContentService.projectGuidesUrl(baseUrl),
+                seoContentService.calculatorUrl(baseUrl),
+                seoContentService.ogImageUrl(baseUrl),
                 "Use project-based presets to pick safer dumpster strategies and avoid overage surprises by timeline.",
                 "Project Guides",
                 seoContentService.projectGuideLinks(),
                 null,
                 null,
-                seoContentService.projectHubFaq()
+                seoContentService.projectHubFaq(),
+                seoContentService.intentClusterLinksForProjectHub()
         );
         ModelAndView modelAndView = new ModelAndView("seo/project-guides");
         modelAndView.addObject("model", model);
@@ -100,6 +109,19 @@ public class SeoPageController {
         ProjectPageViewModel model = seoContentService.projectPage(projectId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/project-page");
+        modelAndView.addObject("model", model);
+        return modelAndView;
+    }
+
+    @GetMapping("/dumpster/answers/{projectId}/{materialId}/{intent}")
+    public ModelAndView intentPage(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("materialId") String materialId,
+            @PathVariable("intent") String intent
+    ) {
+        IntentPageViewModel model = seoContentService.intentPage(projectId, materialId, intent, baseUrl)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ModelAndView modelAndView = new ModelAndView("seo/intent-page");
         modelAndView.addObject("model", model);
         return modelAndView;
     }

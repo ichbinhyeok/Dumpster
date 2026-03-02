@@ -47,4 +47,21 @@ class SeoContentServiceTests {
         assertThat(material.metaDescription()).contains("tons");
         assertThat(material.calculatorAbsoluteUrl()).startsWith("http");
     }
+
+    @Test
+    void intentPageBuildsWithChecklistAndFaq() {
+        var intent = seoContentService.intentPage(
+                "roof_tearoff",
+                "asphalt_shingles",
+                "size-guide",
+                "http://localhost:8080"
+        ).orElseThrow();
+
+        assertThat(intent.intentLabel()).isEqualTo("Size Guide");
+        assertThat(intent.directAnswer()).contains("yard");
+        assertThat(intent.sizeWeightTable()).hasSize(5);
+        assertThat(intent.decisionChecklist()).hasSize(5);
+        assertThat(intent.faqItems()).hasSize(3);
+        assertThat(intent.relatedIntentLinks()).isNotEmpty();
+    }
 }

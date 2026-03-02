@@ -4,6 +4,8 @@ import java.util.List;
 
 public record HeavyRulesViewModel(
         String canonicalUrl,
+        String calculatorUrl,
+        String ogImageUrl,
         String materialGuidesUrl,
         String projectGuidesUrl,
         List<String> rules,

@@ -8,6 +8,7 @@ public record ProjectPageViewModel(
         String seoTitle,
         String metaDescription,
         String canonicalUrl,
+        String ogImageUrl,
         String calculatorAbsoluteUrl,
         String recommendedUnit,
         String defaultMaterialId,
@@ -22,6 +23,7 @@ public record ProjectPageViewModel(
         List<String> quickRules,
         List<FaqItemViewModel> faqItems,
         String projectGuidesUrl,
+        List<LinkItemViewModel> intentClusterLinks,
         List<LinkItemViewModel> relatedMaterialLinks,
         List<LinkItemViewModel> relatedProjectLinks
 ) {

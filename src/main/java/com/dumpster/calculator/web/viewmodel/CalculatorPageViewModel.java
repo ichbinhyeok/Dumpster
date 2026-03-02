@@ -6,7 +6,9 @@ public record CalculatorPageViewModel(
         String pageTitle,
         String seoTitle,
         String seoDescription,
+        String siteBaseUrl,
         String canonicalUrl,
+        String ogImageUrl,
         List<LinkItemViewModel> featuredMaterialLinks,
         List<LinkItemViewModel> featuredProjectLinks
 ) {

@@ -34,6 +34,7 @@ class SeoInfrastructureTests {
         assertThat(body).contains("/dumpster/weight/asphalt_shingles");
         assertThat(body).contains("/dumpster/weight/metal_scrap_light");
         assertThat(body).contains("/dumpster/size/light_commercial_fitout");
+        assertThat(body).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
     }
 
     @Test

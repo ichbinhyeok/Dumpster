@@ -9,6 +9,7 @@ public record MaterialPageViewModel(
         String seoTitle,
         String metaDescription,
         String canonicalUrl,
+        String ogImageUrl,
         String calculatorAbsoluteUrl,
         String categoryLabel,
         double densityLow,
@@ -31,6 +32,7 @@ public record MaterialPageViewModel(
         List<String> quickRules,
         List<FaqItemViewModel> faqItems,
         String materialGuidesUrl,
+        List<LinkItemViewModel> intentClusterLinks,
         List<LinkItemViewModel> relatedMaterialLinks,
         List<LinkItemViewModel> relatedProjectLinks
 ) {

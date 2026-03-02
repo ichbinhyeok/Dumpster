@@ -7,6 +7,7 @@ import com.dumpster.calculator.infra.persistence.MaterialFactorRepository;
 import com.dumpster.calculator.web.viewmodel.FaqItemViewModel;
 import com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel;
 import com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel;
+import com.dumpster.calculator.web.viewmodel.IntentPageViewModel;
 import com.dumpster.calculator.web.viewmodel.LinkItemViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
@@ -54,6 +55,24 @@ public class SeoContentService {
     private static final String MATERIAL_GUIDES_PATH = "/dumpster/material-guides";
     private static final String PROJECT_GUIDES_PATH = "/dumpster/project-guides";
     private static final String HEAVY_RULES_PATH = "/dumpster/heavy-debris-rules";
+    private static final String INTENT_BASE_PATH = "/dumpster/answers";
+    private static final List<IntentType> INTENT_TYPES = List.of(
+            IntentType.SIZE_GUIDE,
+            IntentType.WEIGHT_ESTIMATE,
+            IntentType.OVERAGE_RISK
+    );
+    private static final Map<String, List<String>> PROJECT_INTENT_MATERIALS = Map.of(
+            "roof_tearoff", List.of("asphalt_shingles", "tile_ceramic", "metal_scrap_light"),
+            "kitchen_remodel", List.of("mixed_cd", "drywall", "plaster"),
+            "bathroom_remodel", List.of("tile_ceramic", "drywall", "mixed_cd"),
+            "deck_demolition", List.of("decking_wood", "mixed_cd", "yard_waste"),
+            "garage_cleanout", List.of("household_junk", "furniture", "cardboard_packaging"),
+            "estate_cleanout", List.of("household_junk", "furniture", "mixed_cd"),
+            "yard_cleanup", List.of("yard_waste", "green_waste_brush", "dirt_soil"),
+            "dirt_grading", List.of("dirt_soil", "gravel_rock", "concrete"),
+            "concrete_removal", List.of("concrete", "brick", "asphalt_pavement"),
+            "light_commercial_fitout", List.of("mixed_cd", "drywall", "cardboard_packaging")
+    );
     private static final Map<String, CopyBlock> MATERIAL_COPY = buildMaterialCopy();
     private static final Map<String, CopyBlock> PROJECT_COPY = buildProjectCopy();
 
@@ -215,6 +234,7 @@ public class SeoContentService {
                             seoTitle,
                             metaDescription,
                             absoluteUrl(baseUrl, "/dumpster/weight/" + material.materialId()),
+                            ogImageUrl(baseUrl),
                             absoluteUrl(baseUrl, CALCULATOR_PATH),
                             categoryLabel,
                             material.densityLow(),
@@ -237,6 +257,7 @@ public class SeoContentService {
                             copy.quickRules(),
                             copy.faqItems(),
                             absoluteUrl(baseUrl, MATERIAL_GUIDES_PATH),
+                            intentClusterLinksForMaterial(material.materialId()),
                             relatedMaterialsForMaterial(material),
                             relatedProjectsForMaterial(material.materialId())
                     );
@@ -262,6 +283,7 @@ public class SeoContentService {
                 seoTitle,
                 metaDescription,
                 absoluteUrl(baseUrl, canonicalPath),
+                ogImageUrl(baseUrl),
                 absoluteUrl(baseUrl, CALCULATOR_PATH),
                 seed.recommendedUnit(),
                 seed.defaultMaterialId(),
@@ -276,6 +298,7 @@ public class SeoContentService {
                 copy.quickRules(),
                 copy.faqItems(),
                 absoluteUrl(baseUrl, PROJECT_GUIDES_PATH),
+                intentClusterLinksForProject(seed.projectId()),
                 relatedMaterialsForProject(seed),
                 relatedProjectsForProject(seed)
         ));
@@ -285,6 +308,80 @@ public class SeoContentService {
         return projectSeeds.values().stream()
                 .map(seed -> "/dumpster/size/" + seed.projectId())
                 .toList();
+    }
+
+    public List<String> intentIndexPaths() {
+        return projectSeeds.keySet().stream()
+                .flatMap(projectId -> projectIntentMaterialsForProject(projectId).stream()
+                        .flatMap(materialId -> INTENT_TYPES.stream()
+                                .map(intentType -> intentPath(projectId, materialId, intentType))))
+                .toList();
+    }
+
+    public Optional<IntentPageViewModel> intentPage(
+            String projectId,
+            String materialId,
+            String intentSlug,
+            String baseUrl
+    ) {
+        ProjectSeed seed = projectSeeds.get(projectId);
+        if (seed == null) {
+            return Optional.empty();
+        }
+        IntentType intentType = IntentType.fromSlug(intentSlug).orElse(null);
+        if (intentType == null) {
+            return Optional.empty();
+        }
+        if (!projectIntentMaterialsForProject(projectId).contains(materialId)) {
+            return Optional.empty();
+        }
+        Optional<MaterialFactor> materialOptional = materialFactorRepository.findById(materialId);
+        if (materialOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        MaterialPageViewModel materialPage = materialPage(materialId, baseUrl).orElse(null);
+        ProjectPageViewModel projectPage = projectPage(projectId, baseUrl).orElse(null);
+        if (materialPage == null || projectPage == null) {
+            return Optional.empty();
+        }
+
+        String canonicalPath = intentPath(projectId, materialId, intentType);
+        String canonicalUrl = absoluteUrl(baseUrl, canonicalPath);
+        String materialName = materialPage.materialName();
+        String projectTitle = projectPage.title();
+        MaterialPageViewModel.SizeWeightRow anchorRow = anchorSizeRow(materialPage.sizeWeightTable());
+        String directAnswer = intentDirectAnswer(intentType, materialPage, projectPage, anchorRow);
+        String intentQuestion = intentQuestion(intentType, projectTitle, materialName);
+        String intentSummary = intentSummary(intentType, materialPage, projectPage, anchorRow);
+        String evidenceNote = "Evidence baseline: density "
+                + round2(materialPage.densityLow()) + " to "
+                + round2(materialPage.densityHigh()) + " lbs/yd3,"
+                + " size-level included tonnage, and project workflow assumptions for "
+                + projectTitle.toLowerCase(Locale.US) + ".";
+
+        return Optional.of(new IntentPageViewModel(
+                intentQuestion,
+                intentType.seoTitle(projectTitle, materialName, anchorRow),
+                intentType.metaDescription(projectTitle, materialName, anchorRow),
+                canonicalUrl,
+                ogImageUrl(baseUrl),
+                absoluteUrl(baseUrl, CALCULATOR_PATH),
+                absoluteUrl(baseUrl, MATERIAL_GUIDES_PATH),
+                absoluteUrl(baseUrl, PROJECT_GUIDES_PATH),
+                materialName,
+                materialId,
+                projectTitle,
+                projectId,
+                intentType.label(),
+                intentQuestion,
+                directAnswer,
+                intentSummary,
+                evidenceNote,
+                materialPage.sizeWeightTable(),
+                intentChecklist(intentType, materialPage, projectPage),
+                intentFaq(intentType, materialPage, projectPage, anchorRow),
+                relatedIntentLinks(projectId, materialId, intentType)
+        ));
     }
 
     public List<String> indexableMaterialIds() {
@@ -341,6 +438,49 @@ public class SeoContentService {
                         seed.sampleDecision()
                 ))
                 .toList();
+    }
+
+    public List<LinkItemViewModel> intentClusterLinksForMaterialHub() {
+        LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
+        for (String projectId : projectSeeds.keySet()) {
+            for (String materialId : projectIntentMaterialsForProject(projectId)) {
+                String materialName = materialDisplayName(materialId);
+                String href = intentPath(projectId, materialId, IntentType.WEIGHT_ESTIMATE);
+                String label = "How much does " + materialName + " weigh for " + projectSeeds.get(projectId).title() + "?";
+                deduped.putIfAbsent(href, new LinkItemViewModel(
+                        href,
+                        label,
+                        "Weight-estimate intent page with size-level tonnage and overage risk context."
+                ));
+                if (deduped.size() >= 18) {
+                    return List.copyOf(deduped.values());
+                }
+            }
+        }
+        return List.copyOf(deduped.values());
+    }
+
+    public List<LinkItemViewModel> intentClusterLinksForProjectHub() {
+        LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
+        for (String projectId : projectSeeds.keySet()) {
+            for (String materialId : projectIntentMaterialsForProject(projectId)) {
+                String href = intentPath(projectId, materialId, IntentType.SIZE_GUIDE);
+                String label = "What size dumpster for "
+                        + projectSeeds.get(projectId).title()
+                        + " with "
+                        + materialDisplayName(materialId)
+                        + "?";
+                deduped.putIfAbsent(href, new LinkItemViewModel(
+                        href,
+                        label,
+                        "Size-guide intent page with direct answer, checklist, and scenario constraints."
+                ));
+                if (deduped.size() >= 18) {
+                    return List.copyOf(deduped.values());
+                }
+            }
+        }
+        return List.copyOf(deduped.values());
     }
 
     public List<GuideHubPageViewModel.MaterialGroupViewModel> materialGroupsByCategory() {
@@ -428,6 +568,10 @@ public class SeoContentService {
                         policy.cleanLoadRequiredForHeavy()
                 ))
                 .toList();
+    }
+
+    public String ogImageUrl(String baseUrl) {
+        return absoluteUrl(baseUrl, "/og-image.png");
     }
 
     public String calculatorUrl(String baseUrl) {
@@ -573,6 +717,302 @@ public class SeoContentService {
             case MIXED -> "Mixed debris";
             case LIGHT -> "Light debris";
         };
+    }
+
+    private List<String> projectIntentMaterialsForProject(String projectId) {
+        ProjectSeed seed = projectSeeds.get(projectId);
+        if (seed == null) {
+            return List.of();
+        }
+        List<String> configured = PROJECT_INTENT_MATERIALS.getOrDefault(
+                projectId,
+                List.of(seed.defaultMaterialId())
+        );
+        return configured.stream()
+                .filter(materialId -> materialFactorRepository.findById(materialId).isPresent())
+                .toList();
+    }
+
+    private String intentPath(String projectId, String materialId, IntentType intentType) {
+        return INTENT_BASE_PATH + "/" + projectId + "/" + materialId + "/" + intentType.slug();
+    }
+
+    private String materialDisplayName(String materialId) {
+        return materialFactorRepository.findById(materialId)
+                .map(MaterialFactor::name)
+                .orElse(materialId.replace('_', ' '));
+    }
+
+    private List<LinkItemViewModel> intentClusterLinksForMaterial(String materialId) {
+        String materialName = materialDisplayName(materialId);
+        LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
+        List<String> candidateProjects = projectSeeds.keySet().stream()
+                .filter(projectId -> projectIntentMaterialsForProject(projectId).contains(materialId))
+                .limit(2)
+                .toList();
+
+        for (String projectId : candidateProjects) {
+            ProjectSeed seed = projectSeeds.get(projectId);
+            for (IntentType intentType : INTENT_TYPES) {
+                String href = intentPath(projectId, materialId, intentType);
+                links.putIfAbsent(href, new LinkItemViewModel(
+                        href,
+                        intentType.linkLabel(seed.title(), materialName),
+                        intentType.linkSummary()
+                ));
+                if (links.size() >= 6) {
+                    return List.copyOf(links.values());
+                }
+            }
+        }
+        return List.copyOf(links.values());
+    }
+
+    private List<LinkItemViewModel> intentClusterLinksForProject(String projectId) {
+        ProjectSeed seed = projectSeeds.get(projectId);
+        if (seed == null) {
+            return List.of();
+        }
+        LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
+        List<String> materials = projectIntentMaterialsForProject(projectId).stream()
+                .limit(2)
+                .toList();
+        for (String materialId : materials) {
+            String materialName = materialDisplayName(materialId);
+            for (IntentType intentType : INTENT_TYPES) {
+                String href = intentPath(projectId, materialId, intentType);
+                links.putIfAbsent(href, new LinkItemViewModel(
+                        href,
+                        intentType.linkLabel(seed.title(), materialName),
+                        intentType.linkSummary()
+                ));
+                if (links.size() >= 6) {
+                    return List.copyOf(links.values());
+                }
+            }
+        }
+        return List.copyOf(links.values());
+    }
+
+    private static MaterialPageViewModel.SizeWeightRow anchorSizeRow(List<MaterialPageViewModel.SizeWeightRow> rows) {
+        return rows.stream()
+                .filter(row -> !"High".equals(row.overageRisk()))
+                .findFirst()
+                .orElse(rows.getFirst());
+    }
+
+    private static String intentQuestion(IntentType intentType, String projectTitle, String materialName) {
+        return switch (intentType) {
+            case SIZE_GUIDE -> "What size dumpster is safest for " + projectTitle + " with " + materialName + "?";
+            case WEIGHT_ESTIMATE -> "How much does " + materialName + " weigh for " + projectTitle + "?";
+            case OVERAGE_RISK -> "How likely are overage fees for " + materialName + " in " + projectTitle + "?";
+        };
+    }
+
+    private static String intentDirectAnswer(
+            IntentType intentType,
+            MaterialPageViewModel materialPage,
+            ProjectPageViewModel projectPage,
+            MaterialPageViewModel.SizeWeightRow anchorRow
+    ) {
+        return switch (intentType) {
+            case SIZE_GUIDE -> "Start with a "
+                    + anchorRow.sizeYd()
+                    + "-yard baseline for "
+                    + projectPage.title().toLowerCase(Locale.US)
+                    + " and validate "
+                    + anchorRow.weightLowTons()
+                    + " to "
+                    + anchorRow.weightHighTons()
+                    + " tons against your included-ton quote."
+                    + " Keep the safe strategy if timing is tight or material mix is uncertain.";
+            case WEIGHT_ESTIMATE -> "A typical "
+                    + materialPage.exampleVolumeYd3()
+                    + " yd3 load of "
+                    + materialPage.materialName().toLowerCase(Locale.US)
+                    + " is "
+                    + materialPage.exampleWeightLowTons()
+                    + " to "
+                    + materialPage.exampleWeightHighTons()
+                    + " tons."
+                    + " That range is the baseline for comparing size-level overage and feasibility risk.";
+            case OVERAGE_RISK -> "Overage risk is driven by the gap between high-side estimated tons and included tons."
+                    + " For this material profile, "
+                    + anchorRow.sizeYd()
+                    + "-yard loads trend "
+                    + anchorRow.overageRisk().toLowerCase(Locale.US)
+                    + " risk at "
+                    + anchorRow.weightHighTons()
+                    + " high-side tons versus "
+                    + anchorRow.includedTonsTyp()
+                    + " included tons.";
+        };
+    }
+
+    private static String intentSummary(
+            IntentType intentType,
+            MaterialPageViewModel materialPage,
+            ProjectPageViewModel projectPage,
+            MaterialPageViewModel.SizeWeightRow anchorRow
+    ) {
+        return switch (intentType) {
+            case SIZE_GUIDE -> "Project strategy: " + projectPage.recommendedStrategy()
+                    + " Anchor size: " + anchorRow.sizeYd() + " yd ("
+                    + anchorRow.overageRisk() + " overage risk at typical assumptions).";
+            case WEIGHT_ESTIMATE -> "Density reference: "
+                    + materialPage.densityTyp()
+                    + " lbs/yd3 typical, with moisture multiplier "
+                    + materialPage.wetMultiplierLow()
+                    + " to "
+                    + materialPage.wetMultiplierHigh()
+                    + ".";
+            case OVERAGE_RISK -> "Risk is calculated with included tons, max-haul constraints, and scenario uncertainty."
+                    + " Use this page to choose when to stay safe versus when budget mode is acceptable.";
+        };
+    }
+
+    private static List<String> intentChecklist(
+            IntentType intentType,
+            MaterialPageViewModel materialPage,
+            ProjectPageViewModel projectPage
+    ) {
+        List<String> base = List.of(
+                "Confirm included tons and overage fee per ton before dispatch.",
+                "Validate max haul tons and clean-load rules for heavy or mixed debris.",
+                "Use wet-load assumptions when weather exposure is possible.",
+                "If schedule is tight, keep the safe recommendation instead of volume-only downsizing.",
+                "Ask this vendor question: " + projectPage.operatorQuestion()
+        );
+        return switch (intentType) {
+            case SIZE_GUIDE -> base;
+            case WEIGHT_ESTIMATE -> List.of(
+                    "Start from measured quantity in the project's recommended unit: " + projectPage.recommendedUnit() + ".",
+                    "Use density range " + materialPage.densityLow() + " to " + materialPage.densityHigh() + " lbs/yd3 for low/high scenarios.",
+                    "Compare the full size table, not only one example load.",
+                    "Apply moisture multiplier when recent rain or wet storage is likely.",
+                    "Keep a buffer between high-side tons and included tons for pickup-day variance."
+            );
+            case OVERAGE_RISK -> List.of(
+                    "Flag any size where high-side tons exceed included tons as overage-sensitive.",
+                    "Check whether max-haul limits are stricter than price allowance in your market.",
+                    "If risk is Medium or High, pre-plan swap timing and multi-haul logistics.",
+                    "Separate dense material from mixed loads whenever possible.",
+                    "Use the calculator preset to compare safe versus budget outcomes before booking."
+            );
+        };
+    }
+
+    private static List<FaqItemViewModel> intentFaq(
+            IntentType intentType,
+            MaterialPageViewModel materialPage,
+            ProjectPageViewModel projectPage,
+            MaterialPageViewModel.SizeWeightRow anchorRow
+    ) {
+        return switch (intentType) {
+            case SIZE_GUIDE -> List.of(
+                    faq(
+                            "What dumpster size should I start with for this scenario?",
+                            "Start with the " + anchorRow.sizeYd() + "-yard baseline and verify both included tons and max-haul policy."
+                                    + " Volume alone is not enough when material density can push pickup constraints before the bin looks full."
+                    ),
+                    faq(
+                            "When should I choose a safer size instead of budget size?",
+                            "Use the safer recommendation when timing is strict, moisture is possible, or load mix is uncertain."
+                                    + " Those conditions widen the weight range and make budget-sized assumptions less reliable on pickup day."
+                    ),
+                    faq(
+                            "What should I confirm with the vendor first?",
+                            "Confirm included tons, overage fee per ton, same-day swap availability, and any clean-load requirements."
+                                    + " These four checks prevent most avoidable surprises for " + projectPage.title().toLowerCase(Locale.US) + "."
+                    )
+            );
+            case WEIGHT_ESTIMATE -> List.of(
+                    faq(
+                            "How is this weight estimate calculated?",
+                            "The estimate multiplies material density range by effective loaded volume, then converts pounds to tons."
+                                    + " It includes scenario variance so you can compare low, typical, and high outcomes before choosing a container size."
+                    ),
+                    faq(
+                            "Why can real loads differ from one-number estimates?",
+                            "Moisture, packing behavior, contamination, and mixed debris can all shift final tonnage."
+                                    + " That is why this page keeps a range and pairs it with size-level included-ton benchmarks."
+                    ),
+                    faq(
+                            "Does moisture materially change the estimate?",
+                            "Yes. For this material profile, wet-load assumptions can move tonnage enough to change risk tier."
+                                    + " If conditions are damp, plan against the high-side range rather than typical values."
+                    )
+            );
+            case OVERAGE_RISK -> List.of(
+                    faq(
+                            "How is overage risk classified on this page?",
+                            "Risk is low when high-side tons stay below included tons, high when low-side tons already exceed included tons,"
+                                    + " and medium when estimates straddle the allowance threshold."
+                    ),
+                    faq(
+                            "Can a load be under included tons but still fail pickup?",
+                            "Yes. Included tons are a pricing threshold, but max-haul tons are operational transport limits."
+                                    + " A load can be priced correctly and still be non-feasible if haul constraints are stricter."
+                    ),
+                    faq(
+                            "What is the fastest way to lower overage exposure?",
+                            "Reduce uncertainty first: separate dense debris, avoid wet loading, and keep a margin versus included tons."
+                                    + " If the scenario remains medium or high risk, pre-plan multi-haul instead of hoping one pull works."
+                    )
+            );
+        };
+    }
+
+    private List<LinkItemViewModel> relatedIntentLinks(String projectId, String materialId, IntentType currentIntent) {
+        LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
+        String projectTitle = projectSeeds.get(projectId).title();
+        String materialName = materialDisplayName(materialId);
+
+        for (IntentType intentType : INTENT_TYPES) {
+            if (intentType == currentIntent) {
+                continue;
+            }
+            String href = intentPath(projectId, materialId, intentType);
+            links.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    intentType.linkLabel(projectTitle, materialName),
+                    intentType.linkSummary()
+            ));
+        }
+
+        for (String candidateMaterialId : projectIntentMaterialsForProject(projectId)) {
+            if (candidateMaterialId.equals(materialId)) {
+                continue;
+            }
+            String href = intentPath(projectId, candidateMaterialId, IntentType.SIZE_GUIDE);
+            links.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    IntentType.SIZE_GUIDE.linkLabel(projectTitle, materialDisplayName(candidateMaterialId)),
+                    "Project-level size intent comparison for a different dominant material."
+            ));
+            if (links.size() >= 8) {
+                return List.copyOf(links.values());
+            }
+        }
+
+        for (String candidateProjectId : projectSeeds.keySet()) {
+            if (candidateProjectId.equals(projectId)) {
+                continue;
+            }
+            if (!projectIntentMaterialsForProject(candidateProjectId).contains(materialId)) {
+                continue;
+            }
+            String href = intentPath(candidateProjectId, materialId, IntentType.WEIGHT_ESTIMATE);
+            links.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    IntentType.WEIGHT_ESTIMATE.linkLabel(projectSeeds.get(candidateProjectId).title(), materialName),
+                    "Same material, alternate project context for cross-intent comparison."
+            ));
+            if (links.size() >= 8) {
+                return List.copyOf(links.values());
+            }
+        }
+        return List.copyOf(links.values());
     }
 
     private List<LinkItemViewModel> relatedProjectsForMaterial(String materialId) {
@@ -1083,6 +1523,76 @@ public class SeoContentService {
 
     private static double round2(double value) {
         return Math.round(value * 100.0d) / 100.0d;
+    }
+
+    private enum IntentType {
+        SIZE_GUIDE("size-guide", "Size Guide"),
+        WEIGHT_ESTIMATE("weight-estimate", "Weight Estimate"),
+        OVERAGE_RISK("overage-risk", "Overage Risk");
+
+        private final String slug;
+        private final String label;
+
+        IntentType(String slug, String label) {
+            this.slug = slug;
+            this.label = label;
+        }
+
+        public String slug() {
+            return slug;
+        }
+
+        public String label() {
+            return label;
+        }
+
+        public static Optional<IntentType> fromSlug(String slug) {
+            for (IntentType value : values()) {
+                if (value.slug.equals(slug)) {
+                    return Optional.of(value);
+                }
+            }
+            return Optional.empty();
+        }
+
+        public String seoTitle(String projectTitle, String materialName, MaterialPageViewModel.SizeWeightRow anchorRow) {
+            return switch (this) {
+                case SIZE_GUIDE -> "What size dumpster for " + projectTitle + " with " + materialName
+                        + "? " + anchorRow.sizeYd() + "yd baseline + risk chart";
+                case WEIGHT_ESTIMATE -> "How much does " + materialName + " weigh for " + projectTitle
+                        + "? Tons estimate + size chart";
+                case OVERAGE_RISK -> materialName + " overage risk for " + projectTitle
+                        + ": included tons vs estimated load";
+            };
+        }
+
+        public String metaDescription(String projectTitle, String materialName, MaterialPageViewModel.SizeWeightRow anchorRow) {
+            return switch (this) {
+                case SIZE_GUIDE -> "Direct size guidance for " + projectTitle + " using " + materialName
+                        + " load assumptions. Starts from a " + anchorRow.sizeYd()
+                        + "yd baseline and compares overage risk by size.";
+                case WEIGHT_ESTIMATE -> "Weight estimate for " + materialName + " in " + projectTitle
+                        + " scenarios, with low/typical/high tons and dumpster-size comparisons.";
+                case OVERAGE_RISK -> "Overage-risk breakdown for " + materialName + " during " + projectTitle
+                        + ". Compare included tons, high-side weight, and safer strategy checklists.";
+            };
+        }
+
+        public String linkLabel(String projectTitle, String materialName) {
+            return switch (this) {
+                case SIZE_GUIDE -> "What size dumpster for " + projectTitle + " with " + materialName + "?";
+                case WEIGHT_ESTIMATE -> "How much does " + materialName + " weigh for " + projectTitle + "?";
+                case OVERAGE_RISK -> "Overage risk for " + materialName + " in " + projectTitle;
+            };
+        }
+
+        public String linkSummary() {
+            return switch (this) {
+                case SIZE_GUIDE -> "Intent page focused on size-selection decision logic.";
+                case WEIGHT_ESTIMATE -> "Intent page focused on range-based tonnage estimates.";
+                case OVERAGE_RISK -> "Intent page focused on included tons versus risk exposure.";
+            };
+        }
     }
 
     private record CopyBlock(

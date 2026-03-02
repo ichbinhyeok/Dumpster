@@ -5,12 +5,15 @@ import java.util.List;
 public record GuideHubPageViewModel(
         String pageTitle,
         String canonicalUrl,
+        String calculatorUrl,
+        String ogImageUrl,
         String description,
         String eyebrow,
         List<LinkItemViewModel> links,
         List<MaterialGroupViewModel> materialGroups,
         List<MaterialSummaryRow> comparisonTable,
-        List<FaqItemViewModel> hubFaqItems
+        List<FaqItemViewModel> hubFaqItems,
+        List<LinkItemViewModel> intentClusterLinks
 ) {
     public record MaterialGroupViewModel(
             String categoryLabel,

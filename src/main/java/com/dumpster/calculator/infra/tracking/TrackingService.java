@@ -3,6 +3,7 @@ package com.dumpster.calculator.infra.tracking;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +16,12 @@ public class TrackingService {
     private static final int MAX_EVENT_NAME_LEN = 120;
     private static final int MAX_ESTIMATE_ID_LEN = 64;
     private static final int MAX_EVENT_PAYLOAD_LEN = 4096;
+    private static final Set<String> UNSAMPLED_NULL_ESTIMATE_EVENTS = Set.of(
+            "calc_started",
+            "persona_selected",
+            "heavy_debris_flagged",
+            "allowance_entered"
+    );
 
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
@@ -34,7 +41,7 @@ public class TrackingService {
     }
 
     public void track(String eventName, String estimateId, Map<String, Object> payload) {
-        if (isBlank(estimateId) && ThreadLocalRandom.current().nextDouble() > nullEstimateSampleRate) {
+        if (shouldDropForSampling(eventName, estimateId)) {
             return;
         }
         String eventPayload = "{}";
@@ -75,6 +82,16 @@ public class TrackingService {
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private boolean shouldDropForSampling(String eventName, String estimateId) {
+        if (!isBlank(estimateId)) {
+            return false;
+        }
+        if (UNSAMPLED_NULL_ESTIMATE_EVENTS.contains(eventName)) {
+            return false;
+        }
+        return ThreadLocalRandom.current().nextDouble() > nullEstimateSampleRate;
     }
 
     private static double normalizeSampleRate(double sampleRate) {

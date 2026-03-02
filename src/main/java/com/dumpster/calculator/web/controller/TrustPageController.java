@@ -22,7 +22,9 @@ public class TrustPageController {
                 "Calculation Methodology",
                 "Dumpster Calculation Methodology: Range, Risk, and Feasibility Model",
                 "How dumpster recommendations are calculated from volume, weight, included tons, and haul limits with uncertainty ranges.",
-                baseUrl + "/about/methodology"
+                baseUrl,
+                baseUrl + "/about/methodology",
+                baseUrl + "/og-image.png"
         ));
         return modelAndView;
     }
@@ -34,7 +36,9 @@ public class TrustPageController {
                 "Editorial Policy",
                 "Editorial Policy: Data Quality, Updates, and Accuracy Standards",
                 "Editorial standards for source review, update cadence, and content quality across material and project guides.",
-                baseUrl + "/about/editorial-policy"
+                baseUrl,
+                baseUrl + "/about/editorial-policy",
+                baseUrl + "/og-image.png"
         ));
         return modelAndView;
     }
@@ -46,7 +50,9 @@ public class TrustPageController {
                 "Contact",
                 "Contact: Data Feedback, Corrections, and Partnership Requests",
                 "Contact page for data correction requests, source updates, and partnership inquiries related to dumpster planning content.",
-                baseUrl + "/about/contact"
+                baseUrl,
+                baseUrl + "/about/contact",
+                baseUrl + "/og-image.png"
         ));
         return modelAndView;
     }

@@ -31,6 +31,7 @@ public class SeoInfrastructureController {
                 Allow: /dumpster/heavy-debris-rules
                 Allow: /dumpster/weight/
                 Allow: /dumpster/size/
+                Allow: /dumpster/answers/
                 Allow: /dumpster/material-guides
                 Allow: /dumpster/project-guides
                 Allow: /about/
@@ -53,6 +54,7 @@ public class SeoInfrastructureController {
         urls.add(new SitemapEntry("/about/editorial-policy", defaultLastMod));
         urls.add(new SitemapEntry("/about/contact", defaultLastMod));
         seoContentService.projectIndexPaths().forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
+        seoContentService.intentIndexPaths().forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
         seoContentService.indexableMaterialIds().forEach(materialId -> urls.add(
                 new SitemapEntry(
                         "/dumpster/weight/" + materialId,

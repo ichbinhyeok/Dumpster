@@ -13,11 +13,11 @@
     <meta property="og:description" content="${model.seoDescription()}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="${model.canonicalUrl()}">
-    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/og-image.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="${model.ogImageUrl()}">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${model.seoTitle()}">
     <meta name="twitter:description" content="${model.seoDescription()}">
-    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}/og-image.png">
+    <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -70,7 +70,16 @@
           "@context": "https://schema.org",
           "@type": "WebSite",
           "name": "Dumpster Decision OS",
-          "url": "${model.canonicalUrl().replace("/dumpster/size-weight-calculator", "")}"
+          "url": "${model.siteBaseUrl()}"
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Dumpster Decision OS",
+          "url": "${model.siteBaseUrl()}",
+          "logo": "${model.siteBaseUrl()}/favicon.png"
         }
     </script>
     <script type="application/ld+json">
@@ -219,6 +228,7 @@
                         <h2>Quantity</h2>
                         <p>Large stepper for fast scenario testing.</p>
                     </div>
+                    <label for="quantity" class="field-label">Quantity amount</label>
                     <div class="quantity-stepper">
                         <button type="button" class="stepper-button" id="quantity-dec" aria-label="Decrease quantity">-</button>
                         <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>

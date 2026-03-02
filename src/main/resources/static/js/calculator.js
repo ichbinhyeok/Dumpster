@@ -183,7 +183,7 @@
             }
 
             if (trigger === "submit") {
-                trackEvent("calc_completed", data.estimateId, {
+                trackEvent("calc_completed_client", data.estimateId, {
                     projectId: payload.projectId,
                     persona: payload.persona
                 });

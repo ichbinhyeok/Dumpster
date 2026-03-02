@@ -4,6 +4,8 @@ public record TrustPageViewModel(
         String pageTitle,
         String seoTitle,
         String seoDescription,
-        String canonicalUrl
+        String siteBaseUrl,
+        String canonicalUrl,
+        String ogImageUrl
 ) {
 }

@@ -74,4 +74,14 @@ class SeoPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Max haul")));
     }
+
+    @Test
+    void intentPageRendersDirectAnswerAndComparisonTable() throws Exception {
+        mockMvc.perform(get("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Size-by-size load comparison")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"BreadcrumbList\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Related intent guides")));
+    }
 }

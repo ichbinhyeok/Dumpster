@@ -36,7 +36,9 @@ public class CalculatorPageController {
                 "Dumpster Size & Weight Calculator | Overage Risk + Haul Limit Checks",
                 "Estimate dumpster size and weight range with live overage risk and haul feasibility signals."
                         + " Compare safe vs budget decisions before booking.",
+                baseUrl,
                 baseUrl + "/dumpster/size-weight-calculator",
+                seoContentService.ogImageUrl(baseUrl),
                 seoContentService.featuredMaterialLinks(6),
                 seoContentService.featuredProjectLinks(6)
         ));

@@ -13,11 +13,11 @@
     <meta property="og:description" content="Understand included tons vs haul limits, fill-ratio caps, and clean-load constraints before booking.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
-    <meta property="og:image" content="${model.canonicalUrl().replace("/dumpster/heavy-debris-rules", "")}/og-image.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="${model.ogImageUrl()}">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Heavy Debris Dumpster Rules">
     <meta name="twitter:description" content="Avoid overweight and rejected hauls by comparing heavy-debris limits per dumpster size.">
-    <meta name="twitter:image" content="${model.canonicalUrl().replace("/dumpster/heavy-debris-rules", "")}/og-image.png">
+    <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -51,7 +51,7 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.canonicalUrl().replace("/dumpster/heavy-debris-rules", "/dumpster/size-weight-calculator")}"},
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorUrl()}"},
             {"@type": "ListItem", "position": 2, "name": "Heavy Debris Rules", "item": "${model.canonicalUrl()}"}
           ]
         }
