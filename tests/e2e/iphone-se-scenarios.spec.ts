@@ -11,6 +11,7 @@ test.use({
 
 test.describe("iPhone SE scenario coverage", () => {
   test("homeowner journey keeps result and lead capture actionable on 320px", async ({ page }) => {
+    const events = await captureEvents(page);
     await page.goto("/dumpster/size-weight-calculator");
 
     await selectChip(page, "project-id", "yard_cleanup");
@@ -33,7 +34,11 @@ test.describe("iPhone SE scenario coverage", () => {
     await page.selectOption("#lead-contact-method", "email");
     await page.locator("#lead-contact-value").fill("owner@example.com");
     await expect(page.locator("#lead-contact-value")).toHaveValue("owner@example.com");
-    await expect(page.locator("#lead-status")).toHaveText("");
+    await page.locator("#lead-submit").click();
+    await expect(page.locator("#lead-status")).toContainText("Lead submitted");
+    await expect
+      .poll(() => events.some((event) => event.eventName === "lead_submitted"), { timeout: 10_000 })
+      .toBeTruthy();
   });
 
   test("contractor urgent journey promotes call-first action on iPhone SE", async ({ page }) => {

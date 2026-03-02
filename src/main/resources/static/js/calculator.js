@@ -70,6 +70,13 @@
     let liveDebounceId = null;
     let activeRequestController = null;
     let requestSequence = 0;
+    const leadFormState = {
+        zip: "",
+        contactMethod: "",
+        contactValue: "",
+        step: 1,
+        statusText: ""
+    };
 
     applyPresetFromQuery();
     initializeChoiceGroups();
@@ -306,6 +313,12 @@
         const secondaryCtas = ["dumpster_call", "dumpster_form", "junk_call"]
             .filter((key) => key !== primaryCtaKey)
             .map((key) => ctaConfig(key));
+        const preferredContactMethod = inputPayload.needTiming === "48h" ? "phone" : "email";
+        if (!leadFormState.contactMethod) {
+            leadFormState.contactMethod = preferredContactMethod;
+        }
+        const activeContactMethod = leadFormState.contactMethod || preferredContactMethod;
+        const isEmailContact = activeContactMethod === "email";
 
         const impactLine = inputImpactSummary.length > 0
             ? inputImpactSummary[0]
@@ -407,22 +420,22 @@
         resultActions.innerHTML = `
             <section class="lead-capture">
                 <h3>Request local quotes</h3>
-                <div class="lead-step" id="lead-step-1">
+                <div class="lead-step" id="lead-step-1" ${leadFormState.step === 2 ? "hidden" : ""}>
                     <label for="lead-zip">ZIP code</label>
-                    <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339">
+                    <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339" value="${escapeHtml(leadFormState.zip)}">
                     <button type="button" id="lead-next">Next</button>
                 </div>
-                <div class="lead-step" id="lead-step-2" hidden>
+                <div class="lead-step" id="lead-step-2" ${leadFormState.step === 2 ? "" : "hidden"}>
                     <label for="lead-contact-method">Contact preference</label>
                     <select id="lead-contact-method">
-                        <option value="phone">Phone</option>
-                        <option value="email">Email</option>
+                        <option value="phone" ${activeContactMethod === "phone" ? "selected" : ""}>Phone</option>
+                        <option value="email" ${activeContactMethod === "email" ? "selected" : ""}>Email</option>
                     </select>
-                    <label for="lead-contact-value" id="lead-contact-label">Phone number</label>
-                    <input id="lead-contact-value" type="tel" placeholder="(555) 555-5555">
+                    <label for="lead-contact-value" id="lead-contact-label">${isEmailContact ? "Email" : "Phone number"}</label>
+                    <input id="lead-contact-value" type="${isEmailContact ? "email" : "tel"}" placeholder="${isEmailContact ? "name@company.com" : "(555) 555-5555"}" value="${escapeHtml(leadFormState.contactValue)}">
                     <button type="button" id="lead-submit">Submit lead</button>
                 </div>
-                <p class="lead-hint" id="lead-status" aria-live="polite"></p>
+                <p class="lead-hint" id="lead-status" aria-live="polite">${escapeHtml(leadFormState.statusText)}</p>
             </section>
             <a class="ui-button ui-button--primary result-primary-cta" id="${primaryCta.id}" href="${primaryCta.href}">${primaryCta.label}</a>
             <div class="result-secondary-links">
@@ -459,7 +472,7 @@
             if (!leadZip || !leadContactMethod || !leadContactValue) {
                 return;
             }
-            const zip = sanitizeZip(leadZip.value);
+            const zip = sanitizeZip(leadZip.value || leadFormState.zip);
             const contact = (leadContactValue.value || "").trim();
             if (!isValidZip(zip) || contact === "") {
                 return;
@@ -474,11 +487,33 @@
             });
         };
 
+        if (leadZip) {
+            if (leadFormState.zip && !leadZip.value) {
+                leadZip.value = leadFormState.zip;
+            }
+            leadZip.addEventListener("input", () => {
+                leadFormState.zip = sanitizeZip(leadZip.value);
+            });
+        }
+
         if (leadContactMethod) {
-            leadContactMethod.value = prefersPhone ? "phone" : "email";
+            if (!leadContactMethod.value) {
+                leadContactMethod.value = leadFormState.contactMethod || (prefersPhone ? "phone" : "email");
+            }
+            leadFormState.contactMethod = leadContactMethod.value;
             updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
             leadContactMethod.addEventListener("change", () => {
+                leadFormState.contactMethod = leadContactMethod.value;
                 updateLeadContactField(leadContactMethod, leadContactValue, leadContactLabel);
+            });
+        }
+
+        if (leadContactValue) {
+            if (leadFormState.contactValue && !leadContactValue.value) {
+                leadContactValue.value = leadFormState.contactValue;
+            }
+            leadContactValue.addEventListener("input", () => {
+                leadFormState.contactValue = (leadContactValue.value || "").trim();
             });
         }
 
@@ -487,9 +522,13 @@
                 const zip = sanitizeZip(leadZip.value);
                 if (!isValidZip(zip)) {
                     leadStatus.textContent = "Enter a valid 5-digit ZIP.";
+                    leadFormState.statusText = leadStatus.textContent;
                     return;
                 }
                 leadStatus.textContent = "";
+                leadFormState.statusText = "";
+                leadFormState.zip = zip;
+                leadFormState.step = 2;
                 leadStep1.hidden = true;
                 leadStep2.hidden = false;
                 if (leadContactValue) {
@@ -504,14 +543,20 @@
                 const contact = (leadContactValue.value || "").trim();
                 if (!isValidZip(zip)) {
                     leadStatus.textContent = "Enter a valid 5-digit ZIP.";
+                    leadFormState.statusText = leadStatus.textContent;
                     return;
                 }
                 if (contact === "") {
                     leadStatus.textContent = "Enter your contact information.";
+                    leadFormState.statusText = leadStatus.textContent;
                     return;
                 }
+                leadFormState.zip = zip;
+                leadFormState.contactMethod = leadContactMethod.value;
+                leadFormState.contactValue = contact;
                 emitLeadSubmitted("lead_form_submit");
                 leadStatus.textContent = "Lead submitted. A quote partner can contact you next.";
+                leadFormState.statusText = leadStatus.textContent;
             });
         }
 
