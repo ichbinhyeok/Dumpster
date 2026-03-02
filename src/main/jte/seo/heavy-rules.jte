@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
@@ -74,39 +74,35 @@
     </script>
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">Operational safety</span>
-            <a class="button-link primary" href="/dumpster/size-weight-calculator">Open simulator</a>
-        </div>
-    </div>
-</header>
+@template.components.appHeader(trustLabel = "Operational safety", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")
 
-<main class="shell shell--main">
-    <section class="hero-insight">
-        <div class="hero-grid">
-            <div>
-                <p class="eyebrow">Heavy Debris</p>
+<main class="app-container app-main">
+    <section class="entry-surface">
+        <div class="entry-grid">
+            <article class="quick-answer-card">
+                <p class="eyebrow">Heavy Debris Rules</p>
                 <h1 class="font-display">Heavy Debris Rules for Dumpster Decisions</h1>
-                <p class="answer-first"><strong>Direct answer:</strong> heavy debris jobs usually need smaller bins, reduced fill ratio, and staged pulls. Included tons control pricing, but max haul tons control pickup feasibility, so both limits must be checked before loading.</p>
-                <p>Dense materials behave differently from light cleanouts. Use these rules to avoid rejected hauls and surprise overage costs.</p>
+                <p class="answer-first"><strong>Direct answer:</strong> heavy debris jobs usually need smaller bins, reduced fill ratio, and staged pulls. Included tons control pricing, but max haul tons control pickup feasibility.</p>
+                <p>Use this page as a policy explainer with direct launch paths back into the calculator.</p>
+                <div class="quick-facts">
+                    <div class="fact-chip">
+                        <strong>Rule priority</strong>
+                        <span>Feasibility before visible volume</span>
+                    </div>
+                    <div class="fact-chip">
+                        <strong>Pricing check</strong>
+                        <span>Included tons and overage still apply</span>
+                    </div>
+                    <div class="fact-chip">
+                        <strong>Execution check</strong>
+                        <span>Max haul + fill ratio can block pickup</span>
+                    </div>
+                </div>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
-            </div>
-            <aside class="hero-proof">
-                <h2 class="font-display">Quick simulator jump</h2>
+            </article>
+
+            <aside class="launch-card">
+                <h2 class="font-display">Run heavy mode preset</h2>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="material" value="concrete">
                     <input type="hidden" name="project" value="concrete_removal">
@@ -118,27 +114,42 @@
                         <option value="cubic_yard">Cubic yard</option>
                         <option value="sqft_4in">sqft @ 4in</option>
                     </select>
-                    <button type="submit">Open live estimate</button>
+                    <button type="submit">Open heavy preset</button>
                 </form>
+                <div class="policy-chip-group">
+                    <span class="scenario-chip">Clean-load checks</span>
+                    <span class="scenario-chip">Fill-ratio limits</span>
+                    <span class="scenario-chip">Staged hauls</span>
+                </div>
             </aside>
         </div>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Core heavy-debris rules</h2>
-        <div class="rule-grid">
-            @for(var rule : model.rules())
-                <article class="rule-card">
-                    <h3>Rule</h3>
-                    <p>${rule}</p>
-                </article>
-            @endfor
+    <section class="policy-summary-card">
+        <h2 class="font-display">Policy summary</h2>
+        <p>${model.includedVsMaxExplanation()}</p>
+        <div class="policy-do-dont">
+            <article>
+                <h3>Do</h3>
+                <ul>
+                    @for(var rule : model.rules())
+                        <li>${rule}</li>
+                    @endfor
+                </ul>
+            </article>
+            <article>
+                <h3>Do not</h3>
+                <ul>
+                    <li>Assume included tons guarantees pickup feasibility.</li>
+                    <li>Load dense debris to visual full height without fill-ratio confirmation.</li>
+                    <li>Skip clean-load checks when heavy material is mixed.</li>
+                </ul>
+            </article>
         </div>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Included tons vs max haul tons</h2>
-        <p>${model.includedVsMaxExplanation()}</p>
+    <section class="table-card">
+        <h2 class="font-display">Included tons vs Max haul</h2>
         <div class="table-scroll">
             <table class="data-table" aria-label="Heavy debris haul limits by dumpster size">
                 <caption>Heavy debris pickup constraints by dumpster size</caption>
@@ -168,47 +179,31 @@
         </div>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Frequently asked questions</h2>
-        <div class="faq-list">
+    <section class="table-card">
+        <h2 class="font-display">Questions to ask before booking</h2>
+        <ol>
+            @for(var q : model.operatorQuestions())
+                <li>${q}</li>
+            @endfor
+        </ol>
+        <h3>FAQ</h3>
+        <div class="compact-faq">
             <details class="faq-item">
                 <summary>Why do heavy materials often require smaller dumpsters?</summary>
-                <p>Concrete, masonry, and dense soil can exceed transport limits long before a large bin looks full. Smaller bins with controlled fill and planned multi-haul are often safer because they respect haul caps and reduce pickup rejection risk.</p>
+                <p>Concrete, masonry, and dense soil can exceed transport limits long before a large bin looks full. Smaller bins with controlled fill and planned multi-haul are often safer.</p>
             </details>
             <details class="faq-item">
                 <summary>Is included tonnage the same as max haul limit?</summary>
-                <p>No. Included tons are quote pricing thresholds, while max haul tons are transport and safety constraints. If hauled weight exceeds haul limits, a load may fail pickup even when included-ton pricing appears acceptable.</p>
+                <p>No. Included tons are quote pricing thresholds, while max haul tons are transport and safety constraints.</p>
             </details>
         </div>
-    </section>
-
-    <section class="panel">
-        <article class="mistake-callout">
-            <h2>Questions to ask before booking</h2>
-            <ol>
-                @for(var q : model.operatorQuestions())
-                    <li>${q}</li>
-                @endfor
-            </ol>
-        </article>
-        <p><a href="${model.materialGuidesUrl()}">Browse material guides</a></p>
-        <p><a href="${model.projectGuidesUrl()}">Browse project guides</a></p>
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
+        <div class="inline-cta-row">
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=concrete&project=concrete_removal">Run calculator in heavy mode</a>
+            <a class="ui-button ui-button--ghost" href="${model.materialGuidesUrl()}">Browse material guides</a>
+            <a class="ui-button ui-button--ghost" href="${model.projectGuidesUrl()}">Browse project guides</a>
+        </div>
     </section>
 </main>
-
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
-    </div>
-</footer>
+@template.components.appFooter()
 </body>
 </html>

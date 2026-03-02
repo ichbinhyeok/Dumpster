@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
@@ -95,55 +95,41 @@
     </script>
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">Material intelligence</span>
-            <a class="button-link primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}">Open simulator</a>
-        </div>
-    </div>
-</header>
+@template.components.appHeader(trustLabel = "Material intelligence", primaryHref = "/dumpster/size-weight-calculator?material=" + model.materialId(), primaryLabel = "Open simulator")
 
-<main class="shell shell--main">
-    <section class="hero-insight">
-        <div class="hero-grid">
-            <div>
+<main class="app-container app-main">
+    <section class="entry-surface">
+        <div class="entry-grid">
+            <article class="quick-answer-card">
                 <p class="eyebrow">Material Guide</p>
                 <h1 class="font-display">${model.title()}</h1>
                 <p class="answer-first">${model.answerFirst()}</p>
-                <p>${model.materialName()} belongs to <strong>${model.categoryLabel()}</strong>. This page turns density data into booking-ready decisions with overage visibility by dumpster size.</p>
-                <p class="meta-note">Last updated: ${model.modifiedDateIso()} | Source snapshot: ${model.sourceDateDisplay()}</p>
-                <div class="rule-grid">
-                    <article class="rule-card">
-                        <h3>Typical density</h3>
-                        <p>${model.densityTyp()} lbs/yd3</p>
-                    </article>
-                    <article class="rule-card">
-                        <h3>Example load</h3>
-                        <p>${model.exampleVolumeYd3()} yd3 ~= ${model.exampleWeightTypTons()} tons</p>
-                    </article>
-                    <article class="rule-card">
-                        <h3>Wet load swing</h3>
-                        <p>${(int) ((model.wetMultiplierLow() - 1) * 100)}% to ${(int) ((model.wetMultiplierHigh() - 1) * 100)}%</p>
-                    </article>
+                <p>${model.materialName()} is usually a <strong>weight-first</strong> decision surface. Treat volume as secondary after tonnage limits.</p>
+                <div class="quick-facts">
+                    <div class="fact-chip">
+                        <strong>Typical density</strong>
+                        <span>${model.densityTyp()} lbs/yd3</span>
+                    </div>
+                    <div class="fact-chip">
+                        <strong>Typical load</strong>
+                        <span>${model.exampleVolumeYd3()} yd3 ~= ${model.exampleWeightTypTons()} tons</span>
+                    </div>
+                    <div class="fact-chip">
+                        <strong>Wet swing</strong>
+                        <span>${(int) ((model.wetMultiplierLow() - 1) * 100)}% to ${(int) ((model.wetMultiplierHigh() - 1) * 100)}%</span>
+                    </div>
                 </div>
-            </div>
+                <div class="scenario-chip-group">
+                    <span class="scenario-chip">Weight-limited first</span>
+                    <span class="scenario-chip">Range-based output</span>
+                    <span class="scenario-chip">Overage risk visible</span>
+                </div>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()} | Source snapshot: ${model.sourceDateDisplay()}</p>
+            </article>
 
-            <aside class="hero-proof">
-                <h2 class="font-display">Launch this scenario</h2>
-                <p>Set quantity and jump directly into the live decision board with this material preloaded.</p>
+            <aside class="launch-card">
+                <h2 class="font-display">Launch calculator with this material</h2>
+                <p>Start with a preset scenario and move into the live decision workflow.</p>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="material" value="${model.materialId()}">
                     <label for="intent-qty-material">Quantity</label>
@@ -154,103 +140,101 @@
                         <option value="pickup_load">Pickup load</option>
                         <option value="truckload_small">Small truckload</option>
                     </select>
-                    <button type="submit">Run live estimate</button>
+                    <button type="submit">Open calculator preset</button>
                 </form>
+                <div class="mistake-strip">
+                    <strong>Common mistake</strong>
+                    <p>Picking size by volume only can create heavy overage fees.</p>
+                    <p><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
+                </div>
             </aside>
         </div>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Estimated weight by dumpster size</h2>
-        <div class="table-scroll">
-            <table class="data-table" aria-label="Dumpster size weight comparison table for ${model.materialName()}">
-                <caption>Estimated load tonnage and overage risk by dumpster size for ${model.materialName()}</caption>
-                <thead>
-                <tr>
-                    <th>Dumpster</th>
-                    <th>Dimensions</th>
-                    <th>Effective yd3</th>
-                    <th>Weight low</th>
-                    <th>Weight typical</th>
-                    <th>Weight high</th>
-                    <th>Included tons</th>
-                    <th>Overage risk</th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(var row : model.sizeWeightTable())
+    <section class="module-stack">
+        <section class="table-card">
+            <h2 class="font-display">What changes the answer</h2>
+            <div class="decision-snapshot-grid">
+                <article class="decision-tile">
+                    <h3>Quick rules</h3>
+                    <ul>
+                        @for(var rule : model.quickRules())
+                            <li>${rule}</li>
+                        @endfor
+                    </ul>
+                </article>
+                <article class="decision-tile">
+                    <h3>Decision snapshot</h3>
+                    <p><strong>Scenario input:</strong> ${model.scenarioInput()}</p>
+                    <p><strong>Decision direction:</strong> ${model.scenarioDecision()}</p>
+                    <p>${model.cautionNote()}</p>
+                </article>
+                <article class="decision-tile">
+                    <h3>Feasible starting sizes</h3>
+                    <ul>
+                        @for(var row : model.sizeWeightTable())
+                            @if(row.overageRisk().equals("Low") || row.overageRisk().equals("Medium"))
+                                <li>${row.sizeYd()} yd: ${row.overageRisk()} risk (${row.weightLowTons()} to ${row.weightHighTons()} tons)</li>
+                            @endif
+                        @endfor
+                    </ul>
+                </article>
+            </div>
+            <div class="inline-cta-row">
+                <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}">Run calculator with this material</a>
+                <a class="ui-button ui-button--ghost" href="${model.materialGuidesUrl()}">Browse all material guides</a>
+            </div>
+        </section>
+
+        <section class="table-card">
+            <h2 class="font-display">Estimated weight by dumpster size</h2>
+            <div class="table-scroll">
+                <table class="data-table" aria-label="Dumpster size weight comparison table for ${model.materialName()}">
+                    <caption>Estimated load tonnage and overage risk by dumpster size for ${model.materialName()}</caption>
+                    <thead>
                     <tr>
-                        <td>${row.sizeYd()} yd</td>
-                        <td>${row.dimensions()}</td>
-                        <td>${row.effectiveVolumeYd3()}</td>
-                        <td>${row.weightLowTons()} tons</td>
-                        <td>${row.weightTypTons()} tons</td>
-                        <td>${row.weightHighTons()} tons</td>
-                        <td>${row.includedTonsTyp()} tons</td>
-                        <td>${row.overageRisk()}</td>
+                        <th>Dumpster</th>
+                        <th>Dimensions</th>
+                        <th>Effective yd3</th>
+                        <th>Weight low</th>
+                        <th>Weight typical</th>
+                        <th>Weight high</th>
+                        <th>Included tons</th>
+                        <th>Overage risk</th>
                     </tr>
-                @endfor
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="panel">
-        <h2 class="font-display">Decision highlights</h2>
-        <div class="rule-grid">
-            <article class="rule-card">
-                <h3>How much does ${model.materialName()} weigh?</h3>
-                <p><strong>Direct answer:</strong> ${model.materialName()} is typically ${model.densityTyp()} lbs/yd3. A ${model.exampleVolumeYd3()} yd3 load is usually ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons.</p>
-            </article>
-            <article class="rule-card">
-                <h3>Best starting sizes</h3>
-                <ul>
+                    </thead>
+                    <tbody>
                     @for(var row : model.sizeWeightTable())
-                        @if(row.overageRisk().equals("Low") || row.overageRisk().equals("Medium"))
-                            <li>${row.sizeYd()} yd: ${row.overageRisk()} risk (${row.weightLowTons()} to ${row.weightHighTons()} tons)</li>
-                        @endif
+                        <tr>
+                            <td>${row.sizeYd()} yd</td>
+                            <td>${row.dimensions()}</td>
+                            <td>${row.effectiveVolumeYd3()}</td>
+                            <td>${row.weightLowTons()} tons</td>
+                            <td>${row.weightTypTons()} tons</td>
+                            <td>${row.weightHighTons()} tons</td>
+                            <td>${row.includedTonsTyp()} tons</td>
+                            <td>${row.overageRisk()}</td>
+                        </tr>
                     @endfor
-                </ul>
-            </article>
-            <article class="rule-card">
-                <h3>10 vs 20 vs 30 yard quick read</h3>
-                @for(var row : model.sizeWeightTable())
-                    @if(row.sizeYd() == 10 || row.sizeYd() == 20 || row.sizeYd() == 30)
-                        <p><strong>${row.sizeYd()} yd:</strong> ${row.overageRisk()} risk (typ ${row.weightTypTons()} tons vs ${row.includedTonsTyp()} included).</p>
-                    @endif
-                @endfor
-            </article>
-        </div>
+                    </tbody>
+                </table>
+            </div>
+            <p>Source: ${model.source()} (updated ${model.sourceDateDisplay()})</p>
+        </section>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Quick rules and risk context</h2>
-        <div class="rule-grid">
-            <article class="rule-card">
-                <h3>Quick rules</h3>
-                <ul>
-                    @for(var rule : model.quickRules())
-                        <li>${rule}</li>
-                    @endfor
-                </ul>
-            </article>
-            <article class="rule-card">
-                <h3>Scenario notes</h3>
-                <p>${model.scenarioInput()}</p>
-                <p>${model.scenarioDecision()}</p>
-                <p>${model.cautionNote()}</p>
-                <p>Source: ${model.source()} (updated ${model.sourceDateDisplay()})</p>
-            </article>
-            <article class="mistake-callout">
-                <h3>Mistake to avoid</h3>
-                <p>Picking size by volume only can create heavy overage fees.</p>
-                <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
-            </article>
-        </div>
-    </section>
-
-    <section class="panel">
+    <section class="table-card">
         <h2 class="font-display">Related guides and FAQ</h2>
+        <h3>FAQ</h3>
+        <div class="compact-faq">
+            @for(var faq : model.faqItems())
+                <details class="faq-item">
+                    <summary>${faq.question()}</summary>
+                    <p>${faq.answer()}</p>
+                </details>
+            @endfor
+        </div>
+
         <h3>Related project guides</h3>
         <ul class="link-grid">
             @for(var link : model.relatedProjectLinks())
@@ -262,15 +246,22 @@
         </ul>
 
         @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
-            <h3>Long-tail intent guides</h3>
-            <ul class="link-grid">
-                @for(var link : model.intentClusterLinks())
-                    <li>
-                        <a href="${link.href()}">${link.label()}</a>
-                        <span>${link.summary()}</span>
-                    </li>
-                @endfor
-            </ul>
+            <details class="ui-accordion">
+                <summary>
+                    <span>Long-tail intent guides</span>
+                    <small>Expanded only when needed</small>
+                </summary>
+                <div class="ui-accordion__body">
+                    <ul class="link-grid">
+                        @for(var link : model.intentClusterLinks())
+                            <li>
+                                <a href="${link.href()}">${link.label()}</a>
+                                <span>${link.summary()}</span>
+                            </li>
+                        @endfor
+                    </ul>
+                </div>
+            </details>
         @endif
 
         <h3>Related material guides</h3>
@@ -282,34 +273,8 @@
                 </li>
             @endfor
         </ul>
-
-        <h3>FAQ</h3>
-        <div class="faq-list">
-            @for(var faq : model.faqItems())
-                <details class="faq-item">
-                    <summary>${faq.question()}</summary>
-                    <p>${faq.answer()}</p>
-                </details>
-            @endfor
-        </div>
-
-        <p><a href="${model.materialGuidesUrl()}">Browse all material guides</a></p>
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}">Run calculator with this material</a></p>
     </section>
 </main>
-
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
-    </div>
-</footer>
+@template.components.appFooter()
 </body>
 </html>

@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
@@ -95,54 +95,36 @@
     </script>
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">Project preset</span>
-            <a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open simulator</a>
-        </div>
-    </div>
-</header>
+@template.components.appHeader(trustLabel = "Project preset", primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.defaultMaterialId(), primaryLabel = "Open simulator")
 
-<main class="shell shell--main">
-    <section class="hero-insight">
-        <div class="hero-grid">
-            <div>
+<main class="app-container app-main">
+    <section class="entry-surface">
+        <div class="entry-grid">
+            <article class="quick-answer-card">
                 <p class="eyebrow">Project Guide</p>
                 <h1 class="font-display">${model.title()}</h1>
                 <p class="answer-first">${model.answerFirst()}</p>
-                <p>Use this page as the default strategy for scope, unit, and vendor checks before final booking.</p>
-                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
-                <div class="rule-grid">
-                    <article class="rule-card">
-                        <h3>Recommended unit</h3>
-                        <p>${model.recommendedUnit()}</p>
-                    </article>
-                    <article class="rule-card">
-                        <h3>Default material</h3>
-                        <p>${model.defaultMaterialName()}</p>
-                    </article>
-                    <article class="rule-card">
-                        <h3>Primary strategy</h3>
-                        <p>${model.recommendedStrategy()}</p>
-                    </article>
+                <p>Use this page as a workflow template: start with project preset, then validate risk and feasibility before booking.</p>
+                <div class="quick-facts">
+                    <div class="fact-chip">
+                        <strong>Recommended unit</strong>
+                        <span>${model.recommendedUnit()}</span>
+                    </div>
+                    <div class="fact-chip">
+                        <strong>Default material</strong>
+                        <span>${model.defaultMaterialName()}</span>
+                    </div>
+                    <div class="fact-chip">
+                        <strong>Primary strategy</strong>
+                        <span>${model.recommendedStrategy()}</span>
+                    </div>
                 </div>
-            </div>
-            <aside class="hero-proof">
-                <h2 class="font-display">Fast preset launcher</h2>
-                <p>Jump into the simulator with project + material preselected.</p>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
+            </article>
+
+            <aside class="launch-card">
+                <h2 class="font-display">Launch project preset</h2>
+                <p>Open calculator with project + default material preloaded.</p>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="project" value="${model.projectId()}">
                     <input type="hidden" name="material" value="${model.defaultMaterialId()}">
@@ -156,46 +138,57 @@
                         <option value="investor">Flipper / investor</option>
                         <option value="business">Facility / business</option>
                     </select>
-                    <button type="submit">Launch live simulator</button>
+                    <button type="submit">Start with preset</button>
                 </form>
+                <div class="mistake-strip">
+                    <strong>Mistake prevention</strong>
+                    <p>${model.commonMistake()}</p>
+                    <p><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
+                </div>
             </aside>
         </div>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Decision summary for ${model.title()}</h2>
-        <div class="rule-grid">
-            <article class="rule-card">
-                <h3>Recommended strategy</h3>
-                <p><strong>Direct answer:</strong> ${model.recommendedStrategy()}</p>
+    <section class="table-card">
+        <h2 class="font-display">Decision snapshot</h2>
+        <div class="decision-snapshot-grid">
+            <article class="decision-tile">
+                <h3>Quick rules</h3>
+                <ul>
+                    @for(var rule : model.quickRules())
+                        <li>${rule}</li>
+                    @endfor
+                </ul>
+            </article>
+            <article class="decision-tile">
+                <h3>Typical planning baseline</h3>
+                <p>${model.sampleInput()}</p>
                 <p>${model.sampleDecision()}</p>
             </article>
-            <article class="rule-card">
-                <h3>Typical load planning</h3>
-                <p>${model.sampleInput()}</p>
-                <p>Use this as baseline, then confirm included tons and haul limits with vendor.</p>
+            <article class="decision-tile">
+                <h3>When recommendation flips</h3>
+                <p>Material mix, moisture, and included-ton constraints are the most common reason the cheapest option stops being cheapest.</p>
+                <p><strong>Direct strategy:</strong> ${model.recommendedStrategy()}</p>
             </article>
-            <article class="mistake-callout">
-                <h3>Mistake to avoid</h3>
-                <p>${model.commonMistake()}</p>
-                <p><strong>Operator question:</strong> ${model.operatorQuestion()}</p>
-            </article>
+        </div>
+        <div class="inline-cta-row">
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open calculator preset flow</a>
+            <a class="ui-button ui-button--ghost" href="${model.projectGuidesUrl()}">Browse all project guides</a>
         </div>
     </section>
 
-    <section class="panel">
-        <h2 class="font-display">Quick rules</h2>
-        <ul>
-            @for(var rule : model.quickRules())
-                <li>${rule}</li>
-            @endfor
-        </ul>
-        <p>${model.sampleInput()}</p>
-        <p>${model.sampleDecision()}</p>
-    </section>
-
-    <section class="panel">
+    <section class="table-card">
         <h2 class="font-display">Related guides and FAQ</h2>
+        <h3>FAQ</h3>
+        <div class="compact-faq">
+            @for(var faq : model.faqItems())
+                <details class="faq-item">
+                    <summary>${faq.question()}</summary>
+                    <p>${faq.answer()}</p>
+                </details>
+            @endfor
+        </div>
+
         <h3>Related material guides</h3>
         <ul class="link-grid">
             @for(var link : model.relatedMaterialLinks())
@@ -207,15 +200,22 @@
         </ul>
 
         @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
-            <h3>Long-tail intent guides</h3>
-            <ul class="link-grid">
-                @for(var link : model.intentClusterLinks())
-                    <li>
-                        <a href="${link.href()}">${link.label()}</a>
-                        <span>${link.summary()}</span>
-                    </li>
-                @endfor
-            </ul>
+            <details class="ui-accordion">
+                <summary>
+                    <span>Long-tail intent guides</span>
+                    <small>Expanded only when needed</small>
+                </summary>
+                <div class="ui-accordion__body">
+                    <ul class="link-grid">
+                        @for(var link : model.intentClusterLinks())
+                            <li>
+                                <a href="${link.href()}">${link.label()}</a>
+                                <span>${link.summary()}</span>
+                            </li>
+                        @endfor
+                    </ul>
+                </div>
+            </details>
         @endif
 
         <h3>Related project guides</h3>
@@ -227,34 +227,8 @@
                 </li>
             @endfor
         </ul>
-
-        <h3>FAQ</h3>
-        <div class="faq-list">
-            @for(var faq : model.faqItems())
-                <details class="faq-item">
-                    <summary>${faq.question()}</summary>
-                    <p>${faq.answer()}</p>
-                </details>
-            @endfor
-        </div>
-
-        <p><a href="${model.projectGuidesUrl()}">Browse all project guides</a></p>
-        <p><a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open calculator preset flow</a></p>
     </section>
 </main>
-
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
-    </div>
-</footer>
+@template.components.appFooter()
 </body>
 </html>

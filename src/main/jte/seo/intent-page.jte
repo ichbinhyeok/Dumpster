@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
@@ -71,39 +71,25 @@
     </script>
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">${model.intentLabel()}</span>
-            <a class="button-link primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.materialId()}">Open simulator</a>
-        </div>
-    </div>
-</header>
+@template.components.appHeader(trustLabel = model.intentLabel(), primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.materialId(), primaryLabel = "Open simulator")
 
-<main class="shell shell--main">
-    <section class="hero-insight">
-        <div class="hero-grid">
-            <div>
+<main class="app-container app-main">
+    <section class="entry-surface">
+        <div class="entry-grid">
+            <article class="quick-answer-card">
                 <p class="eyebrow">Intent Guide</p>
                 <h1 class="font-display">${model.pageTitle()}</h1>
                 <p class="answer-first"><strong>Direct answer:</strong> ${model.directAnswer()}</p>
                 <p>${model.intentSummary()}</p>
                 <p>${model.evidenceNote()}</p>
+                <div class="scenario-chip-group">
+                    <span class="scenario-chip">${model.projectTitle()}</span>
+                    <span class="scenario-chip">${model.materialName()}</span>
+                    <span class="scenario-chip">${model.intentLabel()}</span>
+                </div>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
-            </div>
-            <aside class="hero-proof">
+            </article>
+            <aside class="launch-card">
                 <h2 class="font-display">Scenario launcher</h2>
                 <form class="intent-widget" action="/dumpster/size-weight-calculator" method="get">
                     <input type="hidden" name="project" value="${model.projectId()}">
@@ -122,7 +108,7 @@
         </div>
     </section>
 
-    <section class="panel">
+    <section class="table-card">
         <h2 class="font-display">Size-by-size load comparison</h2>
         <div class="table-scroll">
             <table class="data-table" aria-label="Intent-specific dumpster load comparison table">
@@ -155,11 +141,11 @@
         </div>
     </section>
 
-    <section class="panel">
+    <section class="table-card">
         <h2 class="font-display">Decision checklist</h2>
-        <div class="rule-grid">
+        <div class="decision-snapshot-grid">
             @for(var item : model.decisionChecklist())
-                <article class="rule-card">
+                <article class="decision-tile">
                     <h3>Checklist item</h3>
                     <p>${item}</p>
                 </article>
@@ -167,9 +153,9 @@
         </div>
     </section>
 
-    <section class="panel">
+    <section class="table-card">
         <h2 class="font-display">Frequently asked questions</h2>
-        <div class="faq-list">
+        <div class="compact-faq">
             @for(var faq : model.faqItems())
                 <details class="faq-item">
                     <summary>${faq.question()}</summary>
@@ -222,19 +208,6 @@
         </section>
     @endif
 </main>
-
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
-    </div>
-</footer>
+@template.components.appFooter()
 </body>
 </html>
