@@ -37,7 +37,7 @@ test.describe("Negative and validation coverage", () => {
     await page.getByRole("button", { name: "Calculate" }).click();
 
     await expect(page.locator("#submit-button")).toHaveText("Calculating...");
-    await expect(page.locator("#live-note")).toContainText("Refreshing recommendation");
+    await expect(page.locator("#live-note")).toContainText("Calculating:");
     await waitForLiveEstimate(page);
     await expect(page.locator("#submit-button")).toHaveText("Calculate");
     await page.unroute("**/api/estimates");
