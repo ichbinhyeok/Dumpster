@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
@@ -108,27 +108,29 @@
     @if(model.comparisonTable() != null)
         <section class="panel">
             <h2>Material density comparison chart</h2>
-            <table class="data-table" aria-label="Material density and example weight comparison">
-                <caption>Typical density and example weight by material category</caption>
-                <thead>
-                <tr>
-                    <th>Material</th>
-                    <th>Category</th>
-                    <th>Typical density</th>
-                    <th>Example weight</th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(var row : model.comparisonTable())
+            <div class="table-scroll">
+                <table class="data-table" aria-label="Material density and example weight comparison">
+                    <caption>Typical density and example weight by material category</caption>
+                    <thead>
                     <tr>
-                        <td><a href="${row.materialHref()}">${row.materialName()}</a></td>
-                        <td>${row.category()}</td>
-                        <td>${(int) row.densityTyp()} lbs/yd3</td>
-                        <td>${row.exampleWeightTons()} tons</td>
+                        <th>Material</th>
+                        <th>Category</th>
+                        <th>Typical density</th>
+                        <th>Example weight</th>
                     </tr>
-                @endfor
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    @for(var row : model.comparisonTable())
+                        <tr>
+                            <td><a href="${row.materialHref()}">${row.materialName()}</a></td>
+                            <td>${row.category()}</td>
+                            <td>${(int) row.densityTyp()} lbs/yd3</td>
+                            <td>${row.exampleWeightTons()} tons</td>
+                        </tr>
+                    @endfor
+                    </tbody>
+                </table>
+            </div>
         </section>
     @endif
 
@@ -180,3 +182,5 @@
 </footer>
 </body>
 </html>
+
+

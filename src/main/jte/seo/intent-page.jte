@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
@@ -121,33 +121,35 @@
 
     <section class="panel">
         <h2>Size-by-size load comparison</h2>
-        <table class="data-table" aria-label="Intent-specific dumpster load comparison table">
-            <caption>Size-by-size load and overage comparison for this project and material scenario</caption>
-            <thead>
-            <tr>
-                <th>Dumpster</th>
-                <th>Effective yd3</th>
-                <th>Weight low</th>
-                <th>Weight typical</th>
-                <th>Weight high</th>
-                <th>Included tons</th>
-                <th>Overage risk</th>
-            </tr>
-            </thead>
-            <tbody>
-            @for(var row : model.sizeWeightTable())
+        <div class="table-scroll">
+            <table class="data-table" aria-label="Intent-specific dumpster load comparison table">
+                <caption>Size-by-size load and overage comparison for this project and material scenario</caption>
+                <thead>
                 <tr>
-                    <td>${row.sizeYd()} yd</td>
-                    <td>${row.effectiveVolumeYd3()}</td>
-                    <td>${row.weightLowTons()} tons</td>
-                    <td>${row.weightTypTons()} tons</td>
-                    <td>${row.weightHighTons()} tons</td>
-                    <td>${row.includedTonsTyp()} tons</td>
-                    <td>${row.overageRisk()}</td>
+                    <th>Dumpster</th>
+                    <th>Effective yd3</th>
+                    <th>Weight low</th>
+                    <th>Weight typical</th>
+                    <th>Weight high</th>
+                    <th>Included tons</th>
+                    <th>Overage risk</th>
                 </tr>
-            @endfor
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @for(var row : model.sizeWeightTable())
+                    <tr>
+                        <td>${row.sizeYd()} yd</td>
+                        <td>${row.effectiveVolumeYd3()}</td>
+                        <td>${row.weightLowTons()} tons</td>
+                        <td>${row.weightTypTons()} tons</td>
+                        <td>${row.weightHighTons()} tons</td>
+                        <td>${row.includedTonsTyp()} tons</td>
+                        <td>${row.overageRisk()}</td>
+                    </tr>
+                @endfor
+                </tbody>
+            </table>
+        </div>
     </section>
 
     <section class="panel">
@@ -220,3 +222,5 @@
 </footer>
 </body>
 </html>
+
+

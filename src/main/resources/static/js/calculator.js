@@ -30,6 +30,10 @@
     const gaugeWeightLabel = document.getElementById("gauge-weight-label");
     const gaugeVolumeLabel = document.getElementById("gauge-volume-label");
     const gaugeRiskLabel = document.getElementById("gauge-risk-label");
+    const heroKpiPlan = document.getElementById("hero-kpi-plan");
+    const heroKpiRisk = document.getElementById("hero-kpi-risk");
+    const heroKpiFeasibility = document.getElementById("hero-kpi-feasibility");
+    const heroKpiCost = document.getElementById("hero-kpi-cost");
     const projectInput = document.getElementById("project-id");
     const personaInput = document.getElementById("persona");
     const materialInput = document.getElementById("material-id");
@@ -457,6 +461,22 @@
             const lead = topRecommendation ? `${topRecommendation.label} ${topRecommendation.sizeYd}yd` : "No recommendation";
             liveStatus.textContent = `Updated: ${lead} | Feasibility ${result.feasibility}`;
         }
+        if (heroKpiPlan) {
+            heroKpiPlan.textContent = topRecommendation ? `${topRecommendation.label} ${topRecommendation.sizeYd}yd` : "No recommendation";
+            heroKpiPlan.dataset.tone = "neutral";
+        }
+        if (heroKpiRisk) {
+            heroKpiRisk.textContent = result.priceRisk || "Unknown";
+            heroKpiRisk.dataset.tone = riskTone(result.priceRisk);
+        }
+        if (heroKpiFeasibility) {
+            heroKpiFeasibility.textContent = result.feasibility || "Unknown";
+            heroKpiFeasibility.dataset.tone = result.feasibility === "OK" ? "ok" : "warn";
+        }
+        if (heroKpiCost) {
+            heroKpiCost.textContent = extractCostWindow(result.costComparison);
+            heroKpiCost.dataset.tone = "neutral";
+        }
     }
 
     function setGauge(gaugeEl, labelEl, percent, labelText) {
@@ -477,12 +497,12 @@
     function setLoadingState(isLoading, trigger) {
         if (submitButton) {
             submitButton.disabled = isLoading;
-            submitButton.textContent = isLoading && trigger === "submit" ? "Calculating..." : "Calculate";
+            submitButton.textContent = isLoading && trigger === "submit" ? "Running..." : "Run decision engine";
         }
         if (liveNote) {
             liveNote.textContent = isLoading
                     ? "Live update is on. Refreshing recommendation..."
-                    : "Live update is on. Input changes refresh your recommendation automatically.";
+                    : "Live update is on. Any change refreshes the recommendation automatically.";
         }
     }
 
@@ -495,6 +515,22 @@
         }
         if (liveStatus) {
             liveStatus.textContent = "Live update failed. Check values and retry.";
+        }
+        if (heroKpiPlan) {
+            heroKpiPlan.textContent = "Unavailable";
+            heroKpiPlan.dataset.tone = "warn";
+        }
+        if (heroKpiRisk) {
+            heroKpiRisk.textContent = "Unavailable";
+            heroKpiRisk.dataset.tone = "warn";
+        }
+        if (heroKpiFeasibility) {
+            heroKpiFeasibility.textContent = "Unavailable";
+            heroKpiFeasibility.dataset.tone = "warn";
+        }
+        if (heroKpiCost) {
+            heroKpiCost.textContent = "Unavailable";
+            heroKpiCost.dataset.tone = "warn";
         }
     }
 
@@ -585,6 +621,19 @@
         return 34;
     }
 
+    function riskTone(priceRisk) {
+        if (priceRisk === "HIGH") {
+            return "danger";
+        }
+        if (priceRisk === "MEDIUM") {
+            return "warn";
+        }
+        if (priceRisk === "LOW") {
+            return "ok";
+        }
+        return "neutral";
+    }
+
     function badge(text, style) {
         return "<span class=\"badge " + style + "\">" + text + "</span>";
     }
@@ -595,6 +644,22 @@
             return "0.00";
         }
         return numeric.toFixed(2);
+    }
+
+    function extractCostWindow(costComparison) {
+        if (!Array.isArray(costComparison)) {
+            return "Unavailable";
+        }
+        const available = costComparison.find((item) => item && item.available && item.estimatedTotalCostUsd);
+        if (!available) {
+            return "Unavailable";
+        }
+        const low = Number(available.estimatedTotalCostUsd.low);
+        const high = Number(available.estimatedTotalCostUsd.high);
+        if (!Number.isFinite(low) || !Number.isFinite(high)) {
+            return "Unavailable";
+        }
+        return `$${fmt(low)} - $${fmt(high)}`;
     }
 
     function recTone(label) {

@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <script type="application/ld+json">
         {
@@ -114,32 +114,54 @@
     </div>
 </header>
 <main class="shell shell--main">
-    <section class="hero">
+    <section class="hero hero--app">
         <div class="hero-grid">
             <div>
-                <p class="eyebrow">Live Decision Cockpit</p>
+                <p class="eyebrow">Decision Intelligence Platform</p>
                 <h1>${model.pageTitle()}</h1>
-                <p><strong>Direct answer:</strong> this calculator turns your project, material, and quantity into live size and weight ranges, then flags overage and haul-limit risk before you book.</p>
+                <p><strong>Direct answer:</strong> enter project, material, and quantity once. The engine streams safer size, tonnage pressure, overage risk, and routing guidance in real time.</p>
                 <p class="meta-note">Last updated: ${model.lastUpdatedIso()}</p>
                 <div class="hero-tags">
-                    <span class="tag">Live update</span>
-                    <span class="tag">Weight + volume</span>
-                    <span class="tag">Safe vs budget</span>
-                    <span class="tag">Heavy debris guardrails</span>
+                    <span class="tag">Live engine stream</span>
+                    <span class="tag">Risk-first recommendation</span>
+                    <span class="tag">Safe vs budget strategy</span>
+                    <span class="tag">Operator-ready checklist</span>
+                </div>
+                <div class="hero-kpis">
+                    <article class="hero-kpi">
+                        <span>Primary plan</span>
+                        <strong id="hero-kpi-plan">Waiting</strong>
+                    </article>
+                    <article class="hero-kpi">
+                        <span>Price risk</span>
+                        <strong id="hero-kpi-risk">Waiting</strong>
+                    </article>
+                    <article class="hero-kpi">
+                        <span>Feasibility</span>
+                        <strong id="hero-kpi-feasibility">Waiting</strong>
+                    </article>
+                    <article class="hero-kpi">
+                        <span>Cost window</span>
+                        <strong id="hero-kpi-cost">Waiting</strong>
+                    </article>
                 </div>
             </div>
             <aside class="hero-proof">
-                <h2>Built for trust, not hype</h2>
+                <h2>Engine-first UX</h2>
                 <ul>
-                    <li>Data-backed density ranges with scenario context</li>
-                    <li>Separate signals for pricing risk and haul feasibility</li>
-                    <li>Operator checklist before you place a call</li>
+                    <li>Normalization + range modeling is surfaced as clear UI signals</li>
+                    <li>Pricing risk and haul feasibility are separated to avoid false confidence</li>
+                    <li>Actions are tied to urgency, persona, and operational constraints</li>
                 </ul>
             </aside>
         </div>
     </section>
 
     <section class="panel simulator-shell">
+        <div class="simulator-toolbar">
+            <p class="eyebrow">Scenario Builder</p>
+            <p>Configure the scenario once. The decision board updates continuously without page reload.</p>
+        </div>
         <div class="simulator-grid">
             <form id="estimate-form" class="control-form">
                 <input id="project-id" type="hidden" value="roof_tearoff">
@@ -150,8 +172,8 @@
 
                 <section class="control-group" data-choice-target="project-id">
                     <div class="control-label-row">
-                        <h2>Project</h2>
-                        <p>Choose the scenario closest to your job.</p>
+                        <h2>Project type</h2>
+                        <p>Select the closest project profile.</p>
                     </div>
                     <div class="chip-grid">
                         <button type="button" class="choice-chip is-active" data-choice-value="roof_tearoff">Roof tear-off</button>
@@ -167,24 +189,10 @@
                     </div>
                 </section>
 
-                <section class="control-group" data-choice-target="persona">
-                    <div class="control-label-row">
-                        <h2>Persona</h2>
-                        <p>Context helps prioritize recommendations and CTA routing.</p>
-                    </div>
-                    <div class="chip-grid chip-grid--compact">
-                        <button type="button" class="choice-chip is-active" data-choice-value="homeowner">Homeowner</button>
-                        <button type="button" class="choice-chip" data-choice-value="contractor">Contractor</button>
-                        <button type="button" class="choice-chip" data-choice-value="property_manager">Property manager</button>
-                        <button type="button" class="choice-chip" data-choice-value="investor">Flipper / investor</button>
-                        <button type="button" class="choice-chip" data-choice-value="business">Facility / business</button>
-                    </div>
-                </section>
-
                 <section class="control-group" data-choice-target="material-id">
                     <div class="control-label-row">
-                        <h2>Material</h2>
-                        <p>Material density drives most pricing and haul risks.</p>
+                        <h2>Material profile</h2>
+                        <p>Material density drives most risk outcomes.</p>
                     </div>
                     <div class="chip-grid">
                         <button type="button" class="choice-chip is-active" data-choice-value="asphalt_shingles">Asphalt shingles</button>
@@ -208,8 +216,8 @@
 
                 <section class="control-group" data-choice-target="unit-id">
                     <div class="control-label-row">
-                        <h2>Unit</h2>
-                        <p>Pick the measurement unit for your quantity.</p>
+                        <h2>Input unit</h2>
+                        <p>Choose the unit you can estimate most confidently.</p>
                     </div>
                     <div class="chip-grid chip-grid--compact">
                         <button type="button" class="choice-chip is-active" data-choice-value="pickup_load">Pickup load</button>
@@ -227,7 +235,7 @@
                 <section class="control-group">
                     <div class="control-label-row">
                         <h2>Quantity</h2>
-                        <p>Large stepper for fast scenario testing.</p>
+                        <p>Use the large stepper for fast scenario testing.</p>
                     </div>
                     <label for="quantity" class="field-label">Quantity amount</label>
                     <div class="quantity-stepper">
@@ -237,55 +245,74 @@
                     </div>
                 </section>
 
-                <section class="control-group">
+                <details class="control-group control-fold" data-choice-target="persona">
+                    <summary>
+                        <span>Persona context</span>
+                        <small>Optional. Helps prioritize CTA and recommendation framing.</small>
+                    </summary>
+                    <div class="fold-body">
+                        <div class="chip-grid chip-grid--compact">
+                            <button type="button" class="choice-chip is-active" data-choice-value="homeowner">Homeowner</button>
+                            <button type="button" class="choice-chip" data-choice-value="contractor">Contractor</button>
+                            <button type="button" class="choice-chip" data-choice-value="property_manager">Property manager</button>
+                            <button type="button" class="choice-chip" data-choice-value="investor">Flipper / investor</button>
+                            <button type="button" class="choice-chip" data-choice-value="business">Facility / business</button>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="control-group control-fold" data-choice-target="need-timing">
+                    <summary>
+                        <span>Need timing</span>
+                        <small>Optional urgency signal for routing strategy.</small>
+                    </summary>
+                    <div class="fold-body">
+                        <div class="chip-grid chip-grid--compact">
+                            <button type="button" class="choice-chip is-active" data-choice-value="research">Researching</button>
+                            <button type="button" class="choice-chip" data-choice-value="this_week">This week</button>
+                            <button type="button" class="choice-chip" data-choice-value="48h">48 hours</button>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="control-group control-fold advanced-group">
+                    <summary>
+                        <span>Advanced modifiers</span>
+                        <small>Optional adjustments for wet or mixed conditions.</small>
+                    </summary>
+                    <div class="fold-body advanced-grid">
+                        <label class="switch-field">
+                            <input id="wet" type="checkbox">
+                            <span class="switch-ui" aria-hidden="true"></span>
+                            <span>Wet load</span>
+                        </label>
+                        <label class="switch-field">
+                            <input id="mixed-load" type="checkbox">
+                            <span class="switch-ui" aria-hidden="true"></span>
+                            <span>Mixed load</span>
+                        </label>
+                    </div>
+                </details>
+
+                <section class="control-group control-group--inline">
                     <div class="control-label-row">
                         <h2>Allowance</h2>
-                        <p>Optional. Included tonnage in your quote.</p>
+                        <p>Optional included tonnage from your quote.</p>
                     </div>
-                    <label for="allowance-tons" class="field-label">Included tons (optional)</label>
+                    <label for="allowance-tons" class="field-label">Included tons</label>
                     <input id="allowance-tons" type="number" step="0.1" min="0" placeholder="e.g. 3.0">
                 </section>
 
-                <section class="control-group" data-choice-target="need-timing">
-                    <div class="control-label-row">
-                        <h2>Need timing</h2>
-                        <p>Urgency influences routing and CTA strategy.</p>
-                    </div>
-                    <div class="chip-grid chip-grid--compact">
-                        <button type="button" class="choice-chip is-active" data-choice-value="research">Researching</button>
-                        <button type="button" class="choice-chip" data-choice-value="this_week">This week</button>
-                        <button type="button" class="choice-chip" data-choice-value="48h">48 hours</button>
-                    </div>
-                </section>
-
-                <section class="control-group advanced-group">
-                    <details>
-                        <summary>Advanced modifiers</summary>
-                        <div class="advanced-grid">
-                            <label class="switch-field">
-                                <input id="wet" type="checkbox">
-                                <span class="switch-ui" aria-hidden="true"></span>
-                                <span>Wet load</span>
-                            </label>
-                            <label class="switch-field">
-                                <input id="mixed-load" type="checkbox">
-                                <span class="switch-ui" aria-hidden="true"></span>
-                                <span>Mixed load</span>
-                            </label>
-                        </div>
-                    </details>
-                </section>
-
                 <div class="control-actions">
-                    <button id="submit-button" type="submit">Calculate</button>
-                    <p id="live-note" aria-live="polite">Live update is on. Input changes refresh your recommendation automatically.</p>
+                    <button id="submit-button" type="submit">Run decision engine</button>
+                    <p id="live-note" aria-live="polite">Live update is on. Any change refreshes the recommendation automatically.</p>
                 </div>
             </form>
 
             <aside class="live-dashboard" id="live-dashboard">
                 <div class="dashboard-head">
-                    <p class="eyebrow">Live Dashboard</p>
-                    <h2>Risk and recommendation stream</h2>
+                    <p class="eyebrow">Decision Board</p>
+                    <h2>Live risk and feasibility stream</h2>
                     <p id="live-status">Change any input to see the estimate update.</p>
                 </div>
                 <div class="gauge-list">
@@ -308,7 +335,7 @@
 
                 <section class="result-panel" id="result-panel" hidden>
                     <div class="result-header">
-                        <h2>Result</h2>
+                        <h2>Decision output</h2>
                         <a id="share-link" href="#" rel="nofollow">Open share page</a>
                     </div>
                     <div id="result-badges" class="badges"></div>
@@ -322,36 +349,33 @@
         </div>
     </section>
 
-    <section class="panel eeat-panel">
-        <h2>How estimate quality is maintained</h2>
-        <div class="eeat-grid">
-            <article class="eeat-card">
-                <h3>Experience</h3>
-                <p>Operator-first questions are included so you can validate assumptions before booking.</p>
-            </article>
-            <article class="eeat-card">
-                <h3>Expertise</h3>
-                <p>Calculations convert your scenario into volume and weight ranges with allowance-aware risk logic.</p>
-            </article>
-            <article class="eeat-card">
-                <h3>Authority</h3>
-                <p>Reference baselines are aligned with EPA conversion data and local table cross-checks.</p>
-            </article>
-            <article class="eeat-card">
-                <h3>Trust</h3>
-                <p>Output clearly separates planning guidance from final vendor quote and contract terms.</p>
-            </article>
-        </div>
-    </section>
-
-    <section class="panel">
-        <h2>How to use this dumpster size calculator</h2>
-        <ol>
-            <li>Select project and material presets that match your job.</li>
-            <li>Enter quantity using the most reliable unit you have.</li>
-            <li>Review safe versus budget recommendations with risk and feasibility together.</li>
-            <li>Use the vendor checklist before booking to avoid overage and haul-limit surprises.</li>
-        </ol>
+    <section class="panel info-grid">
+        <article class="link-card">
+            <h2>Vendor checklist</h2>
+            <ol>
+                <li>What included tons are in this quote?</li>
+                <li>What is overage per ton above included allowance?</li>
+                <li>For heavy debris, is clean load and fill-ratio enforcement required?</li>
+                <li>If timing is urgent, what swap window is guaranteed?</li>
+            </ol>
+        </article>
+        <article class="link-card">
+            <h2>Frequently asked questions</h2>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Should I pick dumpster size by volume only?</summary>
+                    <p>No. Volume-only planning can fail when dense debris pushes tonnage beyond included allowance even if space appears available. Treat weight and volume as paired constraints, then choose a size that keeps high-side tonnage below both pricing and haul-limit thresholds.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Why can heavy debris require a smaller dumpster?</summary>
+                    <p>Large containers are not always safer for heavy materials because transport rules can cap pickup weight and fill ratio. In those cases, operators often prefer smaller containers with planned multi-haul because it lowers rejection risk and keeps loading within operational limits.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What should I ask before booking?</summary>
+                    <p>Confirm included tons, overage fee per ton, max haul limits, clean-load requirements, and swap timing. Those five checks determine whether your selected strategy can actually be executed at pickup time without avoidable extra charges.</p>
+                </details>
+            </div>
+        </article>
     </section>
 
     <section class="panel knowledge-panel">
@@ -377,33 +401,6 @@
             </article>
         </div>
     </section>
-
-    <section class="panel">
-        <h2>Vendor Checklist</h2>
-        <ol>
-            <li>What included tons are in this quote?</li>
-            <li>What is overage per ton?</li>
-            <li>For heavy debris, is clean load required?</li>
-        </ol>
-    </section>
-
-    <section class="panel">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-list">
-            <details class="faq-item">
-                <summary>Should I pick dumpster size by volume only?</summary>
-                <p>No. Volume-only planning can fail when dense debris pushes tonnage beyond included allowance even if space appears available. Treat weight and volume as paired constraints, then choose a size that keeps high-side tonnage below both pricing and haul-limit thresholds.</p>
-            </details>
-            <details class="faq-item">
-                <summary>Why can heavy debris require a smaller dumpster?</summary>
-                <p>Large containers are not always safer for heavy materials because transport rules can cap pickup weight and fill ratio. In those cases, operators often prefer smaller containers with planned multi-haul because it lowers rejection risk and keeps loading within operational limits.</p>
-            </details>
-            <details class="faq-item">
-                <summary>What should I ask before booking?</summary>
-                <p>Confirm included tons, overage fee per ton, max haul limits, clean-load requirements, and swap timing. Those five checks determine whether your selected strategy can actually be executed at pickup time without avoidable extra charges.</p>
-            </details>
-        </div>
-    </section>
 </main>
 <footer class="site-footer">
     <div class="shell shell--footer">
@@ -425,3 +422,6 @@
 <script src="/js/calculator.js"></script>
 </body>
 </html>
+
+
+
