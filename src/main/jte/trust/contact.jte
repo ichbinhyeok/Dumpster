@@ -20,7 +20,7 @@
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
     <script type="application/ld+json">
@@ -34,27 +34,8 @@
     </script>
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">Contact</span>
-            <a class="button-link primary" href="/dumpster/size-weight-calculator">Open simulator</a>
-        </div>
-    </div>
-</header>
-<main class="shell shell--main">
+@template.components.appHeader(trustLabel = "Contact", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")
+<main class="app-container app-main">
     <section class="panel">
         <p class="eyebrow">Contact</p>
         <h1>${model.pageTitle()}</h1>
@@ -81,19 +62,7 @@
         <p>For future lead or integration partnerships, include expected coverage area, service constraints, and preferred intake format.</p>
     </section>
 </main>
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
-    </div>
-</footer>
+@template.components.appFooter()
 </body>
 </html>
 

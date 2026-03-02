@@ -9,32 +9,13 @@
     <title>Shared Estimate ${model.estimateId()}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
 </head>
 <body class="neo-body neo-content">
-<header class="site-header">
-    <div class="shell shell--header">
-        <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
-            <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size + weight intelligence</small>
-            </span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
-        </nav>
-        <div class="site-header-actions">
-            <span class="trust-pill">Share mode</span>
-            <a class="button-link primary" href="/dumpster/size-weight-calculator">Run new estimate</a>
-        </div>
-    </div>
-</header>
-<main class="shell shell--main">
+@template.components.appHeader(trustLabel = "Share mode", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run new estimate")
+<main class="app-container app-main">
     <section class="panel">
         <p class="eyebrow">Shared Estimate</p>
         <h1>Estimate ${model.estimateId()}</h1>
@@ -61,19 +42,7 @@
         <a class="button-link" href="/dumpster/size-weight-calculator">Back to calculator</a>
     </section>
 </main>
-<footer class="site-footer">
-    <div class="shell shell--footer">
-        <p>Planning estimate only. Final pricing and haul constraints are confirmed by your local vendor contract.</p>
-        <div class="micro-links">
-            <span>Data sources: EPA baseline conversion references + local table checks</span>
-            <a href="/about/methodology">Methodology</a>
-            <a href="/about/editorial-policy">Editorial policy</a>
-            <a href="/about/contact">Contact</a>
-            <a href="/legal/terms.html">Terms</a>
-            <a href="/legal/privacy.html">Privacy</a>
-        </div>
-    </div>
-</footer>
+@template.components.appFooter()
 </body>
 </html>
 
