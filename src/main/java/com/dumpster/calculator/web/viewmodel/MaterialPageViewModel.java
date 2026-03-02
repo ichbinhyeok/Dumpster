@@ -21,6 +21,8 @@ public record MaterialPageViewModel(
         double exampleWeightLowTons,
         double exampleWeightTypTons,
         double exampleWeightHighTons,
+        String publishedDateIso,
+        String modifiedDateIso,
         String sourceDateDisplay,
         String source,
         String cautionNote,

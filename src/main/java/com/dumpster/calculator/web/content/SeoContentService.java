@@ -224,9 +224,10 @@ public class SeoContentService {
                     String metaDescription = material.name() + " weighs around " + (int) material.densityTyp()
                             + " lbs/yd3. A " + (int) exampleVolume + " yd3 load is "
                             + exampleRange + ". Compare dumpster-size weight ranges and overage risk.";
-                    String sourceDateDisplay = material.sourceVersionDate() == null
-                            ? "Not specified"
-                            : material.sourceVersionDate().format(SOURCE_MONTH_YEAR);
+                    LocalDate materialUpdatedDate = material.sourceVersionDate() == null
+                            ? DEFAULT_SEO_LAST_MODIFIED
+                            : material.sourceVersionDate();
+                    String sourceDateDisplay = materialUpdatedDate.format(SOURCE_MONTH_YEAR);
                     return new MaterialPageViewModel(
                             material.materialId(),
                             material.name(),
@@ -246,6 +247,8 @@ public class SeoContentService {
                             round2(lowWeight),
                             round2(typWeight),
                             round2(highWeight),
+                            materialUpdatedDate.toString(),
+                            materialUpdatedDate.toString(),
                             sourceDateDisplay,
                             material.source(),
                             cautionNote,
@@ -277,6 +280,7 @@ public class SeoContentService {
         String seoTitle = seed.title() + " | Dumpster Strategy + Live Calculator";
         String metaDescription = seed.title() + " guide with " + seed.recommendedUnit()
                 + " input defaults, " + defaultMaterialName + " baseline, and risk-aware recommendation notes.";
+        String modifiedDateIso = defaultLastModifiedDate().toString();
         return Optional.of(new ProjectPageViewModel(
                 seed.projectId(),
                 seed.title(),
@@ -294,6 +298,7 @@ public class SeoContentService {
                 canonicalPath,
                 seed.sampleInput(),
                 seed.sampleDecision(),
+                modifiedDateIso,
                 copy.answerFirst(),
                 copy.quickRules(),
                 copy.faqItems(),
@@ -358,6 +363,7 @@ public class SeoContentService {
                 + round2(materialPage.densityHigh()) + " lbs/yd3,"
                 + " size-level included tonnage, and project workflow assumptions for "
                 + projectTitle.toLowerCase(Locale.US) + ".";
+        String modifiedDateIso = materialLastModifiedDate(materialId).toString();
 
         return Optional.of(new IntentPageViewModel(
                 intentQuestion,
@@ -377,10 +383,13 @@ public class SeoContentService {
                 directAnswer,
                 intentSummary,
                 evidenceNote,
+                modifiedDateIso,
                 materialPage.sizeWeightTable(),
                 intentChecklist(intentType, materialPage, projectPage),
                 intentFaq(intentType, materialPage, projectPage, anchorRow),
-                relatedIntentLinks(projectId, materialId, intentType)
+                relatedIntentLinks(projectId, materialId, intentType),
+                relatedMaterialsForMaterial(materialOptional.get()),
+                relatedProjectsForMaterial(materialId)
         ));
     }
 

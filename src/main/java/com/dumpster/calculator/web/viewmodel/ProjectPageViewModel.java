@@ -19,6 +19,7 @@ public record ProjectPageViewModel(
         String canonicalPath,
         String sampleInput,
         String sampleDecision,
+        String modifiedDateIso,
         String answerFirst,
         List<String> quickRules,
         List<FaqItemViewModel> faqItems,

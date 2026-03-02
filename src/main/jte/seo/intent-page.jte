@@ -53,6 +53,20 @@
           ]
         }
     </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "${model.pageTitle()}",
+          "datePublished": "${model.modifiedDateIso()}",
+          "dateModified": "${model.modifiedDateIso()}",
+          "author": {
+            "@type": "Organization",
+            "name": "Dumpster Decision OS"
+          },
+          "mainEntityOfPage": "${model.canonicalUrl()}"
+        }
+    </script>
 </head>
 <body>
 <header class="site-header">
@@ -84,6 +98,7 @@
                 <p class="answer-first"><strong>Direct answer:</strong> ${model.directAnswer()}</p>
                 <p>${model.intentSummary()}</p>
                 <p>${model.evidenceNote()}</p>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </div>
             <aside class="hero-proof">
                 <h2>Scenario launcher</h2>
@@ -106,7 +121,8 @@
 
     <section class="panel">
         <h2>Size-by-size load comparison</h2>
-        <table class="data-table">
+        <table class="data-table" aria-label="Intent-specific dumpster load comparison table">
+            <caption>Size-by-size load and overage comparison for this project and material scenario</caption>
             <thead>
             <tr>
                 <th>Dumpster</th>
@@ -163,7 +179,29 @@
                     <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
                 @endfor
             </ul>
-            <p><a href="${model.materialGuidesUrl()}">Browse material guides</a> · <a href="${model.projectGuidesUrl()}">Browse project guides</a></p>
+            <p><a href="${model.materialGuidesUrl()}">Browse material guides</a> | <a href="${model.projectGuidesUrl()}">Browse project guides</a></p>
+        </section>
+    @endif
+
+    @if(model.relatedMaterialLinks() != null && !model.relatedMaterialLinks().isEmpty())
+        <section class="panel">
+            <h2>Related material guides</h2>
+            <ul>
+                @for(var link : model.relatedMaterialLinks())
+                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                @endfor
+            </ul>
+        </section>
+    @endif
+
+    @if(model.relatedProjectLinks() != null && !model.relatedProjectLinks().isEmpty())
+        <section class="panel">
+            <h2>Related project guides</h2>
+            <ul>
+                @for(var link : model.relatedProjectLinks())
+                    <li><a href="${link.href()}">${link.label()}</a> - ${link.summary()}</li>
+                @endfor
+            </ul>
         </section>
     @endif
 </main>

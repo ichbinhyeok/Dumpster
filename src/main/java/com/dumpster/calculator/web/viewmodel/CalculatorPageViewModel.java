@@ -6,6 +6,7 @@ public record CalculatorPageViewModel(
         String pageTitle,
         String seoTitle,
         String seoDescription,
+        String lastUpdatedIso,
         String siteBaseUrl,
         String canonicalUrl,
         String ogImageUrl,

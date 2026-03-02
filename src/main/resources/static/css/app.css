@@ -255,6 +255,12 @@ p {
     color: var(--muted);
 }
 
+.meta-note {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #4a6384;
+}
+
 ul,
 ol {
     margin: 0.45rem 0 0;

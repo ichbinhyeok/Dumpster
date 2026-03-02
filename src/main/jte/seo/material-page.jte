@@ -77,6 +77,20 @@
           ]
         }
     </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "${model.title()}",
+          "datePublished": "${model.publishedDateIso()}",
+          "dateModified": "${model.modifiedDateIso()}",
+          "author": {
+            "@type": "Organization",
+            "name": "Dumpster Decision OS"
+          },
+          "mainEntityOfPage": "${model.canonicalUrl()}"
+        }
+    </script>
 </head>
 <body>
 <header class="site-header">
@@ -107,6 +121,7 @@
                 <h1>${model.title()}</h1>
                 <p>Category: ${model.categoryLabel()}</p>
                 <p class="answer-first">${model.answerFirst()}</p>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
                 <p>Density range (lbs/yd3): ${model.densityLow()} / ${model.densityTyp()} / ${model.densityHigh()}</p>
                 <p>Example: ${model.exampleVolumeYd3()} yd3 is about ${model.exampleWeightLowTons()} to ${model.exampleWeightHighTons()} tons (typical ${model.exampleWeightTypTons()} tons).</p>
             </div>
@@ -157,7 +172,8 @@
 
     <section class="panel">
         <h2>Estimated weight by dumpster size</h2>
-        <table class="data-table">
+        <table class="data-table" aria-label="Dumpster size weight comparison table for ${model.materialName()}">
+            <caption>Estimated load tonnage and overage risk by dumpster size for ${model.materialName()}</caption>
             <thead>
             <tr>
                 <th>Dumpster</th>

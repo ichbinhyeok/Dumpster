@@ -37,6 +37,7 @@ public class SeoPageController {
                 seoContentService.ogImageUrl(baseUrl),
                 seoContentService.materialGuidesUrl(baseUrl),
                 seoContentService.projectGuidesUrl(baseUrl),
+                seoContentService.defaultLastModifiedDate().toString(),
                 List.of(
                         "Heavy materials often require smaller bins with multiple hauls.",
                         "Included tons and max haul tons are not the same constraint.",

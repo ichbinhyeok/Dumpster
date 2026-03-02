@@ -43,7 +43,7 @@
               "name": "Should I pick dumpster size by volume only?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "No. Dense debris can exceed weight limits even if volume fits."
+                "text": "No. Volume-only planning is the fastest way to trigger overweight surprises. Dense materials such as concrete, shingles, and soil can exceed included tonnage while the container still looks partially full. This calculator evaluates both cubic volume and low/typ/high tonnage before recommending size."
               }
             },
             {
@@ -51,7 +51,7 @@
               "name": "Why can heavy debris require a smaller dumpster?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Operational haul limits and safety rules can require small bins with multiple hauls."
+                "text": "Heavy debris is usually limited by transport constraints rather than visual capacity. Many markets enforce haul caps, heavy fill-ratio limits, or clean-load requirements that make a smaller bin with planned multi-haul safer than one large overloaded container."
               }
             },
             {
@@ -59,7 +59,7 @@
               "name": "What should I ask before booking?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Confirm included tons, overage fee per ton, and clean-load requirements for heavy materials."
+                "text": "Ask for included tons, overage fee per ton, max haul limit, clean-load separation rules, and same-day swap availability. Those details determine whether your estimate can be executed without pickup rejection, emergency swaps, or avoidable overage costs."
               }
             }
           ]
@@ -119,7 +119,8 @@
             <div>
                 <p class="eyebrow">Live Decision Cockpit</p>
                 <h1>${model.pageTitle()}</h1>
-                <p>Use visual controls to test scenarios and get a live risk-aware recommendation before booking.</p>
+                <p><strong>Direct answer:</strong> this calculator turns your project, material, and quantity into live size and weight ranges, then flags overage and haul-limit risk before you book.</p>
+                <p class="meta-note">Last updated: ${model.lastUpdatedIso()}</p>
                 <div class="hero-tags">
                     <span class="tag">Live update</span>
                     <span class="tag">Weight + volume</span>
@@ -391,15 +392,15 @@
         <div class="faq-list">
             <details class="faq-item">
                 <summary>Should I pick dumpster size by volume only?</summary>
-                <p>No. Dense debris can exceed weight limits even if volume fits.</p>
+                <p>No. Volume-only planning can fail when dense debris pushes tonnage beyond included allowance even if space appears available. Treat weight and volume as paired constraints, then choose a size that keeps high-side tonnage below both pricing and haul-limit thresholds.</p>
             </details>
             <details class="faq-item">
                 <summary>Why can heavy debris require a smaller dumpster?</summary>
-                <p>Operational haul limits and safety rules can require small bins with multiple hauls.</p>
+                <p>Large containers are not always safer for heavy materials because transport rules can cap pickup weight and fill ratio. In those cases, operators often prefer smaller containers with planned multi-haul because it lowers rejection risk and keeps loading within operational limits.</p>
             </details>
             <details class="faq-item">
                 <summary>What should I ask before booking?</summary>
-                <p>Confirm included tons, overage fee per ton, and clean-load requirements for heavy materials.</p>
+                <p>Confirm included tons, overage fee per ton, max haul limits, clean-load requirements, and swap timing. Those five checks determine whether your selected strategy can actually be executed at pickup time without avoidable extra charges.</p>
             </details>
         </div>
     </section>

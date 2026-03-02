@@ -8,6 +8,7 @@ public record HeavyRulesViewModel(
         String ogImageUrl,
         String materialGuidesUrl,
         String projectGuidesUrl,
+        String modifiedDateIso,
         List<String> rules,
         List<String> operatorQuestions,
         List<HeavyLimitRow> heavyLimits,

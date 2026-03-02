@@ -20,9 +20,12 @@ public record IntentPageViewModel(
         String directAnswer,
         String intentSummary,
         String evidenceNote,
+        String modifiedDateIso,
         List<MaterialPageViewModel.SizeWeightRow> sizeWeightTable,
         List<String> decisionChecklist,
         List<FaqItemViewModel> faqItems,
-        List<LinkItemViewModel> relatedIntentLinks
+        List<LinkItemViewModel> relatedIntentLinks,
+        List<LinkItemViewModel> relatedMaterialLinks,
+        List<LinkItemViewModel> relatedProjectLinks
 ) {
 }

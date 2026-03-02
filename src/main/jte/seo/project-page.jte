@@ -77,6 +77,20 @@
           ]
         }
     </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "${model.title()}",
+          "datePublished": "${model.modifiedDateIso()}",
+          "dateModified": "${model.modifiedDateIso()}",
+          "author": {
+            "@type": "Organization",
+            "name": "Dumpster Decision OS"
+          },
+          "mainEntityOfPage": "${model.canonicalUrl()}"
+        }
+    </script>
 </head>
 <body>
 <header class="site-header">
@@ -106,6 +120,7 @@
                 <p class="eyebrow">Project Guide</p>
                 <h1>${model.title()}</h1>
                 <p class="answer-first">${model.answerFirst()}</p>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
                 <p>Recommended quick input unit: ${model.recommendedUnit()}</p>
                 <p>Default material preset: ${model.defaultMaterialName()}</p>
                 <p>Recommended strategy: ${model.recommendedStrategy()}</p>

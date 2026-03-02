@@ -108,7 +108,8 @@
     @if(model.comparisonTable() != null)
         <section class="panel">
             <h2>Material density comparison chart</h2>
-            <table class="data-table">
+            <table class="data-table" aria-label="Material density and example weight comparison">
+                <caption>Typical density and example weight by material category</caption>
                 <thead>
                 <tr>
                     <th>Material</th>

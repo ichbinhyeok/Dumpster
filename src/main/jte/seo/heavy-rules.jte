@@ -32,7 +32,7 @@
               "name": "Why do heavy materials often require smaller dumpsters?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Dense debris can exceed haul limits quickly, so operators frequently use smaller bins and multiple hauls."
+                "text": "Heavy materials such as concrete, brick, and soil can hit transport limits before the container looks full. Operators often cap fill ratio and schedule smaller containers with multiple hauls because that approach is more reliable than one oversized load near pickup."
               }
             },
             {
@@ -40,10 +40,24 @@
               "name": "Is included tonnage the same as max haul limit?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "No. Included tons are a pricing threshold, while max haul limits are operational constraints."
+                "text": "No. Included tons are the pricing allowance in your quote, while max haul limit is the operational transport ceiling. A load can be inside quote allowance yet still be rejected if hauled weight exceeds the truck or route constraint."
               }
             }
           ]
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Heavy Debris Dumpster Rules: Included Tons vs Max Haul Limits",
+          "datePublished": "${model.modifiedDateIso()}",
+          "dateModified": "${model.modifiedDateIso()}",
+          "author": {
+            "@type": "Organization",
+            "name": "Dumpster Decision OS"
+          },
+          "mainEntityOfPage": "${model.canonicalUrl()}"
         }
     </script>
     <script type="application/ld+json">
@@ -84,7 +98,9 @@
             <div>
                 <p class="eyebrow">Heavy Debris</p>
                 <h1>Heavy Debris Rules for Dumpster Decisions</h1>
+                <p class="answer-first"><strong>Direct answer:</strong> heavy debris jobs usually need smaller bins, reduced fill ratio, and staged pulls. Included tons control pricing, but max haul tons control pickup feasibility, so both limits must be checked before loading.</p>
                 <p>Dense materials behave differently from light cleanouts. Use these rules to avoid rejected hauls and surprise overage costs.</p>
+                <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </div>
             <aside class="hero-proof">
                 <h2>Quick simulator jump</h2>
@@ -114,7 +130,8 @@
     <section class="panel">
         <h2>Included tons vs max haul tons</h2>
         <p>${model.includedVsMaxExplanation()}</p>
-        <table class="data-table">
+        <table class="data-table" aria-label="Heavy debris haul limits by dumpster size">
+            <caption>Heavy debris pickup constraints by dumpster size</caption>
             <thead>
             <tr>
                 <th>Dumpster</th>
@@ -138,6 +155,19 @@
             @endfor
             </tbody>
         </table>
+    </section>
+    <section class="panel">
+        <h2>Frequently asked questions</h2>
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary>Why do heavy materials often require smaller dumpsters?</summary>
+                <p>Concrete, masonry, and dense soil can exceed transport limits long before a large bin looks full. Smaller bins with controlled fill and planned multi-haul are often safer because they respect haul caps and reduce pickup rejection risk.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Is included tonnage the same as max haul limit?</summary>
+                <p>No. Included tons are quote pricing thresholds, while max haul tons are transport and safety constraints. If hauled weight exceeds haul limits, a load may fail pickup even when included-ton pricing appears acceptable.</p>
+            </details>
+        </div>
     </section>
     <section class="panel">
         <article class="mistake-callout">
