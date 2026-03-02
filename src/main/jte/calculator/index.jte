@@ -107,15 +107,15 @@
         <div class="calc-benefits">
             <article class="calc-benefit">
                 <strong>Decision first</strong>
-                <p>Safe fit and budget fit shown side by side.</p>
+                <p>Safe fit and budget fit, side by side.</p>
             </article>
             <article class="calc-benefit">
                 <strong>Risk visible</strong>
-                <p>Weight and allowance risk shown as ranges, not guesses.</p>
+                <p>Weight and allowance risk in ranges, not guesses.</p>
             </article>
             <article class="calc-benefit">
                 <strong>Actionable output</strong>
-                <p>Primary route, backup route, and vendor checklist in one view.</p>
+                <p>Primary route, backup route, and vendor checklist.</p>
             </article>
         </div>
     </section>
@@ -263,7 +263,7 @@
 
             <div class="calc-actions">
                 <button id="submit-button" type="submit" class="calc-submit">Calculate</button>
-                <p id="live-note" aria-live="polite">Live update is on. Any change refreshes the recommendation automatically.</p>
+                <p id="live-note" aria-live="polite">Live update is on. Any change refreshes the recommendation.</p>
             </div>
         </form>
 
@@ -271,24 +271,24 @@
             <div class="result-rail__header">
                 <p class="eyebrow">Result summary</p>
                 <h2 class="font-display">Decision board</h2>
-                <p id="live-status" class="result-status">Change any input to see the estimate update.</p>
+                <p id="live-status" class="result-status">Change any input to refresh your estimate.</p>
             </div>
 
             <div class="gauge-list">
                 <article class="gauge-card">
                     <h3>Weight pressure</h3>
                     <div class="gauge-track"><span id="gauge-weight" class="gauge-fill"></span></div>
-                    <p id="gauge-weight-label">Waiting for estimate</p>
+                    <p id="gauge-weight-label">Run estimate</p>
                 </article>
                 <article class="gauge-card">
                     <h3>Volume load</h3>
                     <div class="gauge-track"><span id="gauge-volume" class="gauge-fill"></span></div>
-                    <p id="gauge-volume-label">Waiting for estimate</p>
+                    <p id="gauge-volume-label">Run estimate</p>
                 </article>
                 <article class="gauge-card">
                     <h3>Overage risk</h3>
                     <div class="gauge-track"><span id="gauge-risk" class="gauge-fill"></span></div>
-                    <p id="gauge-risk-label">Waiting for estimate</p>
+                    <p id="gauge-risk-label">Run estimate</p>
                 </article>
             </div>
 
@@ -299,14 +299,14 @@
                 </div>
                 <div id="result-state-banner" class="result-state-banner" hidden></div>
                 <div id="result-hard-stops" class="result-hard-stops" hidden></div>
-                <p id="result-verdict" class="result-verdict">Verdict will appear here after calculation.</p>
+                <p id="result-verdict" class="result-verdict">Run calculation to get your verdict.</p>
                 <div id="result-badges" class="badges"></div>
                 <div id="result-input-impact" class="input-impact-list"></div>
                 <div id="result-summary" class="summary-grid"></div>
                 <div id="result-recommendations" class="cards"></div>
                 <div id="result-costs" class="cards"></div>
                 <details id="trust-drawer" class="trust-drawer">
-                    <summary>Assumptions and source detail</summary>
+                    <summary>Assumptions, sources, and versions</summary>
                     <div class="trust-drawer__body">
                         <div id="result-assumptions" class="notes"></div>
                     </div>
@@ -374,7 +374,7 @@
 
 <div id="mobile-result-dock" class="mobile-result-dock" hidden>
     <div class="mobile-result-dock__row">
-        <p id="mobile-result-verdict">Run calculation to see recommendation.</p>
+        <p id="mobile-result-verdict">Run calculation to get your recommendation.</p>
         <a id="mobile-primary-cta" class="ui-button ui-button--primary" href="#estimate-form">View result</a>
     </div>
 </div>

@@ -146,7 +146,7 @@
             window.clearTimeout(liveDebounceId);
         }
         if (liveNote) {
-            liveNote.textContent = "Live update is on. Refreshing recommendation...";
+            liveNote.textContent = "Live update is on. Recalculating...";
         }
         liveDebounceId = window.setTimeout(() => {
             runEstimate("live");
@@ -309,7 +309,7 @@
 
         const impactLine = inputImpactSummary.length > 0
             ? inputImpactSummary[0]
-            : "Input assumptions are stable.";
+            : "No major input risk signal.";
         const feasibilityText = translateFeasibility(result.feasibility);
         const riskText = translatePriceRisk(result.priceRisk);
 
@@ -326,7 +326,7 @@
             if (hardStops.length > 0) {
                 resultHardStops.hidden = false;
                 resultHardStops.innerHTML = `
-                    <strong>Hard stop reasons</strong>
+                    <strong>Hard stops</strong>
                     <ul>${hardStops.map((reason) => "<li>" + reason + "</li>").join("")}</ul>
                 `;
             } else {
@@ -355,7 +355,7 @@
         resultSummary.innerHTML = `
             <article class="stat">
                 <h3>Verdict</h3>
-                <p>${topRecommendation ? topRecommendation.label + " " + topRecommendation.sizeYd + "yd" : "No verdict"}</p>
+                <p>${topRecommendation ? topRecommendation.label + " " + topRecommendation.sizeYd + "yd" : "Pending"}</p>
             </article>
             <article class="stat">
                 <h3>Volume range</h3>
@@ -375,7 +375,7 @@
             <article class="result-card ${recTone(rec.label)}">
                 <h3>${rec.label}: ${rec.sizeYd}yd</h3>
                 <p>${translateRisk(rec.risk)} / ${translateFeasibility(rec.feasibility)}</p>
-                <p>${rec.multiHaul ? "Conditional fit: multi-haul recommended (" + rec.haulCount + " runs)" : "Suitable for single-haul scenarios"}</p>
+                <p>${rec.multiHaul ? "Conditional fit: plan " + rec.haulCount + " hauls." : "Good for a single-haul scenario."}</p>
                 <ul>${(Array.isArray(rec.why) ? rec.why : []).map((reason) => "<li>" + reason + "</li>").join("")}</ul>
             </article>
         `).join("");
@@ -385,7 +385,7 @@
                 <h3>${cost.title}</h3>
                 <p>${cost.summary}</p>
                 <p>${cost.available ? "$" + fmt(cost.estimatedTotalCostUsd.low) + " - $" + fmt(cost.estimatedTotalCostUsd.high) : "Unavailable"}</p>
-                <p>${cost.available ? "Suitable for comparison" : "Availability depends on market and constraints"}</p>
+                <p>${cost.available ? "Use as a quick compare line." : "Availability depends on market and constraints."}</p>
             </article>
         `).join("");
 
@@ -406,7 +406,7 @@
 
         resultActions.innerHTML = `
             <section class="lead-capture">
-                <h3>Get local quotes</h3>
+                <h3>Request local quotes</h3>
                 <div class="lead-step" id="lead-step-1">
                     <label for="lead-zip">ZIP code</label>
                     <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339">
@@ -428,7 +428,7 @@
             <div class="result-secondary-links">
                 ${secondaryCtas.map((item) => `<a class="ui-button ui-button--ghost" id="${item.id}" href="${item.href}">${item.label}</a>`).join("")}
             </div>
-            ${inputPayload.persona === "contractor" ? '<p class="lead-hint">Contractor mode: use the share link to send estimate context to your team or vendor.</p>' : ""}
+            ${inputPayload.persona === "contractor" ? '<p class="lead-hint">Contractor mode: share this estimate with your crew or vendor.</p>' : ""}
         `;
 
         if (mobilePrimaryCta) {
@@ -486,7 +486,7 @@
             leadNext.addEventListener("click", () => {
                 const zip = sanitizeZip(leadZip.value);
                 if (!isValidZip(zip)) {
-                    leadStatus.textContent = "Enter a valid 5-digit ZIP code.";
+                    leadStatus.textContent = "Enter a valid 5-digit ZIP.";
                     return;
                 }
                 leadStatus.textContent = "";
@@ -503,7 +503,7 @@
                 const zip = sanitizeZip(leadZip.value);
                 const contact = (leadContactValue.value || "").trim();
                 if (!isValidZip(zip)) {
-                    leadStatus.textContent = "Enter a valid 5-digit ZIP code.";
+                    leadStatus.textContent = "Enter a valid 5-digit ZIP.";
                     return;
                 }
                 if (contact === "") {
@@ -620,7 +620,7 @@
             liveNote.classList.toggle("is-loading", isLoading);
             liveNote.textContent = isLoading
                 ? `Calculating: ${narrative}`
-                : "Live update is on. Any change refreshes the recommendation automatically.";
+                : "Live update is on. Any change refreshes the recommendation.";
         }
         if (liveStatus && isLoading) {
             liveStatus.textContent = narrative;
@@ -644,10 +644,10 @@
             resultInputImpact.innerHTML = "";
         }
         if (resultVerdict) {
-            resultVerdict.textContent = "Could not calculate estimate. Check inputs and retry.";
+            resultVerdict.textContent = "Estimate failed. Check inputs and retry.";
         }
         if (resultSummary) {
-            resultSummary.innerHTML = '<p class="warn">Could not calculate estimate. Check inputs and retry.</p>';
+            resultSummary.innerHTML = '<p class="warn">Estimate failed. Check inputs and retry.</p>';
         }
         if (liveStatus) {
             liveStatus.textContent = "Live update failed. Check values and retry.";
@@ -655,10 +655,10 @@
         if (liveNote) {
             liveNote.classList.remove("is-loading");
             liveNote.classList.add("is-error");
-            liveNote.textContent = "Live update failed. Verify inputs and try again.";
+            liveNote.textContent = "Live update failed. Verify inputs and retry.";
         }
         if (mobileResultVerdict) {
-            mobileResultVerdict.textContent = "Live update failed. Verify inputs and try again.";
+            mobileResultVerdict.textContent = "Live update failed. Verify inputs and retry.";
         }
         if (mobileResultDock) {
             mobileResultDock.hidden = false;
@@ -780,7 +780,7 @@
             return "Lower overage risk";
         }
         if (String(risk).toUpperCase() === "MEDIUM") {
-            return "Allowance could be crossed";
+            return "Allowance may be crossed";
         }
         return "Overage likely under current assumptions";
     }
@@ -801,7 +801,7 @@
             return "Overage unlikely under current assumptions.";
         }
         if (risk === "MEDIUM") {
-            return "Allowance could be crossed depending on mix or moisture.";
+            return "Allowance may be crossed depending on mix or moisture.";
         }
         if (risk === "HIGH") {
             return "Overage likely; compare junk removal or staged multi-haul.";
