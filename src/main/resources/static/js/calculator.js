@@ -67,6 +67,19 @@
         "Comparing container options and haul feasibility"
     ];
 
+    const unitHelperText = document.getElementById("unit-helper-text");
+    const unitHints = {
+        "pickup_load": "Standard 8ft pickup truck bed, level full (~2.5 yd³).",
+        "truckload_small": "Small box truck or large trailer (~10 yd³).",
+        "roof_square": "100 sq ft of roofing area. Include layers in quantity.",
+        "sqft_4in": "Square footage of 4-inch deep concrete/dirt.",
+        "sqft_2in": "Square footage of 2-inch deep material.",
+        "sqft_1in": "Square footage of 1-inch deep material.",
+        "contractor_bag": "42-gallon heavy-duty contractor trash bag.",
+        "drywall_sheet": "Standard 4ft x 8ft drywall sheet (1/2\" to 5/8\").",
+        "cubic_yard": "3ft x 3ft x 3ft. Roughly the size of a washing machine."
+    };
+
     let liveDebounceId = null;
     let activeRequestController = null;
     let requestSequence = 0;
@@ -116,6 +129,9 @@
                     }
                     if (targetId === "persona") {
                         trackEvent("persona_selected", null, { persona: targetInput.value });
+                    }
+                    if (targetId === "unit-id" && unitHelperText) {
+                        unitHelperText.textContent = unitHints[targetInput.value] || "";
                     }
                     queueLiveEstimate();
                 });
@@ -420,6 +436,7 @@
         resultActions.innerHTML = `
             <section class="lead-capture">
                 <h3>Request local quotes</h3>
+                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">✓ Direct connect only. No spam.</p>
                 <div class="lead-step" id="lead-step-1" ${leadFormState.step === 2 ? "hidden" : ""}>
                     <label for="lead-zip">ZIP code</label>
                     <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339" value="${escapeHtml(leadFormState.zip)}">
@@ -747,6 +764,9 @@
             if (group) {
                 syncChoiceButtons(group);
             }
+        }
+        if (unitHelperText) {
+            unitHelperText.textContent = unitHints[unitInput.value] || "";
         }
     }
 

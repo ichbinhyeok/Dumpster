@@ -197,6 +197,7 @@
                     </div>
                     <div class="calc-quantity">
                         <label class="ui-field__label" for="quantity">Quantity</label>
+                        <p id="unit-helper-text" class="calc-step__hint" style="margin-top: -0.25rem; margin-bottom: 0.5rem;">Standard 8ft pickup truck bed, level full (~2.5 yd³).</p>
                         <div class="calc-quantity-stepper">
                             <button type="button" id="quantity-dec" class="calc-stepper-btn" aria-label="Decrease quantity">-</button>
                             <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
@@ -276,17 +277,17 @@
 
             <div class="gauge-list">
                 <article class="gauge-card">
-                    <h3>Weight pressure</h3>
-                    <div class="gauge-track"><span id="gauge-weight" class="gauge-fill"></span></div>
-                    <p id="gauge-weight-label">Run estimate</p>
-                </article>
-                <article class="gauge-card">
-                    <h3>Volume load</h3>
+                    <h3>Will it fit? <span class="gauge-hint" style="font-weight:400; font-size:0.875rem; color:var(--text-muted);">(Volume)</span></h3>
                     <div class="gauge-track"><span id="gauge-volume" class="gauge-fill"></span></div>
                     <p id="gauge-volume-label">Run estimate</p>
                 </article>
                 <article class="gauge-card">
-                    <h3>Overage risk</h3>
+                    <h3>Is it too heavy? <span class="gauge-hint" style="font-weight:400; font-size:0.875rem; color:var(--text-muted);">(Weight)</span></h3>
+                    <div class="gauge-track"><span id="gauge-weight" class="gauge-fill"></span></div>
+                    <p id="gauge-weight-label">Run estimate</p>
+                </article>
+                <article class="gauge-card">
+                    <h3>Overage risk <span class="gauge-hint" style="font-weight:400; font-size:0.875rem; color:var(--text-muted);">(Cost)</span></h3>
                     <div class="gauge-track"><span id="gauge-risk" class="gauge-fill"></span></div>
                     <p id="gauge-risk-label">Run estimate</p>
                 </article>
