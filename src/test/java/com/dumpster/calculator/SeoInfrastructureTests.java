@@ -3,6 +3,8 @@ package com.dumpster.calculator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dumpster.calculator.web.controller.SeoInfrastructureController;
+import java.time.Clock;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,8 +64,9 @@ class SeoInfrastructureTests {
     void sitemapUsesStableLastmodForDefaultPages() {
         ResponseEntity<String> response = seoInfrastructureController.sitemap();
         String body = response.getBody();
-        assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>2026-03-01</lastmod>");
-        assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>2026-03-01</lastmod>");
+        String today = LocalDate.now(Clock.systemUTC()).toString();
+        assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>" + today + "</lastmod>");
+        assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>" + today + "</lastmod>");
     }
 
     @Test

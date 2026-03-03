@@ -12,6 +12,7 @@ import com.dumpster.calculator.web.viewmodel.LinkItemViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
 import com.dumpster.calculator.web.viewmodel.SpecialSeoPageViewModel;
+import java.time.Clock;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -32,8 +33,8 @@ public class SeoContentService {
     private final DumpsterSizeRepository dumpsterSizeRepository;
     private final Map<String, ProjectSeed> projectSeeds = new LinkedHashMap<>();
     private final int seoMaxWave;
+    private final Clock clock;
     private static final DateTimeFormatter SOURCE_MONTH_YEAR = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US);
-    private static final LocalDate DEFAULT_SEO_LAST_MODIFIED = LocalDate.of(2026, 3, 1);
     private static final List<String> MATERIAL_PRIORITY = List.of(
             "asphalt_shingles",
             "concrete",
@@ -155,10 +156,12 @@ public class SeoContentService {
     public SeoContentService(
             MaterialFactorRepository materialFactorRepository,
             DumpsterSizeRepository dumpsterSizeRepository,
+            Clock clock,
             @Value("${app.seo.max-wave:2}") int seoMaxWave
     ) {
         this.materialFactorRepository = materialFactorRepository;
         this.dumpsterSizeRepository = dumpsterSizeRepository;
+        this.clock = clock;
         this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, 3));
         addProject(
                 "roof_tearoff",
@@ -305,10 +308,10 @@ public class SeoContentService {
                     String metaDescription = material.name() + " weighs around " + (int) material.densityTyp()
                             + " lbs/yd3. A " + (int) exampleVolume + " yd3 load is "
                             + exampleRange + ". Compare dumpster-size weight ranges and overage risk.";
-                    LocalDate materialUpdatedDate = material.sourceVersionDate() == null
-                            ? DEFAULT_SEO_LAST_MODIFIED
-                            : material.sourceVersionDate();
-                    String sourceDateDisplay = materialUpdatedDate.format(SOURCE_MONTH_YEAR);
+                    LocalDate materialUpdatedDate = defaultLastModifiedDate();
+                    LocalDate sourceVersionDate = material.sourceVersionDate();
+                    String sourceDateDisplay = (sourceVersionDate == null ? materialUpdatedDate : sourceVersionDate)
+                            .format(SOURCE_MONTH_YEAR);
                     return new MaterialPageViewModel(
                             material.materialId(),
                             material.name(),
@@ -1190,13 +1193,11 @@ public class SeoContentService {
     }
 
     public LocalDate materialLastModifiedDate(String materialId) {
-        return materialFactorRepository.findById(materialId)
-                .map(material -> material.sourceVersionDate() == null ? DEFAULT_SEO_LAST_MODIFIED : material.sourceVersionDate())
-                .orElse(DEFAULT_SEO_LAST_MODIFIED);
+        return defaultLastModifiedDate();
     }
 
     public LocalDate defaultLastModifiedDate() {
-        return DEFAULT_SEO_LAST_MODIFIED;
+        return LocalDate.now(clock);
     }
 
     private void addProject(
