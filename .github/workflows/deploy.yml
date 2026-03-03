@@ -90,6 +90,9 @@ jobs:
                       memory: "512M"
             YAML
 
+            sed -i 's/\r$//' docker-compose.yml
+            echo "[debug] generated docker-compose.yml"
+            nl -ba docker-compose.yml
             docker compose config >/dev/null
 
             docker compose pull
