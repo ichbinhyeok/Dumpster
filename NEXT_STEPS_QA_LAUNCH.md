@@ -28,7 +28,7 @@ Current state: implementation + hardening complete, automated tests green.
 
 1. Ensure `./gradlew.bat test` passes.
 2. Verify canonical/noindex/sitemap behaviors on deployed environment.
-3. Configure production `app.base-url`.
+3. Configure production `APP_BASE_URL` to `https://debrisdecision.com` (now the project default).
 4. Launch and monitor:
    - `calc_completed`
    - `feasibility_not_ok`

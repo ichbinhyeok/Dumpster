@@ -41,4 +41,5 @@
 - 2026-03-03: Applied indexing policy in code: intent/hub pages noindex, robots disallow for intent/hub routes, sitemap reduced to phase-one indexables.
 - 2026-03-03: Added canonical slug normalization (public slugs) for key material/project routes with permanent redirects from legacy ID paths.
 - 2026-03-03: Implemented dedicated phase-one special decision pages (`rule/limit/comparison/unit`) and connected sitemap wave gating via `app.seo.max-wave`.
+- 2026-03-03: Updated default canonical base domain to `https://debrisdecision.com` via `APP_BASE_URL` default.
 - 2026-03-03: Set default rollout to `app.seo.max-wave=2` for launch mode (`wave1 + wave2` indexed by default).
