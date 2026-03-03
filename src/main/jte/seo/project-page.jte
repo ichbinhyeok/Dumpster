@@ -143,7 +143,7 @@
                     <button type="submit" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"launch_card"}'>Start with preset</button>
                 </form>
                 <div class="mistake-strip" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
-                    <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">?ая╕П Mistake prevention</strong>
+                    <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">Warning: Mistake prevention</strong>
                     <p style="color: #991B1B; font-weight: 500;">${model.commonMistake()}</p>
                     <p style="color: #991B1B; font-size: 0.8rem;"><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
                 </div>
