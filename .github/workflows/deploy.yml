@@ -71,23 +71,26 @@ jobs:
             mkdir -p "$DEPLOY_DIR"
             cd "$DEPLOY_DIR"
 
-            cat > docker-compose.yml <<'EOF'
+            cat > docker-compose.yml <<'YAML'
+            version: "3.9"
             services:
               dumpster:
-                image: shinhyeok22/dumpster:latest
-                container_name: dumpster
-                restart: unless-stopped
+                image: "shinhyeok22/dumpster:latest"
+                container_name: "dumpster"
+                restart: "unless-stopped"
                 ports:
                   - "8808:8080"
-                mem_limit: 512m
+                mem_limit: "512m"
                 environment:
-                  - APP_BASE_URL=https://debrisdecision.com
-                  - APP_SEO_MAX_WAVE=2
+                  APP_BASE_URL: "https://debrisdecision.com"
+                  APP_SEO_MAX_WAVE: "2"
                 deploy:
                   resources:
                     limits:
-                      memory: 512M
-            EOF
+                      memory: "512M"
+            YAML
+
+            docker compose config >/dev/null
 
             docker compose pull
             docker compose up -d --remove-orphans
