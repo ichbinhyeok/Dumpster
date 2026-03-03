@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.seoTitle()}</title>
     <meta name="description" content="${model.metaDescription()}">
-    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="robots" content="noindex,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="${model.seoTitle()}">

@@ -16,15 +16,11 @@ class SeoContentServiceTests {
     @Test
     void materialPageIncludesAnswerFirstQuickRulesAndFaq() {
         var topMaterial = seoContentService.materialPage("asphalt_shingles", "http://localhost:8080").orElseThrow();
-        var fallbackMaterial = seoContentService.materialPage("plaster", "http://localhost:8080").orElseThrow();
 
         assertThat(topMaterial.answerFirst()).isNotBlank();
         assertThat(topMaterial.quickRules()).hasSize(3);
         assertThat(topMaterial.faqItems()).hasSize(3);
-
-        assertThat(fallbackMaterial.answerFirst()).isNotBlank();
-        assertThat(fallbackMaterial.quickRules()).hasSize(3);
-        assertThat(fallbackMaterial.faqItems()).hasSize(3);
+        assertThat(seoContentService.materialPage("plaster", "http://localhost:8080")).isEmpty();
     }
 
     @Test

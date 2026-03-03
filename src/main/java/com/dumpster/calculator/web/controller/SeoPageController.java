@@ -6,6 +6,8 @@ import com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel;
 import com.dumpster.calculator.web.viewmodel.IntentPageViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
+import com.dumpster.calculator.web.viewmodel.SpecialSeoPageViewModel;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -57,7 +59,8 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/material-guides")
-    public ModelAndView materialGuidesHub() {
+    public ModelAndView materialGuidesHub(HttpServletResponse response) {
+        response.setHeader("X-Robots-Tag", "noindex, follow");
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Material Weight Guides: Density Chart + Live Calculator",
                 seoContentService.materialGuidesUrl(baseUrl),
@@ -77,7 +80,8 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/project-guides")
-    public ModelAndView projectGuidesHub() {
+    public ModelAndView projectGuidesHub(HttpServletResponse response) {
+        response.setHeader("X-Robots-Tag", "noindex, follow");
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Project Guides: Size Strategy by Job Type",
                 seoContentService.projectGuidesUrl(baseUrl),
@@ -98,7 +102,19 @@ public class SeoPageController {
 
     @GetMapping("/dumpster/weight/{materialId}")
     public ModelAndView materialPage(@PathVariable("materialId") String materialId) {
-        MaterialPageViewModel model = seoContentService.materialPage(materialId, baseUrl)
+        String resolvedMaterialId = seoContentService.resolveMaterialId(materialId);
+        if (!seoContentService.isMaterialEnabled(resolvedMaterialId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        String requestedPath = "/dumpster/weight/" + materialId;
+        String canonicalPath = seoContentService.materialCanonicalPath(resolvedMaterialId);
+        if (!requestedPath.equals(canonicalPath)) {
+            ModelAndView redirect = new ModelAndView("redirect:" + canonicalPath);
+            redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
+            return redirect;
+        }
+
+        MaterialPageViewModel model = seoContentService.materialPage(resolvedMaterialId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/material-page");
         modelAndView.addObject("model", model);
@@ -107,7 +123,19 @@ public class SeoPageController {
 
     @GetMapping("/dumpster/size/{projectId}")
     public ModelAndView projectPage(@PathVariable("projectId") String projectId) {
-        ProjectPageViewModel model = seoContentService.projectPage(projectId, baseUrl)
+        String resolvedProjectId = seoContentService.resolveProjectId(projectId);
+        if (!seoContentService.isProjectEnabled(resolvedProjectId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        String requestedPath = "/dumpster/size/" + projectId;
+        String canonicalPath = seoContentService.projectCanonicalPath(resolvedProjectId);
+        if (!requestedPath.equals(canonicalPath)) {
+            ModelAndView redirect = new ModelAndView("redirect:" + canonicalPath);
+            redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
+            return redirect;
+        }
+
+        ProjectPageViewModel model = seoContentService.projectPage(resolvedProjectId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/project-page");
         modelAndView.addObject("model", model);
@@ -118,11 +146,27 @@ public class SeoPageController {
     public ModelAndView intentPage(
             @PathVariable("projectId") String projectId,
             @PathVariable("materialId") String materialId,
-            @PathVariable("intent") String intent
+            @PathVariable("intent") String intent,
+            HttpServletResponse response
     ) {
-        IntentPageViewModel model = seoContentService.intentPage(projectId, materialId, intent, baseUrl)
+        response.setHeader("X-Robots-Tag", "noindex, follow");
+        String resolvedProjectId = seoContentService.resolveProjectId(projectId);
+        String resolvedMaterialId = seoContentService.resolveMaterialId(materialId);
+        IntentPageViewModel model = seoContentService.intentPage(resolvedProjectId, resolvedMaterialId, intent, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/intent-page");
+        modelAndView.addObject("model", model);
+        return modelAndView;
+    }
+
+    @GetMapping({"/dumpster/{slug}", "/dumpster/{slug}/"})
+    public ModelAndView specialPage(@PathVariable("slug") String slug) {
+        if (!seoContentService.isSpecialPageEnabled(slug)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        SpecialSeoPageViewModel model = seoContentService.specialPage(slug, baseUrl)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        ModelAndView modelAndView = new ModelAndView("seo/special-page");
         modelAndView.addObject("model", model);
         return modelAndView;
     }

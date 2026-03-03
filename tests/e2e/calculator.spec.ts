@@ -43,14 +43,17 @@ test.describe("Dumpster calculator local e2e", () => {
     );
   });
 
-  test("sitemap exposes calculator and guide hubs", async ({ request }) => {
+  test("sitemap exposes phase-one calculator and decision pages", async ({ request }) => {
     const response = await request.get("/sitemap.xml");
     expect(response.ok()).toBeTruthy();
     const xml = await response.text();
     expect(xml).toContain("/dumpster/size-weight-calculator");
-    expect(xml).toContain("/dumpster/material-guides");
-    expect(xml).toContain("/dumpster/project-guides");
-    expect(xml).toContain("/dumpster/weight/asphalt_shingles");
-    expect(xml).toContain("/dumpster/size/light_commercial_fitout");
+    expect(xml).toContain("/dumpster/heavy-debris-rules");
+    expect(xml).toContain("/dumpster/weight/shingles");
+    expect(xml).toContain("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold");
+    expect(xml).toContain("/dumpster/dumpster-vs-junk-removal");
+    expect(xml).not.toContain("/dumpster/material-guides");
+    expect(xml).not.toContain("/dumpster/project-guides");
+    expect(xml).not.toContain("/dumpster/answers/");
   });
 });

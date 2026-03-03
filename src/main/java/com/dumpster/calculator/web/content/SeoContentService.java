@@ -11,6 +11,7 @@ import com.dumpster.calculator.web.viewmodel.IntentPageViewModel;
 import com.dumpster.calculator.web.viewmodel.LinkItemViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
+import com.dumpster.calculator.web.viewmodel.SpecialSeoPageViewModel;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -18,7 +19,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +31,7 @@ public class SeoContentService {
     private final MaterialFactorRepository materialFactorRepository;
     private final DumpsterSizeRepository dumpsterSizeRepository;
     private final Map<String, ProjectSeed> projectSeeds = new LinkedHashMap<>();
+    private final int seoMaxWave;
     private static final DateTimeFormatter SOURCE_MONTH_YEAR = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US);
     private static final LocalDate DEFAULT_SEO_LAST_MODIFIED = LocalDate.of(2026, 3, 1);
     private static final List<String> MATERIAL_PRIORITY = List.of(
@@ -50,6 +55,70 @@ public class SeoContentService {
             "green_waste_brush",
             "cardboard_packaging",
             "metal_scrap_light"
+    );
+    private static final Map<String, String> MATERIAL_SLUG_TO_ID = Map.of(
+            "concrete", "concrete",
+            "shingles", "asphalt_shingles",
+            "drywall", "drywall",
+            "dirt", "dirt_soil",
+            "brick-block", "brick"
+    );
+    private static final Map<String, String> MATERIAL_ID_TO_CANONICAL_PATH = Map.of(
+            "concrete", "/dumpster/weight/concrete",
+            "asphalt_shingles", "/dumpster/weight/shingles",
+            "drywall", "/dumpster/weight/drywall",
+            "dirt_soil", "/dumpster/weight/dirt",
+            "brick", "/dumpster/weight/brick-block"
+    );
+    private static final Map<String, String> PROJECT_SLUG_TO_ID = Map.of(
+            "bathroom-remodel", "bathroom_remodel",
+            "roof-tear-off", "roof_tearoff",
+            "deck-removal", "deck_demolition",
+            "garage-cleanout", "garage_cleanout",
+            "kitchen-remodel", "kitchen_remodel",
+            "estate-cleanout", "estate_cleanout",
+            "yard-cleanup", "yard_cleanup",
+            "dirt-grading", "dirt_grading",
+            "concrete-removal", "concrete_removal",
+            "light-commercial-fitout", "light_commercial_fitout"
+    );
+    private static final Map<String, String> PROJECT_ID_TO_CANONICAL_PATH = Map.of(
+            "bathroom_remodel", "/dumpster/size/bathroom-remodel",
+            "roof_tearoff", "/dumpster/size/roof-tear-off",
+            "deck_demolition", "/dumpster/size/deck-removal",
+            "garage_cleanout", "/dumpster/size/garage-cleanout",
+            "kitchen_remodel", "/dumpster/size/kitchen-remodel",
+            "estate_cleanout", "/dumpster/size/estate-cleanout",
+            "yard_cleanup", "/dumpster/size/yard-cleanup",
+            "dirt_grading", "/dumpster/size/dirt-grading",
+            "concrete_removal", "/dumpster/size/concrete-removal",
+            "light_commercial_fitout", "/dumpster/size/light-commercial-fitout"
+    );
+    private static final Map<String, Integer> MATERIAL_INDEX_WAVE = Map.of(
+            "concrete", 1,
+            "asphalt_shingles", 1,
+            "drywall", 1,
+            "dirt_soil", 1,
+            "brick", 3
+    );
+    private static final Map<String, Integer> PROJECT_INDEX_WAVE = Map.of(
+            "bathroom_remodel", 2,
+            "roof_tearoff", 2,
+            "deck_demolition", 2,
+            "garage_cleanout", 3,
+            "kitchen_remodel", 3
+    );
+    private static final Map<String, Integer> SPECIAL_PAGE_INDEX_WAVE = Map.ofEntries(
+            Map.entry("how-many-tons-can-a-10-yard-dumpster-hold", 1),
+            Map.entry("can-you-put-concrete-in-a-dumpster", 1),
+            Map.entry("can-you-mix-concrete-and-wood-in-a-dumpster", 1),
+            Map.entry("dumpster-vs-junk-removal", 1),
+            Map.entry("pickup-truck-loads-to-dumpster-size", 1),
+            Map.entry("roofing-squares-to-dumpster-size", 1),
+            Map.entry("bagster-vs-dumpster", 2),
+            Map.entry("fill-line-rules-for-heavy-debris", 3),
+            Map.entry("one-20-yard-vs-two-10-yard", 3),
+            Map.entry("drywall-sheets-to-dumpster-size", 3)
     );
     private static final String CALCULATOR_PATH = "/dumpster/size-weight-calculator";
     private static final String MATERIAL_GUIDES_PATH = "/dumpster/material-guides";
@@ -78,10 +147,12 @@ public class SeoContentService {
 
     public SeoContentService(
             MaterialFactorRepository materialFactorRepository,
-            DumpsterSizeRepository dumpsterSizeRepository
+            DumpsterSizeRepository dumpsterSizeRepository,
+            @Value("${app.seo.max-wave:2}") int seoMaxWave
     ) {
         this.materialFactorRepository = materialFactorRepository;
         this.dumpsterSizeRepository = dumpsterSizeRepository;
+        this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, 3));
         addProject(
                 "roof_tearoff",
                 "Dumpster Size for Roof Tear-off",
@@ -195,6 +266,9 @@ public class SeoContentService {
     }
 
     public Optional<MaterialPageViewModel> materialPage(String materialId, String baseUrl) {
+        if (!isMaterialEnabled(materialId)) {
+            return Optional.empty();
+        }
         return materialFactorRepository.findById(materialId)
                 .map(material -> {
                     double exampleVolume = material.category() == MaterialCategory.HEAVY ? 4.0d : 8.0d;
@@ -234,7 +308,7 @@ public class SeoContentService {
                             material.name() + " Dumpster Weight Guide",
                             seoTitle,
                             metaDescription,
-                            absoluteUrl(baseUrl, "/dumpster/weight/" + material.materialId()),
+                            absoluteUrl(baseUrl, materialCanonicalPath(material.materialId())),
                             ogImageUrl(baseUrl),
                             absoluteUrl(baseUrl, CALCULATOR_PATH),
                             categoryLabel,
@@ -272,8 +346,11 @@ public class SeoContentService {
         if (seed == null) {
             return Optional.empty();
         }
+        if (!isProjectEnabled(projectId)) {
+            return Optional.empty();
+        }
         CopyBlock copy = projectCopyFor(seed);
-        String canonicalPath = "/dumpster/size/" + seed.projectId();
+        String canonicalPath = projectCanonicalPath(seed.projectId());
         String defaultMaterialName = materialFactorRepository.findById(seed.defaultMaterialId())
                 .map(MaterialFactor::name)
                 .orElse(seed.defaultMaterialId().replace('_', ' '));
@@ -310,8 +387,16 @@ public class SeoContentService {
     }
 
     public List<String> projectIndexPaths() {
-        return projectSeeds.values().stream()
-                .map(seed -> "/dumpster/size/" + seed.projectId())
+        return projectIndexPaths(3);
+    }
+
+    public List<String> projectIndexPaths(int maxWave) {
+        int waveLimit = Math.max(1, Math.min(maxWave, 3));
+        return PROJECT_INDEX_WAVE.entrySet().stream()
+                .filter(entry -> entry.getValue() <= waveLimit)
+                .map(Map.Entry::getKey)
+                .filter(projectSeeds::containsKey)
+                .map(this::projectCanonicalPath)
                 .toList();
     }
 
@@ -394,24 +479,438 @@ public class SeoContentService {
     }
 
     public List<String> indexableMaterialIds() {
-        Map<String, Integer> priorityRank = new LinkedHashMap<>();
-        for (int i = 0; i < MATERIAL_PRIORITY.size(); i++) {
-            priorityRank.put(MATERIAL_PRIORITY.get(i), i);
-        }
-        return materialFactorRepository.findAll().stream()
-                .map(material -> material.materialId())
-                .sorted(Comparator
-                        .comparingInt((String id) -> priorityRank.getOrDefault(id, Integer.MAX_VALUE))
-                        .thenComparing(id -> id))
-                .limit(20)
+        return indexableMaterialIds(3);
+    }
+
+    public List<String> indexableMaterialIds(int maxWave) {
+        int waveLimit = Math.max(1, Math.min(maxWave, 3));
+        List<String> available = materialFactorRepository.findAll().stream()
+                .map(MaterialFactor::materialId)
                 .toList();
+        return MATERIAL_INDEX_WAVE.entrySet().stream()
+                .filter(entry -> entry.getValue() <= waveLimit)
+                .map(Map.Entry::getKey)
+                .filter(available::contains)
+                .toList();
+    }
+
+    public String resolveMaterialId(String materialPathToken) {
+        return MATERIAL_SLUG_TO_ID.getOrDefault(materialPathToken, materialPathToken);
+    }
+
+    public String resolveProjectId(String projectPathToken) {
+        return PROJECT_SLUG_TO_ID.getOrDefault(projectPathToken, projectPathToken);
+    }
+
+    public String materialCanonicalPath(String materialId) {
+        return MATERIAL_ID_TO_CANONICAL_PATH.getOrDefault(materialId, "/dumpster/weight/" + materialId);
+    }
+
+    public String projectCanonicalPath(String projectId) {
+        return PROJECT_ID_TO_CANONICAL_PATH.getOrDefault(projectId, "/dumpster/size/" + projectId);
+    }
+
+    public boolean isSpecialPageSlug(String slug) {
+        return SPECIAL_PAGE_INDEX_WAVE.containsKey(slug);
+    }
+
+    public boolean isSpecialPageEnabled(String slug) {
+        return isSpecialPageSlug(slug) && SPECIAL_PAGE_INDEX_WAVE.getOrDefault(slug, Integer.MAX_VALUE) <= seoMaxWave;
+    }
+
+    public List<String> specialPageIndexPaths(int maxWave) {
+        int waveLimit = Math.max(1, Math.min(maxWave, 3));
+        return SPECIAL_PAGE_INDEX_WAVE.entrySet().stream()
+                .filter(entry -> entry.getValue() <= waveLimit)
+                .map(entry -> "/dumpster/" + entry.getKey())
+                .toList();
+    }
+
+    public Optional<SpecialSeoPageViewModel> specialPage(String slug, String baseUrl) {
+        if (!isSpecialPageEnabled(slug)) {
+            return Optional.empty();
+        }
+        String canonicalPath = "/dumpster/" + slug;
+        String modifiedDateIso = defaultLastModifiedDate().toString();
+
+        return switch (slug) {
+            case "how-many-tons-can-a-10-yard-dumpster-hold" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "How Many Tons Can a 10-Yard Dumpster Hold?",
+                    "How Many Tons Can a 10-Yard Dumpster Hold? Limits and Risk",
+                    "See the difference between included tons and haul limits for a 10-yard dumpster before loading heavy debris.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Limit Intent",
+                    "Typical included tons are lower than physical haul capacity, so policy and feasibility must be checked separately.",
+                    "Use included tons for quote risk and max-haul limits for pickup feasibility. Heavy debris can fail before visual capacity.",
+                    List.of(
+                            "Do not treat included tons as transport limit.",
+                            "Heavy debris often requires low fill strategy.",
+                            "Confirm overage fee and rejection trigger before loading."
+                    ),
+                    List.of(
+                            row("Included tons", "Usually 1 to 2 tons", "Crossing this can trigger overage fees."),
+                            row("Max haul tons", "Higher than included tons", "Pickup can still fail if heavy-fill rules are ignored."),
+                            row("Heavy fill behavior", "Part-way loading common", "Volume fit does not guarantee feasible transport.")
+                    ),
+                    List.of(
+                            faq("Why are included tons and haul limits different?", "Included tons are pricing terms, while haul limits are operational transport constraints."),
+                            faq("Can I load a 10-yard to the top with concrete?", "Usually no. Heavy loads often require partial fill and sometimes clean-load separation."),
+                            faq("What should I ask the vendor first?", "Ask included tons, overage rate, and maximum haul policy for heavy debris.")
+                    ),
+                    "Check if a 10-yard is enough",
+                    "/dumpster/size-weight-calculator?material=concrete&unit=sqft_4in",
+                    "See heavy-debris rules",
+                    "/dumpster/heavy-debris-rules",
+                    List.of(
+                            link("/dumpster/heavy-debris-rules", "Heavy Debris Rules", "Understand fill-line and clean-load constraints."),
+                            link("/dumpster/can-you-put-concrete-in-a-dumpster", "Concrete Rules", "See when concrete is allowed and how to load safely.")
+                    )
+            ));
+            case "can-you-put-concrete-in-a-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Can You Put Concrete in a Dumpster?",
+                    "Can You Put Concrete in a Dumpster? Rules Limits and Options",
+                    "Learn when concrete is allowed, when clean-load rules apply, and when multiple small hauls are safer.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Rule Intent",
+                    "Yes, often with strict conditions: concrete-only loads, partial fill, and haul-cap checks are common requirements.",
+                    "Concrete is transport-limited material. The safest plan is to validate clean-load and max-haul rules before choosing container size.",
+                    List.of(
+                            "Assume concrete-only separation unless confirmed otherwise.",
+                            "Do not fill to rim for heavy concrete loads.",
+                            "Use slab area plus thickness for planning, not visual volume only."
+                    ),
+                    List.of(
+                            row("Load type", "Concrete-only often required", "Mixed loads can be rejected or repriced."),
+                            row("Fill behavior", "Partial fill for heavy debris", "Top-fill assumptions cause pickup risk."),
+                            row("Hauling strategy", "Multi-haul frequently needed", "One-bin plan can fail operationally.")
+                    ),
+                    List.of(
+                            faq("Is concrete always allowed?", "Usually yes, but many operators require clean-load separation and conservative fill."),
+                            faq("Can I mix concrete with wood?", "Sometimes not. Mixed heavy loads frequently face stricter rules."),
+                            faq("What is the safest booking pattern?", "Use smaller staged pulls and confirm max haul constraints upfront.")
+                    ),
+                    "Check concrete options",
+                    "/dumpster/size-weight-calculator?material=concrete&project=concrete_removal&unit=sqft_4in",
+                    "See concrete calculator",
+                    "/dumpster/weight/concrete",
+                    List.of(
+                            link("/dumpster/weight/concrete", "Concrete Dumpster Calculator", "Estimate tons by size and risk band."),
+                            link("/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster", "Mixing Rules", "Review mixed-load risk before pickup.")
+                    )
+            ));
+            case "can-you-mix-concrete-and-wood-in-a-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Can You Mix Concrete and Wood in a Dumpster?",
+                    "Can You Mix Concrete and Wood in a Dumpster? Safer Options",
+                    "See when mixed loads cause pickup or fee issues and when clean-load separation is safer.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Rule Intent",
+                    "Sometimes, but many operators discourage or restrict this because dense concrete changes haul feasibility and pricing.",
+                    "Mixing heavy and light materials can break both pricing and transport assumptions. Separation usually reduces rejection risk.",
+                    List.of(
+                            "Treat mixed concrete loads as high-risk by default.",
+                            "Ask whether clean-load separation is mandatory.",
+                            "If uncertain, split into dedicated heavy and mixed bins."
+                    ),
+                    List.of(
+                            row("Policy clarity", "Varies by hauler", "Unconfirmed mixing can trigger refusal or reclassification."),
+                            row("Weight behavior", "Concrete dominates tonnage", "Light debris does not offset heavy-load risk."),
+                            row("Best practice", "Split heavy from mixed", "Improves pricing predictability and pickup success.")
+                    ),
+                    List.of(
+                            faq("Why is mixing problematic?", "Concrete can push loads into heavy-debris handling while wood suggests mixed-load pricing."),
+                            faq("Does mixing ever work?", "It can, but only when operator policy explicitly allows it."),
+                            faq("What is safer for schedule certainty?", "Separate concrete into dedicated heavy loads and keep mixed debris separate.")
+                    ),
+                    "See safer disposal option",
+                    "/dumpster/size-weight-calculator?material=concrete&project=concrete_removal",
+                    "See heavy-debris rules",
+                    "/dumpster/heavy-debris-rules",
+                    List.of(
+                            link("/dumpster/can-you-put-concrete-in-a-dumpster", "Concrete Allowed Rules", "Check baseline concrete acceptance."),
+                            link("/dumpster/dumpster-vs-junk-removal", "Dumpster vs Junk Removal", "Compare alternatives when feasibility is weak.")
+                    )
+            ));
+            case "fill-line-rules-for-heavy-debris" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Heavy Debris Fill Line Rules",
+                    "Heavy Debris Fill Line Rules: Avoid Refusals and Extra Fees",
+                    "Understand why heavy debris is often loaded below the top and how to reduce pickup refusal risk.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Rule Intent",
+                    "For dense debris, operators commonly require loading below normal top-fill level to stay within safe haul limits.",
+                    "Fill-line guidance is operational safety policy. It should be treated as non-optional when handling concrete, dirt, shingles, or masonry.",
+                    List.of(
+                            "Do not use top edge as target for dense loads.",
+                            "Confirm heavy-debris fill constraints before loading starts.",
+                            "Keep a visible margin to avoid pickup-day rejection."
+                    ),
+                    List.of(
+                            row("Fill threshold", "Below top line for heavy debris", "Overfill risk includes refusal and rework."),
+                            row("Policy source", "Operator transport constraints", "Rule is tied to safe hauling, not preference."),
+                            row("Practical strategy", "Use staged hauling", "Reduces rejection and overage uncertainty.")
+                    ),
+                    List.of(
+                            faq("Is fill-line rule the same for all materials?", "No. Heavy debris commonly has stricter fill expectations than light loads."),
+                            faq("What happens if I overfill?", "Pickup can be delayed, refused, or repriced depending on policy."),
+                            faq("How can I prevent refusal?", "Load conservatively and confirm heavy-debris constraints in writing.")
+                    ),
+                    "Check heavy-debris rules",
+                    "/dumpster/heavy-debris-rules",
+                    "Start calculator",
+                    "/dumpster/size-weight-calculator?material=concrete",
+                    List.of(
+                            link("/dumpster/heavy-debris-rules", "Heavy Debris Rules", "Review included tons vs haul constraints."),
+                            link("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold", "10-Yard Ton Limits", "Check limit intent before loading.")
+                    )
+            ));
+            case "dumpster-vs-junk-removal" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Dumpster vs Junk Removal",
+                    "Dumpster vs Junk Removal: Which Costs Less for Heavy Debris?",
+                    "Compare dumpster rental and junk removal by labor, urgency, and heavy-debris risk to choose the better option.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Comparison Intent",
+                    "Dumpster usually wins for larger planned loads; junk removal often wins when speed and labor convenience matter most.",
+                    "Use decision criteria, not headline price alone. Labor availability, loading certainty, and heavy-load feasibility can flip the best option.",
+                    List.of(
+                            "If labor is constrained, convenience can outweigh nominal disposal cost.",
+                            "If debris volume is large and staged, dumpster often scales better.",
+                            "When heavy-feasibility is poor, compare alternate method early."
+                    ),
+                    List.of(
+                            row("Small urgent cleanout", "High convenience need", "Junk removal can be lower-friction."),
+                            row("Large multi-day project", "Predictable loading window", "Dumpster often has lower unit economics."),
+                            row("Heavy dense debris", "Strict haul constraints", "Route by feasibility first, then cost.")
+                    ),
+                    List.of(
+                            faq("Is junk removal always more expensive?", "Not always. For small urgent jobs, convenience can offset price differences."),
+                            faq("When is dumpster usually better?", "When you control loading schedule and total debris is large enough to amortize rental."),
+                            faq("How do I choose quickly?", "Start with size and weight risk, then compare labor and urgency requirements.")
+                    ),
+                    "Compare your options",
+                    "/dumpster/size-weight-calculator?project=garage_cleanout",
+                    "Start calculator",
+                    "/dumpster/size-weight-calculator",
+                    List.of(
+                            link("/dumpster/pickup-truck-loads-to-dumpster-size", "Pickup Load Converter", "Estimate whether job size favors dumpster flow."),
+                            link("/dumpster/heavy-debris-rules", "Heavy Rules", "Check feasibility constraints before comparing cost.")
+                    )
+            ));
+            case "bagster-vs-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Bagster vs Dumpster",
+                    "Bagster vs Dumpster: Weight Limits Cost and Best Fit",
+                    "See when a bagster is enough and when a roll-off dumpster is safer for capacity and heavy-load risk.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Comparison Intent",
+                    "Bagster can work for smaller lighter cleanups; dumpster is safer for larger or heavy debris where capacity and haul flexibility matter.",
+                    "Treat this as a capacity-plus-risk decision. Weight-sensitive debris quickly pushes one-bag assumptions past safe limits.",
+                    List.of(
+                            "Do not use bag solution as default for dense debris.",
+                            "Estimate total volume and expected tonnage before choosing.",
+                            "If uncertainty is high, use dumpster-first strategy."
+                    ),
+                    List.of(
+                            row("Capacity headroom", "Bag is limited", "Large project variance favors dumpster."),
+                            row("Heavy debris tolerance", "Lower", "Concrete/dirt/masonry usually need roll-off strategy."),
+                            row("Operational flexibility", "Dumpster supports staged hauls", "Improves schedule reliability.")
+                    ),
+                    List.of(
+                            faq("When is bagster enough?", "Smaller light-to-mixed loads with low variability can fit."),
+                            faq("When should I skip bagster?", "When load may include dense heavy debris or volume uncertainty is high."),
+                            faq("What is the safer default under uncertainty?", "Use dumpster sizing with risk-aware allowance.")
+                    ),
+                    "Compare bagster vs dumpster",
+                    "/dumpster/size-weight-calculator?project=garage_cleanout",
+                    "See if a 10-yard is enough",
+                    "/dumpster/how-many-tons-can-a-10-yard-dumpster-hold",
+                    List.of(
+                            link("/dumpster/dumpster-vs-junk-removal", "Dumpster vs Junk Removal", "Compare alternatives by scenario."),
+                            link("/dumpster/pickup-truck-loads-to-dumpster-size", "Pickup Load Converter", "Estimate realistic volume first.")
+                    )
+            ));
+            case "one-20-yard-vs-two-10-yard" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "One 20-Yard vs Two 10-Yard Dumpsters",
+                    "One 20-Yard vs Two 10-Yard Dumpsters: Which Is Safer?",
+                    "Compare cost, haul flexibility, and heavy-debris risk when choosing one larger dumpster versus two smaller pulls.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Comparison Intent",
+                    "Two 10-yard pulls are often safer for dense debris because haul constraints can bind before a 20-yard bin is fully utilized.",
+                    "This choice is not volume-only. Feasibility, fill rules, and swap logistics can make smaller staged hauling the lower-risk path.",
+                    List.of(
+                            "Use heavy-material share as primary split trigger.",
+                            "Compare operational flexibility, not just quoted rental.",
+                            "Model both strategies before booking."
+                    ),
+                    List.of(
+                            row("Heavy debris dominance", "High", "Two 10-yard strategy often reduces haul-failure risk."),
+                            row("Schedule rigidity", "Tight deadlines", "Single large bin may simplify logistics if feasible."),
+                            row("Risk tolerance", "Low tolerance for pickup failure", "Favor staged smaller pulls.")
+                    ),
+                    List.of(
+                            faq("Is one 20-yard always cheaper?", "Not always. Heavy-load constraints can force rework that erodes quoted savings."),
+                            faq("When do two 10-yard bins help most?", "When debris density is high and fill-line constraints are strict."),
+                            faq("How should I decide quickly?", "Compare both plans in calculator with high-side weight assumptions.")
+                    ),
+                    "Compare haul options",
+                    "/dumpster/size-weight-calculator?project=concrete_removal&material=concrete",
+                    "See concrete calculator",
+                    "/dumpster/weight/concrete",
+                    List.of(
+                            link("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold", "10-Yard Limit Page", "Check risk profile for staged hauling."),
+                            link("/dumpster/heavy-debris-rules", "Heavy Rules", "Use rule baseline before cost comparison.")
+                    )
+            ));
+            case "pickup-truck-loads-to-dumpster-size" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Pickup Truck Loads to Dumpster Size Calculator",
+                    "Pickup Truck Loads to Dumpster Size Calculator",
+                    "Convert pickup truck loads into dumpster size ranges and avoid underestimating cleanup volume before booking.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Unit Intent",
+                    "Use pickup-load conversion as a planning shortcut, then validate weight risk for dense materials.",
+                    "Load-count shortcuts are useful for volume estimate, but heavy materials still require tonnage checks before final size decision.",
+                    List.of(
+                            "Use load-count estimate as starting point, not final answer.",
+                            "Add margin for irregular bulky items and poor packing.",
+                            "Run heavy-material scenarios separately for risk control."
+                    ),
+                    List.of(
+                            row("10-yard baseline", "About 3 pickup loads", "Small projects can fit when density is moderate."),
+                            row("20-yard baseline", "About 6 pickup loads", "Common remodel range when loading is staged."),
+                            row("30 to 40-yard", "About 9 to 12 loads", "Large cleanouts need feasibility and scheduling checks.")
+                    ),
+                    List.of(
+                            faq("Are pickup-load conversions exact?", "No. They are directional and vary with bed size and packing efficiency."),
+                            faq("What most often breaks the estimate?", "Bulky items, moisture, and dense material share."),
+                            faq("What should I do after conversion?", "Run calculator with material and project context for risk-aware sizing.")
+                    ),
+                    "Convert pickup loads",
+                    "/dumpster/size-weight-calculator?unit=pickup_load",
+                    "Start calculator",
+                    "/dumpster/size-weight-calculator",
+                    List.of(
+                            link("/dumpster/dumpster-vs-junk-removal", "Dumpster vs Junk Removal", "Use when convenience tradeoff is unclear."),
+                            link("/dumpster/heavy-debris-rules", "Heavy Rules", "Validate dense-load constraints.")
+                    )
+            ));
+            case "roofing-squares-to-dumpster-size" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Roofing Squares to Dumpster Size Calculator",
+                    "Roofing Squares to Dumpster Size Calculator",
+                    "Convert roofing squares into dumpster size and ton-range estimates with risk cues before your tear-off starts.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Unit Intent",
+                    "Use roofing squares as input, then validate shingle type, layer count, and haul limits before selecting container size.",
+                    "Square conversion is powerful for roof jobs, but weight variance across material types means risk should be modeled as range.",
+                    List.of(
+                            "Distinguish 3-tab, architectural, and premium shingles.",
+                            "Account for multiple layers in tear-off planning.",
+                            "Validate heavy-load limits before final size choice."
+                    ),
+                    List.of(
+                            row("Input unit", "Roofing square", "Faster estimate than loose volume guess."),
+                            row("Weight behavior", "Material and layer sensitive", "Range-based output prevents false precision."),
+                            row("Operational check", "Haul constraints first", "Large bin by volume can still fail transport.")
+                    ),
+                    List.of(
+                            faq("Can one square map to one fixed tonnage?", "No. Product type and tear-off conditions create range variance."),
+                            faq("Why can a larger bin still be risky?", "Shingle density can exceed haul limits before visual capacity is reached."),
+                            faq("What is the safest next step?", "Run calculator with roof-square input and compare safe versus budget recommendations.")
+                    ),
+                    "Convert roofing squares",
+                    "/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles&unit=roof_square",
+                    "See roof tear-off calculator",
+                    "/dumpster/size/roof-tear-off",
+                    List.of(
+                            link("/dumpster/weight/shingles", "Shingles Calculator", "Review tonnage ranges by dumpster size."),
+                            link("/dumpster/heavy-debris-rules", "Heavy Rules", "Validate fill-line and haul policies.")
+                    )
+            ));
+            case "drywall-sheets-to-dumpster-size" -> Optional.of(new SpecialSeoPageViewModel(
+                    slug,
+                    "Drywall Sheets to Dumpster Size Calculator",
+                    "Drywall Sheets to Dumpster Size Calculator",
+                    "Convert drywall sheet counts into dumpster size and risk ranges, including moisture and mixed-load caveats.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Unit Intent",
+                    "Sheet count gives fast planning baseline, but moisture and mixed debris can shift risk tier materially.",
+                    "Use sheet conversion as entry point, then validate overage exposure with realistic wet-load and mixed-load assumptions.",
+                    List.of(
+                            "Differentiate 1/2-inch and 5/8-inch board weights.",
+                            "Increase assumptions for wet or demolition-loaded sheets.",
+                            "Use safe option when schedule cannot absorb rework."
+                    ),
+                    List.of(
+                            row("Per-sheet estimate", "Range by board type", "Use range output instead of single fixed value."),
+                            row("Moisture effect", "Can move risk tier upward", "Dry vs wet assumptions should be compared."),
+                            row("Mixed load behavior", "Packing inefficiency common", "Volume and weight both need margin.")
+                    ),
+                    List.of(
+                            faq("Is drywall mostly volume or weight constrained?", "It can be both, especially when moisture is present."),
+                            faq("Why does sheet-count planning miss sometimes?", "Board type, water content, and mixed debris affect final tons."),
+                            faq("What is safest for remodel projects?", "Convert sheets, then run project preset with conservative assumptions.")
+                    ),
+                    "Convert drywall sheets",
+                    "/dumpster/size-weight-calculator?material=drywall&unit=drywall_sheet",
+                    "See drywall dumpster calculator",
+                    "/dumpster/weight/drywall",
+                    List.of(
+                            link("/dumpster/size/kitchen-remodel", "Kitchen Remodel Guide", "Use for cabinet + drywall mixed workflows."),
+                            link("/dumpster/size/bathroom-remodel", "Bathroom Remodel Guide", "Use for tile + drywall scenario planning.")
+                    )
+            ));
+            default -> Optional.empty();
+        };
+    }
+
+    private static SpecialSeoPageViewModel.DecisionRow row(String factor, String baseline, String implication) {
+        return new SpecialSeoPageViewModel.DecisionRow(factor, baseline, implication);
+    }
+
+    private static LinkItemViewModel link(String href, String label, String summary) {
+        return new LinkItemViewModel(href, label, summary);
     }
 
     public List<LinkItemViewModel> featuredMaterialLinks(int limit) {
         return sortedIndexableMaterials().stream()
                 .limit(limit)
                 .map(material -> new LinkItemViewModel(
-                        "/dumpster/weight/" + material.materialId(),
+                        materialCanonicalPath(material.materialId()),
                         material.name() + " weight guide",
                         material.category().name().toLowerCase() + " debris profile with tonnage range"
                 ))
@@ -419,10 +918,10 @@ public class SeoContentService {
     }
 
     public List<LinkItemViewModel> featuredProjectLinks(int limit) {
-        return projectSeeds.values().stream()
+        return sortedIndexableProjects().stream()
                 .limit(limit)
                 .map(seed -> new LinkItemViewModel(
-                        "/dumpster/size/" + seed.projectId(),
+                        projectCanonicalPath(seed.projectId()),
                         seed.title(),
                         seed.sampleInput()
                 ))
@@ -432,7 +931,7 @@ public class SeoContentService {
     public List<LinkItemViewModel> materialGuideLinks() {
         return sortedIndexableMaterials().stream()
                 .map(material -> new LinkItemViewModel(
-                        "/dumpster/weight/" + material.materialId(),
+                        materialCanonicalPath(material.materialId()),
                         material.name() + " weight guide",
                         material.category().name().toLowerCase() + " load behavior and decision notes"
                 ))
@@ -440,9 +939,9 @@ public class SeoContentService {
     }
 
     public List<LinkItemViewModel> projectGuideLinks() {
-        return projectSeeds.values().stream()
+        return sortedIndexableProjects().stream()
                 .map(seed -> new LinkItemViewModel(
-                        "/dumpster/size/" + seed.projectId(),
+                        projectCanonicalPath(seed.projectId()),
                         seed.title(),
                         seed.sampleDecision()
                 ))
@@ -501,7 +1000,7 @@ public class SeoContentService {
                         materials.stream()
                                 .filter(material -> material.category() == MaterialCategory.HEAVY)
                                 .map(material -> new LinkItemViewModel(
-                                        "/dumpster/weight/" + material.materialId(),
+                                        materialCanonicalPath(material.materialId()),
                                         material.name() + " weight guide",
                                         "Typical density " + (int) material.densityTyp() + " lbs/yd3"
                                 ))
@@ -513,7 +1012,7 @@ public class SeoContentService {
                         materials.stream()
                                 .filter(material -> material.category() == MaterialCategory.MIXED)
                                 .map(material -> new LinkItemViewModel(
-                                        "/dumpster/weight/" + material.materialId(),
+                                        materialCanonicalPath(material.materialId()),
                                         material.name() + " weight guide",
                                         "Typical density " + (int) material.densityTyp() + " lbs/yd3"
                                 ))
@@ -525,7 +1024,7 @@ public class SeoContentService {
                         materials.stream()
                                 .filter(material -> material.category() == MaterialCategory.LIGHT)
                                 .map(material -> new LinkItemViewModel(
-                                        "/dumpster/weight/" + material.materialId(),
+                                        materialCanonicalPath(material.materialId()),
                                         material.name() + " weight guide",
                                         "Typical density " + (int) material.densityTyp() + " lbs/yd3"
                                 ))
@@ -541,7 +1040,7 @@ public class SeoContentService {
                     double exampleWeight = round2((exampleVolume * material.densityTyp()) / 2000.0d);
                     return new GuideHubPageViewModel.MaterialSummaryRow(
                             material.name(),
-                            "/dumpster/weight/" + material.materialId(),
+                            materialCanonicalPath(material.materialId()),
                             categoryLabel(material.category()),
                             material.densityTyp(),
                             exampleWeight
@@ -675,15 +1174,31 @@ public class SeoContentService {
     }
 
     private List<MaterialFactor> sortedIndexableMaterials() {
+        Set<String> allowedIds = Set.copyOf(indexableMaterialIds(seoMaxWave));
         Map<String, Integer> priorityRank = new LinkedHashMap<>();
         for (int i = 0; i < MATERIAL_PRIORITY.size(); i++) {
             priorityRank.put(MATERIAL_PRIORITY.get(i), i);
         }
         return materialFactorRepository.findAll().stream()
+                .filter(material -> allowedIds.contains(material.materialId()))
                 .sorted(Comparator
                         .comparingInt((MaterialFactor material) -> priorityRank.getOrDefault(material.materialId(), Integer.MAX_VALUE))
                         .thenComparing(material -> material.materialId()))
                 .limit(20)
+                .toList();
+    }
+
+    public boolean isMaterialEnabled(String materialId) {
+        return MATERIAL_INDEX_WAVE.getOrDefault(materialId, Integer.MAX_VALUE) <= seoMaxWave;
+    }
+
+    public boolean isProjectEnabled(String projectId) {
+        return PROJECT_INDEX_WAVE.getOrDefault(projectId, Integer.MAX_VALUE) <= seoMaxWave;
+    }
+
+    private List<ProjectSeed> sortedIndexableProjects() {
+        return projectSeeds.values().stream()
+                .filter(seed -> isProjectEnabled(seed.projectId()))
                 .toList();
     }
 
@@ -1025,10 +1540,10 @@ public class SeoContentService {
     }
 
     private List<LinkItemViewModel> relatedProjectsForMaterial(String materialId) {
-        List<LinkItemViewModel> directMatches = projectSeeds.values().stream()
+        List<LinkItemViewModel> directMatches = sortedIndexableProjects().stream()
                 .filter(seed -> seed.defaultMaterialId().equals(materialId))
                 .map(seed -> new LinkItemViewModel(
-                        "/dumpster/size/" + seed.projectId(),
+                        projectCanonicalPath(seed.projectId()),
                         seed.title(),
                         seed.sampleDecision()
                 ))
@@ -1045,9 +1560,10 @@ public class SeoContentService {
         };
         return fallback.stream()
                 .map(projectSeeds::get)
-                .filter(seed -> seed != null)
+                .filter(Objects::nonNull)
+                .filter(seed -> isProjectEnabled(seed.projectId()))
                 .map(seed -> new LinkItemViewModel(
-                        "/dumpster/size/" + seed.projectId(),
+                        projectCanonicalPath(seed.projectId()),
                         seed.title(),
                         seed.sampleDecision()
                 ))
@@ -1064,7 +1580,7 @@ public class SeoContentService {
         if (!sameCategory.isEmpty()) {
             return sameCategory.stream()
                     .map(candidate -> new LinkItemViewModel(
-                            "/dumpster/weight/" + candidate.materialId(),
+                            materialCanonicalPath(candidate.materialId()),
                             candidate.name() + " weight guide",
                             "Compare " + categoryLabel(candidate.category()).toLowerCase() + " behavior"
                     ))
@@ -1075,7 +1591,7 @@ public class SeoContentService {
                 .filter(candidate -> !candidate.materialId().equals(material.materialId()))
                 .limit(3)
                 .map(candidate -> new LinkItemViewModel(
-                        "/dumpster/weight/" + candidate.materialId(),
+                        materialCanonicalPath(candidate.materialId()),
                         candidate.name() + " weight guide",
                         "Compare density and overage risk profile"
                 ))
@@ -1087,7 +1603,7 @@ public class SeoContentService {
         List<LinkItemViewModel> links = materials.stream()
                 .filter(material -> material.materialId().equals(seed.defaultMaterialId()))
                 .map(material -> new LinkItemViewModel(
-                        "/dumpster/weight/" + material.materialId(),
+                        materialCanonicalPath(material.materialId()),
                         material.name() + " weight guide",
                         "Primary material profile for this project"
                 ))
@@ -1098,7 +1614,7 @@ public class SeoContentService {
         return materials.stream()
                 .limit(3)
                 .map(material -> new LinkItemViewModel(
-                        "/dumpster/weight/" + material.materialId(),
+                        materialCanonicalPath(material.materialId()),
                         material.name() + " weight guide",
                         "Compare against this material profile"
                 ))
@@ -1106,12 +1622,12 @@ public class SeoContentService {
     }
 
     private List<LinkItemViewModel> relatedProjectsForProject(ProjectSeed seed) {
-        List<LinkItemViewModel> sameMaterial = projectSeeds.values().stream()
+        List<LinkItemViewModel> sameMaterial = sortedIndexableProjects().stream()
                 .filter(candidate -> !candidate.projectId().equals(seed.projectId()))
                 .filter(candidate -> candidate.defaultMaterialId().equals(seed.defaultMaterialId()))
                 .limit(3)
                 .map(candidate -> new LinkItemViewModel(
-                        "/dumpster/size/" + candidate.projectId(),
+                        projectCanonicalPath(candidate.projectId()),
                         candidate.title(),
                         "Project pattern with similar material mix"
                 ))
@@ -1121,11 +1637,11 @@ public class SeoContentService {
             return sameMaterial;
         }
 
-        return projectSeeds.values().stream()
+        return sortedIndexableProjects().stream()
                 .filter(candidate -> !candidate.projectId().equals(seed.projectId()))
                 .limit(3)
                 .map(candidate -> new LinkItemViewModel(
-                        "/dumpster/size/" + candidate.projectId(),
+                        projectCanonicalPath(candidate.projectId()),
                         candidate.title(),
                         "Compare strategy and operator constraints"
                 ))

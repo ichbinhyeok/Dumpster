@@ -31,8 +31,10 @@ test.describe("Launch smoke - infrastructure and calculator", () => {
     const sitemapResponse = await request.get("/sitemap.xml");
     expect(sitemapResponse.ok()).toBeTruthy();
     const sitemapXml = await sitemapResponse.text();
-    expect(sitemapXml).toContain("/dumpster/material-guides");
-    expect(sitemapXml).toContain("/dumpster/project-guides");
+    expect(sitemapXml).toContain("/dumpster/heavy-debris-rules");
+    expect(sitemapXml).toContain("/dumpster/weight/concrete");
+    expect(sitemapXml).not.toContain("/dumpster/material-guides");
+    expect(sitemapXml).not.toContain("/dumpster/project-guides");
   });
 
   test("calculator live mode renders result, gauges, and no server errors", async ({ page }) => {
@@ -105,7 +107,7 @@ test.describe("Launch smoke - infrastructure and calculator", () => {
 
 test.describe("Launch smoke - SEO intent capture", () => {
   test("material guide widget forwards material and quantity into calculator", async ({ page }) => {
-    await page.goto("/dumpster/weight/asphalt_shingles");
+    await page.goto("/dumpster/weight/shingles");
     await page.fill("#intent-qty-material", "9");
     await page.selectOption("#intent-unit-material", "pickup_load");
     await page.locator("form.intent-widget button[type='submit']").click();
@@ -118,7 +120,7 @@ test.describe("Launch smoke - SEO intent capture", () => {
   });
 
   test("project guide widget forwards persona and project preset", async ({ page }) => {
-    await page.goto("/dumpster/size/roof_tearoff");
+    await page.goto("/dumpster/size/roof-tear-off");
     await page.fill("#intent-qty-project", "5");
     await page.selectOption("#intent-persona-project", "property_manager");
     await page.locator("form.intent-widget button[type='submit']").click();
@@ -150,8 +152,8 @@ test.describe("Launch smoke - SEO intent capture", () => {
     const seoPaths = [
       "/dumpster/material-guides",
       "/dumpster/project-guides",
-      "/dumpster/weight/asphalt_shingles",
-      "/dumpster/size/roof_tearoff",
+      "/dumpster/weight/shingles",
+      "/dumpster/size/roof-tear-off",
       "/dumpster/heavy-debris-rules",
     ];
 

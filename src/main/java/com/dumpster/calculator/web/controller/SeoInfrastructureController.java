@@ -14,13 +14,16 @@ public class SeoInfrastructureController {
 
     private final SeoContentService seoContentService;
     private final String baseUrl;
+    private final int seoMaxWave;
 
     public SeoInfrastructureController(
             SeoContentService seoContentService,
-            @Value("${app.base-url:http://localhost:8080}") String baseUrl
+            @Value("${app.base-url:http://localhost:8080}") String baseUrl,
+            @Value("${app.seo.max-wave:2}") int seoMaxWave
     ) {
         this.seoContentService = seoContentService;
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+        this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, 3));
     }
 
     @GetMapping(value = "/robots.txt", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -31,11 +34,11 @@ public class SeoInfrastructureController {
                 Allow: /dumpster/heavy-debris-rules
                 Allow: /dumpster/weight/
                 Allow: /dumpster/size/
-                Allow: /dumpster/answers/
-                Allow: /dumpster/material-guides
-                Allow: /dumpster/project-guides
                 Allow: /about/
                 Disallow: /dumpster/estimate/
+                Disallow: /dumpster/answers/
+                Disallow: /dumpster/material-guides
+                Disallow: /dumpster/project-guides
                 Disallow: /api/
                 Sitemap: %s/sitemap.xml
                 """;
@@ -48,16 +51,14 @@ public class SeoInfrastructureController {
         String defaultLastMod = seoContentService.defaultLastModifiedDate().toString();
         urls.add(new SitemapEntry("/dumpster/size-weight-calculator", defaultLastMod));
         urls.add(new SitemapEntry("/dumpster/heavy-debris-rules", defaultLastMod));
-        urls.add(new SitemapEntry("/dumpster/material-guides", defaultLastMod));
-        urls.add(new SitemapEntry("/dumpster/project-guides", defaultLastMod));
         urls.add(new SitemapEntry("/about/methodology", defaultLastMod));
         urls.add(new SitemapEntry("/about/editorial-policy", defaultLastMod));
         urls.add(new SitemapEntry("/about/contact", defaultLastMod));
-        seoContentService.projectIndexPaths().forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
-        seoContentService.intentIndexPaths().forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
-        seoContentService.indexableMaterialIds().forEach(materialId -> urls.add(
+        seoContentService.specialPageIndexPaths(seoMaxWave).forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
+        seoContentService.projectIndexPaths(seoMaxWave).forEach(path -> urls.add(new SitemapEntry(path, defaultLastMod)));
+        seoContentService.indexableMaterialIds(seoMaxWave).forEach(materialId -> urls.add(
                 new SitemapEntry(
-                        "/dumpster/weight/" + materialId,
+                        seoContentService.materialCanonicalPath(materialId),
                         seoContentService.materialLastModifiedDate(materialId).toString()
                 )
         ));

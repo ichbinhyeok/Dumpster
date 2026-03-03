@@ -7,21 +7,24 @@ function extractFirstMatch(input: string, pattern: RegExp): string | null {
 }
 
 test.describe("Mass intent-cluster coverage", () => {
-  test("sitemap exposes broad intent-cluster surface", async ({ request }) => {
+  test("sitemap excludes combinatorial intent cluster", async ({ request }) => {
     const sitemap = await request.get("/sitemap.xml");
     expect(sitemap.ok()).toBeTruthy();
     const xml = await sitemap.text();
     const locs = sitemapLocs(xml);
     const intentLocs = locs.filter((loc) => loc.includes("/dumpster/answers/"));
-
-    expect(intentLocs.length).toBeGreaterThanOrEqual(80);
-    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
-    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/concrete_removal/concrete/overage-risk");
+    expect(intentLocs.length).toBe(0);
   });
 
-  test("all intent pages return 200 with direct-answer structure", async ({ request }) => {
-    const sitemap = await request.get("/sitemap.xml");
-    const locs = sitemapLocs(await sitemap.text()).filter((loc) => loc.includes("/dumpster/answers/"));
+  test("phase-one decision pages return 200 with direct-answer structure", async ({ request }) => {
+    const locs = [
+      "http://127.0.0.1:4173/dumpster/how-many-tons-can-a-10-yard-dumpster-hold",
+      "http://127.0.0.1:4173/dumpster/can-you-put-concrete-in-a-dumpster",
+      "http://127.0.0.1:4173/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster",
+      "http://127.0.0.1:4173/dumpster/dumpster-vs-junk-removal",
+      "http://127.0.0.1:4173/dumpster/pickup-truck-loads-to-dumpster-size",
+      "http://127.0.0.1:4173/dumpster/roofing-squares-to-dumpster-size",
+    ];
     const titles = new Set<string>();
 
     for (const loc of locs) {
@@ -33,8 +36,8 @@ test.describe("Mass intent-cluster coverage", () => {
       const canonical = extractFirstMatch(html, /<link rel="canonical" href="(.*?)">/i);
 
       expect(html).toContain("Direct answer:");
-      expect(html).toContain("Size-by-size load comparison");
-      expect(html).toContain("Decision checklist");
+      expect(html).toContain("Decision matrix");
+      expect(html).toContain("Common mistakes to avoid");
       expect(html).toContain("\"@type\": \"FAQPage\"");
       expect(html).toContain("\"@type\": \"BreadcrumbList\"");
       expect(title).toBeTruthy();

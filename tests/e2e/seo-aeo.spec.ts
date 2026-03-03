@@ -24,12 +24,12 @@ const pages: SeoExpectation[] = [
     expectedType: "CollectionPage",
   },
   {
-    path: "/dumpster/weight/asphalt_shingles",
+    path: "/dumpster/weight/shingles",
     expectedTitlePart: "Asphalt shingles",
     expectedType: "HowTo",
   },
   {
-    path: "/dumpster/size/roof_tearoff",
+    path: "/dumpster/size/roof-tear-off",
     expectedTitlePart: "Roof Tear-off",
     expectedType: "HowTo",
   },
@@ -100,11 +100,11 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     }
   });
 
-  test("robots and sitemap expose crawlable SEO assets including intent cluster", async ({ request }) => {
+  test("robots and sitemap expose crawlable phase-one assets and block combinatorial intent pages", async ({ request }) => {
     const robots = await request.get("/robots.txt");
     expect(robots.ok()).toBeTruthy();
     const robotsTxt = await robots.text();
-    expect(robotsTxt).toContain("Allow: /dumpster/answers/");
+    expect(robotsTxt).toContain("Disallow: /dumpster/answers/");
     expect(robotsTxt).toContain("Allow: /about/");
     expect(robotsTxt).toContain("Disallow: /api/");
     expect(robotsTxt).toContain("Sitemap:");
@@ -113,9 +113,12 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     expect(sitemap.ok()).toBeTruthy();
     const xml = await sitemap.text();
     expect(xml).toContain("/about/methodology");
-    expect(xml).toContain("/dumpster/size/roof_tearoff");
-    expect(xml).toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
-    expect(xml).toContain("/dumpster/answers/concrete_removal/concrete/overage-risk");
+    expect(xml).toContain("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold");
+    expect(xml).toContain("/dumpster/weight/concrete");
+    expect(xml).not.toContain("/dumpster/material-guides");
+    expect(xml).not.toContain("/dumpster/project-guides");
+    expect(xml).not.toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
+    expect(xml).not.toContain("/dumpster/answers/concrete_removal/concrete/overage-risk");
   });
 
   test("intent page includes direct answer block, table, checklist and related links", async ({ page }) => {

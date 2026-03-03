@@ -27,7 +27,7 @@ class SeoPageRenderingTests {
 
     @Test
     void materialPageRendersAnswerQuickRulesFaqAndSchema() throws Exception {
-        mockMvc.perform(get("/dumpster/weight/asphalt_shingles"))
+        mockMvc.perform(get("/dumpster/weight/shingles"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
@@ -39,7 +39,7 @@ class SeoPageRenderingTests {
 
     @Test
     void projectPageRendersAnswerQuickRulesFaqAndSchema() throws Exception {
-        mockMvc.perform(get("/dumpster/size/roof_tearoff"))
+        mockMvc.perform(get("/dumpster/size/roof-tear-off"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
@@ -51,7 +51,7 @@ class SeoPageRenderingTests {
 
     @Test
     void materialPageRendersWeightTable() throws Exception {
-        mockMvc.perform(get("/dumpster/weight/asphalt_shingles"))
+        mockMvc.perform(get("/dumpster/weight/shingles"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Estimated weight by dumpster size")))
@@ -83,5 +83,27 @@ class SeoPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Size-by-size load comparison")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"BreadcrumbList\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Related intent guides")));
+    }
+
+    @Test
+    void specialDecisionPageRendersDirectAnswerMatrixAndSchema() throws Exception {
+        mockMvc.perform(get("/dumpster/dumpster-vs-junk-removal"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Decision matrix")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"BreadcrumbList\"")));
+    }
+
+    @Test
+    void waveThreePagesReturnNotFoundWhenMaxWaveIsTwo() throws Exception {
+        mockMvc.perform(get("/dumpster/weight/brick-block"))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/dumpster/size/garage-cleanout"))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/dumpster/fill-line-rules-for-heavy-debris"))
+                .andExpect(status().isNotFound());
     }
 }
