@@ -13,6 +13,8 @@ import java.util.List;
 
 public final class JtePrecompiler {
 
+    private static final String PRECOMPILED_NAMESPACE = "gg.jte.generated.precompiled";
+
     private JtePrecompiler() {
     }
 
@@ -29,7 +31,9 @@ public final class JtePrecompiler {
         TemplateEngine engine = TemplateEngine.create(
                 new DirectoryCodeResolver(templateRoot),
                 outputRoot,
-                ContentType.Html
+                ContentType.Html,
+                JtePrecompiler.class.getClassLoader(),
+                PRECOMPILED_NAMESPACE
         );
         engine.setClassPath(classPathEntries());
         List<String> precompiledTemplates = engine.precompileAll();
