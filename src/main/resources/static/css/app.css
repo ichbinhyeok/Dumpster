@@ -42,7 +42,7 @@
     --surface-inverted-muted: #F9FAFB;
     --text-inverted: #1D1D1F;
     /* Apple dark gray */
-    --text-inverted-muted: #86868B;
+    --text-inverted-muted: #636366;
     --line-inverted: #E5E5EA;
 
     --line: #E5E5EA;
@@ -53,7 +53,7 @@
     /* Apple dark gray */
     --text-muted: #515154;
     /* Apple secondary */
-    --text-subtle: #86868B;
+    --text-subtle: #636366;
     /* Apple tertiary */
 
     /* Semantic: Apple Blue Accent */

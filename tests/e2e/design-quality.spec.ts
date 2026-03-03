@@ -88,7 +88,7 @@ test.describe("Design quality matrix (layout / typography / tap target)", () => 
         }
       });
 
-      test("typography tokens are loaded (Manrope + Space Grotesk)", async ({ page }) => {
+      test("typography tokens are loaded (Inter system stack)", async ({ page }) => {
         await page.goto("/dumpster/size-weight-calculator");
         const fonts = await page.evaluate(() => {
           const bodyFont = getComputedStyle(document.body).fontFamily;
@@ -97,8 +97,8 @@ test.describe("Design quality matrix (layout / typography / tap target)", () => 
           return { bodyFont, h1Font };
         });
 
-        expect(fonts.bodyFont.toLowerCase()).toContain("manrope");
-        expect(fonts.h1Font.toLowerCase()).toContain("space grotesk");
+        expect(fonts.bodyFont.toLowerCase()).toContain("inter");
+        expect(fonts.h1Font.toLowerCase()).toContain("inter");
       });
 
       test("mobile CTA tap targets meet 44px guideline", async ({ page }) => {

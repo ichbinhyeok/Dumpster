@@ -108,7 +108,7 @@ test.describe("Launch smoke - SEO intent capture", () => {
     await page.goto("/dumpster/weight/asphalt_shingles");
     await page.fill("#intent-qty-material", "9");
     await page.selectOption("#intent-unit-material", "pickup_load");
-    await page.getByRole("button", { name: "Run live estimate" }).click();
+    await page.locator("form.intent-widget button[type='submit']").click();
 
     await expect(page).toHaveURL(/\/dumpster\/size-weight-calculator\?/);
     await expect(page.locator("#material-id")).toHaveValue("asphalt_shingles");
@@ -121,7 +121,7 @@ test.describe("Launch smoke - SEO intent capture", () => {
     await page.goto("/dumpster/size/roof_tearoff");
     await page.fill("#intent-qty-project", "5");
     await page.selectOption("#intent-persona-project", "property_manager");
-    await page.getByRole("button", { name: "Launch live simulator" }).click();
+    await page.locator("form.intent-widget button[type='submit']").click();
 
     await expect(page).toHaveURL(/project=roof_tearoff/);
     await expect(page.locator("#project-id")).toHaveValue("roof_tearoff");
@@ -135,7 +135,7 @@ test.describe("Launch smoke - SEO intent capture", () => {
     await page.goto("/dumpster/heavy-debris-rules");
     await page.fill("#intent-qty-heavy", "7");
     await page.selectOption("#intent-unit-heavy", "sqft_4in");
-    await page.getByRole("button", { name: "Open live estimate" }).click();
+    await page.locator("form.intent-widget button[type='submit']").click();
 
     await expect(page).toHaveURL(/project=concrete_removal/);
     await expect(page).toHaveURL(/material=concrete/);
@@ -175,17 +175,16 @@ test.describe("Launch smoke - mobile viewport", () => {
     hasTouch: iphone13.hasTouch,
   });
 
-  test("mobile shell keeps nav usability and floating CTA behavior", async ({ page }) => {
+  test("mobile shell keeps nav usability and result dock behavior", async ({ page }) => {
     await page.goto("/dumpster/size-weight-calculator");
     await expect(page.locator("header.site-header")).toBeVisible();
     await expect(page.locator("footer.site-footer")).toBeVisible();
 
     await waitForLiveEstimate(page);
-    await expect(page.locator("#floating-cta")).toBeVisible();
-    await expect(page.locator("#floating-call")).toBeVisible();
-    await expect(page.locator("#floating-quote")).toBeVisible();
+    await expect(page.locator("#floating-cta")).toBeHidden();
+    await expect(page.locator("#mobile-result-dock")).toBeVisible();
+    await expect(page.locator("#mobile-primary-cta")).toBeVisible();
 
-    const navOverflowX = await page.locator(".site-nav").evaluate((el) => getComputedStyle(el).overflowX);
-    expect(navOverflowX === "auto" || navOverflowX === "scroll").toBeTruthy();
+    await expect(page.locator(".site-nav a")).toHaveCount(3);
   });
 });
