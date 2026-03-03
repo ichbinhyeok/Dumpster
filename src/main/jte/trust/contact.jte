@@ -32,6 +32,7 @@
           "logo": "${model.siteBaseUrl()}/favicon.png"
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Contact", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")

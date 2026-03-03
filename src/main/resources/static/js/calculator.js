@@ -60,6 +60,14 @@
         "asphalt_pavement",
         "metal_scrap_light"
     ]);
+    const GA_EVENT_MAP = {
+        calc_started: "calculator_start",
+        calc_completed_client: "calculator_complete",
+        cta_click_dumpster_call: "quote_cta_click",
+        cta_click_dumpster_form: "quote_cta_click",
+        cta_click_junk_call: "junk_compare_cta_click",
+        lead_submitted: "lead_submitted"
+    };
 
     const loadingNarratives = [
         "Checking material density ranges",
@@ -960,6 +968,7 @@
     }
 
     function trackEvent(eventName, estimateId, payload) {
+        trackGaEvent(eventName, estimateId, payload);
         fetch("/api/events", {
             method: "POST",
             headers: {
@@ -972,6 +981,42 @@
             })
         }).catch(() => {
         });
+    }
+
+    function trackGaEvent(eventName, estimateId, payload) {
+        const analytics = window.dumpsterAnalytics;
+        if (!analytics || typeof analytics.track !== "function") {
+            return;
+        }
+        const mappedEvent = GA_EVENT_MAP[eventName];
+        if (!mappedEvent) {
+            return;
+        }
+        const params = normalizeGaParams(payload || {});
+        params.page_path = window.location.pathname;
+        if (estimateId) {
+            params.estimate_id = estimateId;
+        }
+        analytics.track(mappedEvent, params);
+        if (mappedEvent === "calculator_complete") {
+            analytics.track("result_view", params);
+        }
+    }
+
+    function normalizeGaParams(payload) {
+        const params = {};
+        Object.entries(payload).forEach(([key, value]) => {
+            if (value === null || value === undefined) {
+                return;
+            }
+            const valueType = typeof value;
+            if (valueType === "string" || valueType === "number" || valueType === "boolean") {
+                params[key] = value;
+                return;
+            }
+            params[key] = JSON.stringify(value);
+        });
+        return params;
     }
 
     function sanitizeZip(value) {

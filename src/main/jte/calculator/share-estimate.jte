@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/calculator-modern.css">
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Share mode", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run new estimate")

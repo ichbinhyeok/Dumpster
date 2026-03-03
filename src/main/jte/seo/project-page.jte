@@ -93,6 +93,7 @@
           "mainEntityOfPage": "${model.canonicalUrl()}"
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Project preset", primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.defaultMaterialId(), primaryLabel = "Open simulator")
@@ -138,7 +139,7 @@
                         <option value="investor">Flipper / investor</option>
                         <option value="business">Facility / business</option>
                     </select>
-                    <button type="submit">Start with preset</button>
+                    <button type="submit" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"launch_card"}'>Start with preset</button>
                 </form>
                 <div class="mistake-strip">
                     <strong>Mistake prevention</strong>
@@ -172,7 +173,7 @@
             </article>
         </div>
         <div class="inline-cta-row">
-            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}">Open calculator preset flow</a>
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"inline_cta"}'>Open calculator preset flow</a>
             <a class="ui-button ui-button--ghost" href="${model.projectGuidesUrl()}">Browse all project guides</a>
         </div>
     </section>

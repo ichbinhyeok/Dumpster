@@ -93,6 +93,7 @@
           ]
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Range-based, heavy-debris aware", primaryHref = "#estimate-form", primaryLabel = "Request quote")

@@ -93,6 +93,7 @@
           "mainEntityOfPage": "${model.canonicalUrl()}"
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Material intelligence", primaryHref = "/dumpster/size-weight-calculator?material=" + model.materialId(), primaryLabel = "Open simulator")
@@ -140,7 +141,7 @@
                         <option value="pickup_load">Pickup load</option>
                         <option value="truckload_small">Small truckload</option>
                     </select>
-                    <button type="submit">Open calculator preset</button>
+                    <button type="submit" data-analytics-event="material_page_to_calculator_click" data-analytics-params='{"source":"launch_card"}'>Open calculator preset</button>
                 </form>
                 <div class="mistake-strip">
                     <strong>Common mistake</strong>
@@ -181,7 +182,7 @@
                 </article>
             </div>
             <div class="inline-cta-row">
-                <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}">Run calculator with this material</a>
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=${model.materialId()}" data-analytics-event="material_page_to_calculator_click" data-analytics-params='{"source":"inline_cta"}'>Run calculator with this material</a>
                 <a class="ui-button ui-button--ghost" href="${model.materialGuidesUrl()}">Browse all material guides</a>
             </div>
         </section>

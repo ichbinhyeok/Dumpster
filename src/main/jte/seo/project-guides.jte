@@ -63,6 +63,7 @@
         }
     </script>
     @endif
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Project library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")

@@ -69,6 +69,7 @@
           "mainEntityOfPage": "${model.canonicalUrl()}"
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = model.intentLabel(), primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.materialId(), primaryLabel = "Open simulator")

@@ -67,6 +67,7 @@
           "mainEntityOfPage": "${model.canonicalUrl()}"
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = model.eyebrow(), primaryHref = model.primaryCtaHref(), primaryLabel = model.primaryCtaLabel())
@@ -86,8 +87,8 @@
                 <h2 class="font-display">Take the next decision step</h2>
                 <p>Open a live preset or compare alternatives before booking.</p>
                 <div class="inline-cta-row">
-                    <a class="ui-button ui-button--primary" href="${model.primaryCtaHref()}">${model.primaryCtaLabel()}</a>
-                    <a class="ui-button ui-button--ghost" href="${model.secondaryCtaHref()}">${model.secondaryCtaLabel()}</a>
+                    <a class="ui-button ui-button--primary" href="${model.primaryCtaHref()}" data-analytics-event="comparison_page_cta_click" data-analytics-params='{"source":"primary_cta"}'>${model.primaryCtaLabel()}</a>
+                    <a class="ui-button ui-button--ghost" href="${model.secondaryCtaHref()}" data-analytics-event="comparison_page_cta_click" data-analytics-params='{"source":"secondary_cta"}'>${model.secondaryCtaLabel()}</a>
                 </div>
                 <div class="mistake-strip">
                     <strong>Common mistakes to avoid</strong>

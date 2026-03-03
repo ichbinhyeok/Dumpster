@@ -72,6 +72,7 @@
           ]
         }
     </script>
+    @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
 @template.components.appHeader(trustLabel = "Operational safety", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")
@@ -114,7 +115,7 @@
                         <option value="cubic_yard">Cubic yard</option>
                         <option value="sqft_4in">sqft @ 4in</option>
                     </select>
-                    <button type="submit">Open heavy preset</button>
+                    <button type="submit" data-analytics-event="rules_page_to_calculator_click" data-analytics-params='{"source":"launch_card"}'>Open heavy preset</button>
                 </form>
                 <div class="policy-chip-group">
                     <span class="scenario-chip">Clean-load checks</span>
@@ -198,7 +199,7 @@
             </details>
         </div>
         <div class="inline-cta-row">
-            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=concrete&project=concrete_removal">Run calculator in heavy mode</a>
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=concrete&project=concrete_removal" data-analytics-event="rules_page_to_calculator_click" data-analytics-params='{"source":"inline_cta"}'>Run calculator in heavy mode</a>
             <a class="ui-button ui-button--ghost" href="${model.materialGuidesUrl()}">Browse material guides</a>
             <a class="ui-button ui-button--ghost" href="${model.projectGuidesUrl()}">Browse project guides</a>
         </div>
