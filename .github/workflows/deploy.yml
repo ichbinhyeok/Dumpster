@@ -75,7 +75,7 @@ jobs:
             echo 'version: "3.9"' >> docker-compose.yml
             echo 'services:' >> docker-compose.yml
             echo '  dumpster:' >> docker-compose.yml
-            echo '    image: "shinhyeok22/dumpster:latest"' >> docker-compose.yml
+            echo '    image: "shinhyeok22/dumpster:${{ github.sha }}"' >> docker-compose.yml
             echo '    container_name: "dumpster"' >> docker-compose.yml
             echo '    restart: "unless-stopped"' >> docker-compose.yml
             echo '    ports:' >> docker-compose.yml
@@ -95,5 +95,23 @@ jobs:
             docker compose config >/dev/null
 
             docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose up -d --force-recreate --remove-orphans
             docker compose ps
+
+            HEALTH_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/api/health)
+            ROOT_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/)
+            CALC_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/dumpster/size-weight-calculator)
+
+            echo "[debug] health status: $HEALTH_CODE"
+            echo "[debug] root status: $ROOT_CODE"
+            echo "[debug] calc status: $CALC_CODE"
+
+            if [ "$HEALTH_CODE" != "200" ]; then
+              echo "Health check failed."
+              exit 1
+            fi
+            if [ "$ROOT_CODE" != "200" ] || [ "$CALC_CODE" != "200" ]; then
+              echo "Web route check failed."
+              docker compose logs --tail=200 dumpster
+              exit 1
+            fi
