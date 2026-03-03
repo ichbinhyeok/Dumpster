@@ -106,19 +106,26 @@ public class SeoContentService {
             "roof_tearoff", 2,
             "deck_demolition", 2,
             "garage_cleanout", 3,
-            "kitchen_remodel", 3
+            "kitchen_remodel", 2
     );
     private static final Map<String, Integer> SPECIAL_PAGE_INDEX_WAVE = Map.ofEntries(
-            Map.entry("how-many-tons-can-a-10-yard-dumpster-hold", 1),
+            Map.entry("what-size-dumpster-do-i-need", 1),
+            Map.entry("10-yard-dumpster-weight-limit-overage", 1),
             Map.entry("can-you-put-concrete-in-a-dumpster", 1),
-            Map.entry("can-you-mix-concrete-and-wood-in-a-dumpster", 1),
-            Map.entry("dumpster-vs-junk-removal", 1),
+            Map.entry("can-you-mix-concrete-and-wood-in-a-dumpster", 2),
+            Map.entry("dumpster-vs-junk-removal-which-is-cheaper", 1),
             Map.entry("pickup-truck-loads-to-dumpster-size", 1),
-            Map.entry("roofing-squares-to-dumpster-size", 1),
-            Map.entry("bagster-vs-dumpster", 2),
+            Map.entry("roof-shingles-dumpster-size-calculator", 1),
+            Map.entry("drywall-disposal-dumpster-rules", 2),
+            Map.entry("bagster-vs-dumpster", 3),
             Map.entry("fill-line-rules-for-heavy-debris", 3),
-            Map.entry("one-20-yard-vs-two-10-yard", 3),
-            Map.entry("drywall-sheets-to-dumpster-size", 3)
+            Map.entry("one-20-yard-vs-two-10-yard", 3)
+    );
+    private static final Map<String, String> SPECIAL_PAGE_ALIASES = Map.of(
+            "how-many-tons-can-a-10-yard-dumpster-hold", "10-yard-dumpster-weight-limit-overage",
+            "dumpster-vs-junk-removal", "dumpster-vs-junk-removal-which-is-cheaper",
+            "roofing-squares-to-dumpster-size", "roof-shingles-dumpster-size-calculator",
+            "drywall-sheets-to-dumpster-size", "drywall-disposal-dumpster-rules"
     );
     private static final String CALCULATOR_PATH = "/dumpster/size-weight-calculator";
     private static final String MATERIAL_GUIDES_PATH = "/dumpster/material-guides";
@@ -510,12 +517,18 @@ public class SeoContentService {
         return PROJECT_ID_TO_CANONICAL_PATH.getOrDefault(projectId, "/dumpster/size/" + projectId);
     }
 
+    public String resolveSpecialSlug(String slug) {
+        return SPECIAL_PAGE_ALIASES.getOrDefault(slug, slug);
+    }
+
     public boolean isSpecialPageSlug(String slug) {
-        return SPECIAL_PAGE_INDEX_WAVE.containsKey(slug);
+        return SPECIAL_PAGE_INDEX_WAVE.containsKey(resolveSpecialSlug(slug));
     }
 
     public boolean isSpecialPageEnabled(String slug) {
-        return isSpecialPageSlug(slug) && SPECIAL_PAGE_INDEX_WAVE.getOrDefault(slug, Integer.MAX_VALUE) <= seoMaxWave;
+        String resolvedSlug = resolveSpecialSlug(slug);
+        return isSpecialPageSlug(resolvedSlug)
+                && SPECIAL_PAGE_INDEX_WAVE.getOrDefault(resolvedSlug, Integer.MAX_VALUE) <= seoMaxWave;
     }
 
     public List<String> specialPageIndexPaths(int maxWave) {
@@ -527,17 +540,54 @@ public class SeoContentService {
     }
 
     public Optional<SpecialSeoPageViewModel> specialPage(String slug, String baseUrl) {
-        if (!isSpecialPageEnabled(slug)) {
+        String resolvedSlug = resolveSpecialSlug(slug);
+        if (!isSpecialPageEnabled(resolvedSlug)) {
             return Optional.empty();
         }
-        String canonicalPath = "/dumpster/" + slug;
+        String canonicalPath = "/dumpster/" + resolvedSlug;
         String modifiedDateIso = defaultLastModifiedDate().toString();
 
-        return switch (slug) {
-            case "how-many-tons-can-a-10-yard-dumpster-hold" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
-                    "How Many Tons Can a 10-Yard Dumpster Hold?",
-                    "How Many Tons Can a 10-Yard Dumpster Hold? Limits and Risk",
+        return switch (resolvedSlug) {
+            case "what-size-dumpster-do-i-need" -> Optional.of(new SpecialSeoPageViewModel(
+                    resolvedSlug,
+                    "What Size Dumpster Do I Need?",
+                    "What Size Dumpster Do I Need? Fast Decision Guide",
+                    "Answer the size question fast, then validate weight limits and overage risk before you book.",
+                    absoluteUrl(baseUrl, canonicalPath),
+                    ogImageUrl(baseUrl),
+                    absoluteUrl(baseUrl, CALCULATOR_PATH),
+                    modifiedDateIso,
+                    "Decision Intent",
+                    "Most projects fit a range, not a single guaranteed size. The safest path is to match debris type, volume, and ton limits together.",
+                    "Start from project type and material. Then check included tons and max-haul feasibility before finalizing container size.",
+                    List.of(
+                            "Do not pick by cubic yards alone when debris is dense.",
+                            "Use safe recommendation if schedule cannot absorb swap delays.",
+                            "Validate both quote allowance and haul constraints before dispatch."
+                    ),
+                    List.of(
+                            row("Light to mixed cleanup", "Volume-led sizing", "10 to 20-yard is common when tonnage is moderate."),
+                            row("Heavy debris share", "Weight-led sizing", "Smaller staged pulls often outperform one larger bin."),
+                            row("High uncertainty jobs", "Risk-first sizing", "Use safe option to reduce overage and refusal risk.")
+                    ),
+                    List.of(
+                            faq("What is the fastest way to choose size?", "Pick project and material presets first, then compare safe versus budget recommendations."),
+                            faq("Why can larger bins still fail?", "Heavy materials can exceed haul limits before the container is visually full."),
+                            faq("What should I confirm with a hauler?", "Ask included tons, overage pricing, and max-haul policy for your debris profile.")
+                    ),
+                    "Start size decision",
+                    "/dumpster/size-weight-calculator",
+                    "See heavy-debris rules",
+                    "/dumpster/heavy-debris-rules",
+                    List.of(
+                            link("/dumpster/10-yard-dumpster-weight-limit-overage", "10-Yard Weight Limits", "Check included tons versus max-haul risk."),
+                            link("/dumpster/dumpster-vs-junk-removal-which-is-cheaper", "Dumpster vs Junk Removal", "Compare by urgency, labor, and risk.")
+                    )
+            ));
+            case "10-yard-dumpster-weight-limit-overage" -> Optional.of(new SpecialSeoPageViewModel(
+                    resolvedSlug,
+                    "10-Yard Dumpster Weight Limit and Overage Risk",
+                    "10-Yard Dumpster Weight Limit and Overage Risk",
                     "See the difference between included tons and haul limits for a 10-yard dumpster before loading heavy debris.",
                     absoluteUrl(baseUrl, canonicalPath),
                     ogImageUrl(baseUrl),
@@ -571,7 +621,7 @@ public class SeoContentService {
                     )
             ));
             case "can-you-put-concrete-in-a-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+                    resolvedSlug,
                     "Can You Put Concrete in a Dumpster?",
                     "Can You Put Concrete in a Dumpster? Rules Limits and Options",
                     "Learn when concrete is allowed, when clean-load rules apply, and when multiple small hauls are safer.",
@@ -607,7 +657,7 @@ public class SeoContentService {
                     )
             ));
             case "can-you-mix-concrete-and-wood-in-a-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+                    resolvedSlug,
                     "Can You Mix Concrete and Wood in a Dumpster?",
                     "Can You Mix Concrete and Wood in a Dumpster? Safer Options",
                     "See when mixed loads cause pickup or fee issues and when clean-load separation is safer.",
@@ -639,11 +689,11 @@ public class SeoContentService {
                     "/dumpster/heavy-debris-rules",
                     List.of(
                             link("/dumpster/can-you-put-concrete-in-a-dumpster", "Concrete Allowed Rules", "Check baseline concrete acceptance."),
-                            link("/dumpster/dumpster-vs-junk-removal", "Dumpster vs Junk Removal", "Compare alternatives when feasibility is weak.")
+                            link("/dumpster/dumpster-vs-junk-removal-which-is-cheaper", "Dumpster vs Junk Removal", "Compare alternatives when feasibility is weak.")
                     )
             ));
             case "fill-line-rules-for-heavy-debris" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+                    resolvedSlug,
                     "Heavy Debris Fill Line Rules",
                     "Heavy Debris Fill Line Rules: Avoid Refusals and Extra Fees",
                     "Understand why heavy debris is often loaded below the top and how to reduce pickup refusal risk.",
@@ -675,11 +725,11 @@ public class SeoContentService {
                     "/dumpster/size-weight-calculator?material=concrete",
                     List.of(
                             link("/dumpster/heavy-debris-rules", "Heavy Debris Rules", "Review included tons vs haul constraints."),
-                            link("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold", "10-Yard Ton Limits", "Check limit intent before loading.")
+                            link("/dumpster/10-yard-dumpster-weight-limit-overage", "10-Yard Ton Limits", "Check limit intent before loading.")
                     )
             ));
-            case "dumpster-vs-junk-removal" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+            case "dumpster-vs-junk-removal-which-is-cheaper" -> Optional.of(new SpecialSeoPageViewModel(
+                    resolvedSlug,
                     "Dumpster vs Junk Removal",
                     "Dumpster vs Junk Removal: Which Costs Less for Heavy Debris?",
                     "Compare dumpster rental and junk removal by labor, urgency, and heavy-debris risk to choose the better option.",
@@ -715,7 +765,7 @@ public class SeoContentService {
                     )
             ));
             case "bagster-vs-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+                    resolvedSlug,
                     "Bagster vs Dumpster",
                     "Bagster vs Dumpster: Weight Limits Cost and Best Fit",
                     "See when a bagster is enough and when a roll-off dumpster is safer for capacity and heavy-load risk.",
@@ -744,14 +794,14 @@ public class SeoContentService {
                     "Compare bagster vs dumpster",
                     "/dumpster/size-weight-calculator?project=garage_cleanout",
                     "See if a 10-yard is enough",
-                    "/dumpster/how-many-tons-can-a-10-yard-dumpster-hold",
+                    "/dumpster/10-yard-dumpster-weight-limit-overage",
                     List.of(
-                            link("/dumpster/dumpster-vs-junk-removal", "Dumpster vs Junk Removal", "Compare alternatives by scenario."),
+                            link("/dumpster/dumpster-vs-junk-removal-which-is-cheaper", "Dumpster vs Junk Removal", "Compare alternatives by scenario."),
                             link("/dumpster/pickup-truck-loads-to-dumpster-size", "Pickup Load Converter", "Estimate realistic volume first.")
                     )
             ));
             case "one-20-yard-vs-two-10-yard" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+                    resolvedSlug,
                     "One 20-Yard vs Two 10-Yard Dumpsters",
                     "One 20-Yard vs Two 10-Yard Dumpsters: Which Is Safer?",
                     "Compare cost, haul flexibility, and heavy-debris risk when choosing one larger dumpster versus two smaller pulls.",
@@ -782,12 +832,12 @@ public class SeoContentService {
                     "See concrete calculator",
                     "/dumpster/weight/concrete",
                     List.of(
-                            link("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold", "10-Yard Limit Page", "Check risk profile for staged hauling."),
+                            link("/dumpster/10-yard-dumpster-weight-limit-overage", "10-Yard Limit Page", "Check risk profile for staged hauling."),
                             link("/dumpster/heavy-debris-rules", "Heavy Rules", "Use rule baseline before cost comparison.")
                     )
             ));
             case "pickup-truck-loads-to-dumpster-size" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+                    resolvedSlug,
                     "Pickup Truck Loads to Dumpster Size Calculator",
                     "Pickup Truck Loads to Dumpster Size Calculator",
                     "Convert pickup truck loads into dumpster size ranges and avoid underestimating cleanup volume before booking.",
@@ -818,12 +868,12 @@ public class SeoContentService {
                     "Start calculator",
                     "/dumpster/size-weight-calculator",
                     List.of(
-                            link("/dumpster/dumpster-vs-junk-removal", "Dumpster vs Junk Removal", "Use when convenience tradeoff is unclear."),
+                            link("/dumpster/dumpster-vs-junk-removal-which-is-cheaper", "Dumpster vs Junk Removal", "Use when convenience tradeoff is unclear."),
                             link("/dumpster/heavy-debris-rules", "Heavy Rules", "Validate dense-load constraints.")
                     )
             ));
-            case "roofing-squares-to-dumpster-size" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
+            case "roof-shingles-dumpster-size-calculator" -> Optional.of(new SpecialSeoPageViewModel(
+                    resolvedSlug,
                     "Roofing Squares to Dumpster Size Calculator",
                     "Roofing Squares to Dumpster Size Calculator",
                     "Convert roofing squares into dumpster size and ton-range estimates with risk cues before your tear-off starts.",
@@ -858,18 +908,18 @@ public class SeoContentService {
                             link("/dumpster/heavy-debris-rules", "Heavy Rules", "Validate fill-line and haul policies.")
                     )
             ));
-            case "drywall-sheets-to-dumpster-size" -> Optional.of(new SpecialSeoPageViewModel(
-                    slug,
-                    "Drywall Sheets to Dumpster Size Calculator",
-                    "Drywall Sheets to Dumpster Size Calculator",
-                    "Convert drywall sheet counts into dumpster size and risk ranges, including moisture and mixed-load caveats.",
+            case "drywall-disposal-dumpster-rules" -> Optional.of(new SpecialSeoPageViewModel(
+                    resolvedSlug,
+                    "Drywall Disposal Dumpster Rules",
+                    "Drywall Disposal Dumpster Rules: Size, Moisture, and Overage Risk",
+                    "Plan drywall disposal with realistic sheet-to-ton ranges, moisture caveats, and mixed-load rules that affect overage.",
                     absoluteUrl(baseUrl, canonicalPath),
                     ogImageUrl(baseUrl),
                     absoluteUrl(baseUrl, CALCULATOR_PATH),
                     modifiedDateIso,
-                    "Unit Intent",
-                    "Sheet count gives fast planning baseline, but moisture and mixed debris can shift risk tier materially.",
-                    "Use sheet conversion as entry point, then validate overage exposure with realistic wet-load and mixed-load assumptions.",
+                    "Rule Intent",
+                    "Drywall is often accepted as mixed debris, but moisture and board type can materially change risk and allowed loading strategy.",
+                    "Use sheet count for speed, then validate moisture assumptions, mixed-load policy, and included tons before booking.",
                     List.of(
                             "Differentiate 1/2-inch and 5/8-inch board weights.",
                             "Increase assumptions for wet or demolition-loaded sheets.",
@@ -885,7 +935,7 @@ public class SeoContentService {
                             faq("Why does sheet-count planning miss sometimes?", "Board type, water content, and mixed debris affect final tons."),
                             faq("What is safest for remodel projects?", "Convert sheets, then run project preset with conservative assumptions.")
                     ),
-                    "Convert drywall sheets",
+                    "Check drywall disposal plan",
                     "/dumpster/size-weight-calculator?material=drywall&unit=drywall_sheet",
                     "See drywall dumpster calculator",
                     "/dumpster/weight/drywall",

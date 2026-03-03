@@ -2,6 +2,7 @@ package com.dumpster.calculator;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -87,12 +88,27 @@ class SeoPageRenderingTests {
 
     @Test
     void specialDecisionPageRendersDirectAnswerMatrixAndSchema() throws Exception {
-        mockMvc.perform(get("/dumpster/dumpster-vs-junk-removal"))
+        mockMvc.perform(get("/dumpster/dumpster-vs-junk-removal-which-is-cheaper"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Decision matrix")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"BreadcrumbList\"")));
+    }
+
+    @Test
+    void legacySpecialSlugsRedirectToCanonicalSlug() throws Exception {
+        mockMvc.perform(get("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold"))
+                .andExpect(status().isMovedPermanently())
+                .andExpect(redirectedUrl("/dumpster/10-yard-dumpster-weight-limit-overage"));
+
+        mockMvc.perform(get("/dumpster/dumpster-vs-junk-removal"))
+                .andExpect(status().isMovedPermanently())
+                .andExpect(redirectedUrl("/dumpster/dumpster-vs-junk-removal-which-is-cheaper"));
+
+        mockMvc.perform(get("/dumpster/roofing-squares-to-dumpster-size"))
+                .andExpect(status().isMovedPermanently())
+                .andExpect(redirectedUrl("/dumpster/roof-shingles-dumpster-size-calculator"));
     }
 
     @Test

@@ -29,13 +29,13 @@ class SeoInfrastructureTests {
         assertThat(body).contains("/about/methodology");
         assertThat(body).contains("/about/editorial-policy");
         assertThat(body).contains("/about/contact");
-        assertThat(body).contains("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold");
+        assertThat(body).contains("/dumpster/what-size-dumpster-do-i-need");
+        assertThat(body).contains("/dumpster/10-yard-dumpster-weight-limit-overage");
         assertThat(body).contains("/dumpster/can-you-put-concrete-in-a-dumpster");
-        assertThat(body).contains("/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster");
-        assertThat(body).contains("/dumpster/dumpster-vs-junk-removal");
+        assertThat(body).contains("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
         assertThat(body).contains("/dumpster/pickup-truck-loads-to-dumpster-size");
-        assertThat(body).contains("/dumpster/roofing-squares-to-dumpster-size");
-        assertThat(body).contains("/dumpster/bagster-vs-dumpster");
+        assertThat(body).contains("/dumpster/roof-shingles-dumpster-size-calculator");
+        assertThat(body).contains("/dumpster/drywall-disposal-dumpster-rules");
         assertThat(body).contains("/dumpster/weight/shingles");
         assertThat(body).contains("/dumpster/weight/concrete");
         assertThat(body).contains("/dumpster/weight/drywall");
@@ -43,12 +43,16 @@ class SeoInfrastructureTests {
         assertThat(body).contains("/dumpster/size/roof-tear-off");
         assertThat(body).contains("/dumpster/size/bathroom-remodel");
         assertThat(body).contains("/dumpster/size/deck-removal");
+        assertThat(body).contains("/dumpster/size/kitchen-remodel");
         assertThat(body).doesNotContain("/dumpster/weight/brick-block");
         assertThat(body).doesNotContain("/dumpster/size/garage-cleanout");
-        assertThat(body).doesNotContain("/dumpster/size/kitchen-remodel");
+        assertThat(body).doesNotContain("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold");
+        assertThat(body).doesNotContain("/dumpster/dumpster-vs-junk-removal</loc>");
+        assertThat(body).doesNotContain("/dumpster/roofing-squares-to-dumpster-size");
+        assertThat(body).doesNotContain("/dumpster/drywall-sheets-to-dumpster-size");
+        assertThat(body).doesNotContain("/dumpster/bagster-vs-dumpster");
         assertThat(body).doesNotContain("/dumpster/fill-line-rules-for-heavy-debris");
         assertThat(body).doesNotContain("/dumpster/one-20-yard-vs-two-10-yard");
-        assertThat(body).doesNotContain("/dumpster/drywall-sheets-to-dumpster-size");
         assertThat(body).doesNotContain("/dumpster/material-guides");
         assertThat(body).doesNotContain("/dumpster/project-guides");
         assertThat(body).doesNotContain("/dumpster/answers/");
@@ -60,5 +64,17 @@ class SeoInfrastructureTests {
         String body = response.getBody();
         assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>2026-03-01</lastmod>");
         assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>2026-03-01</lastmod>");
+    }
+
+    @Test
+    void robotsAllowsEstimateCrawlingSoNoindexCanBeRead() {
+        ResponseEntity<String> response = seoInfrastructureController.robotsTxt();
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(response.getBody()).isNotBlank();
+
+        String body = response.getBody();
+        assertThat(body).contains("Disallow: /dumpster/answers/");
+        assertThat(body).doesNotContain("Disallow: /dumpster/estimate/");
+        assertThat(body).contains("Sitemap:");
     }
 }

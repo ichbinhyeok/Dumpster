@@ -18,12 +18,14 @@ test.describe("Mass intent-cluster coverage", () => {
 
   test("phase-one decision pages return 200 with direct-answer structure", async ({ request }) => {
     const locs = [
-      "http://127.0.0.1:4173/dumpster/how-many-tons-can-a-10-yard-dumpster-hold",
+      "http://127.0.0.1:4173/dumpster/what-size-dumpster-do-i-need",
+      "http://127.0.0.1:4173/dumpster/10-yard-dumpster-weight-limit-overage",
       "http://127.0.0.1:4173/dumpster/can-you-put-concrete-in-a-dumpster",
       "http://127.0.0.1:4173/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster",
-      "http://127.0.0.1:4173/dumpster/dumpster-vs-junk-removal",
+      "http://127.0.0.1:4173/dumpster/dumpster-vs-junk-removal-which-is-cheaper",
       "http://127.0.0.1:4173/dumpster/pickup-truck-loads-to-dumpster-size",
-      "http://127.0.0.1:4173/dumpster/roofing-squares-to-dumpster-size",
+      "http://127.0.0.1:4173/dumpster/roof-shingles-dumpster-size-calculator",
+      "http://127.0.0.1:4173/dumpster/drywall-disposal-dumpster-rules",
     ];
     const titles = new Set<string>();
 

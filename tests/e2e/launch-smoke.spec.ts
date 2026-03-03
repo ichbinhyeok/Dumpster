@@ -25,7 +25,8 @@ test.describe("Launch smoke - infrastructure and calculator", () => {
     expect(robotsResponse.ok()).toBeTruthy();
     const robotsTxt = await robotsResponse.text();
     expect(robotsTxt).toContain("Allow: /dumpster/size-weight-calculator");
-    expect(robotsTxt).toContain("Disallow: /dumpster/estimate/");
+    expect(robotsTxt).not.toContain("Disallow: /dumpster/estimate/");
+    expect(robotsTxt).toContain("Disallow: /dumpster/answers/");
     expect(robotsTxt).toContain("Sitemap:");
 
     const sitemapResponse = await request.get("/sitemap.xml");

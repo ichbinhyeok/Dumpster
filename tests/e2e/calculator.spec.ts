@@ -50,8 +50,8 @@ test.describe("Dumpster calculator local e2e", () => {
     expect(xml).toContain("/dumpster/size-weight-calculator");
     expect(xml).toContain("/dumpster/heavy-debris-rules");
     expect(xml).toContain("/dumpster/weight/shingles");
-    expect(xml).toContain("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold");
-    expect(xml).toContain("/dumpster/dumpster-vs-junk-removal");
+    expect(xml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
+    expect(xml).toContain("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
     expect(xml).not.toContain("/dumpster/material-guides");
     expect(xml).not.toContain("/dumpster/project-guides");
     expect(xml).not.toContain("/dumpster/answers/");

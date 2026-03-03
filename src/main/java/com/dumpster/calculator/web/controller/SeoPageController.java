@@ -161,10 +161,16 @@ public class SeoPageController {
 
     @GetMapping({"/dumpster/{slug}", "/dumpster/{slug}/"})
     public ModelAndView specialPage(@PathVariable("slug") String slug) {
-        if (!seoContentService.isSpecialPageEnabled(slug)) {
+        String resolvedSlug = seoContentService.resolveSpecialSlug(slug);
+        if (!seoContentService.isSpecialPageEnabled(resolvedSlug)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        SpecialSeoPageViewModel model = seoContentService.specialPage(slug, baseUrl)
+        if (!resolvedSlug.equals(slug)) {
+            ModelAndView redirect = new ModelAndView("redirect:/dumpster/" + resolvedSlug);
+            redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
+            return redirect;
+        }
+        SpecialSeoPageViewModel model = seoContentService.specialPage(resolvedSlug, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/special-page");
         modelAndView.addObject("model", model);

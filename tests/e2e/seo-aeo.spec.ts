@@ -113,7 +113,7 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     expect(sitemap.ok()).toBeTruthy();
     const xml = await sitemap.text();
     expect(xml).toContain("/about/methodology");
-    expect(xml).toContain("/dumpster/how-many-tons-can-a-10-yard-dumpster-hold");
+    expect(xml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
     expect(xml).toContain("/dumpster/weight/concrete");
     expect(xml).not.toContain("/dumpster/material-guides");
     expect(xml).not.toContain("/dumpster/project-guides");

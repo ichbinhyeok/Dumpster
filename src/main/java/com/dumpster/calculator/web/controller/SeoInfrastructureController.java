@@ -35,7 +35,6 @@ public class SeoInfrastructureController {
                 Allow: /dumpster/weight/
                 Allow: /dumpster/size/
                 Allow: /about/
-                Disallow: /dumpster/estimate/
                 Disallow: /dumpster/answers/
                 Disallow: /dumpster/material-guides
                 Disallow: /dumpster/project-guides

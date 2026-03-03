@@ -43,7 +43,7 @@ test.describe("Post-deploy critical smoke suite", () => {
       "/dumpster/weight/shingles",
       "/dumpster/size/roof-tear-off",
       "/dumpster/heavy-debris-rules",
-      "/dumpster/dumpster-vs-junk-removal",
+      "/dumpster/dumpster-vs-junk-removal-which-is-cheaper",
     ];
 
     for (const path of paths) {
