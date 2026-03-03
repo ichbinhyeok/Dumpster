@@ -45,6 +45,10 @@
     align-items: start;
 }
 
+.calc-layout > * {
+    min-width: 0;
+}
+
 .calc-workflow {
     background: var(--surface);
     border: none;
@@ -327,6 +331,7 @@
     display: flex;
     justify-content: space-between;
     gap: var(--space-3);
+    min-width: 0;
 }
 
 .radial-card {
