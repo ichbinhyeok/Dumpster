@@ -71,24 +71,23 @@ jobs:
             mkdir -p "$DEPLOY_DIR"
             cd "$DEPLOY_DIR"
 
-            cat > docker-compose.yml <<'YAML'
-            version: "3.9"
-            services:
-              dumpster:
-                image: "shinhyeok22/dumpster:latest"
-                container_name: "dumpster"
-                restart: "unless-stopped"
-                ports:
-                  - "8808:8080"
-                mem_limit: "512m"
-                environment:
-                  APP_BASE_URL: "https://debrisdecision.com"
-                  APP_SEO_MAX_WAVE: "2"
-                deploy:
-                  resources:
-                    limits:
-                      memory: "512M"
-            YAML
+            rm -f docker-compose.yml
+            echo 'version: "3.9"' >> docker-compose.yml
+            echo 'services:' >> docker-compose.yml
+            echo '  dumpster:' >> docker-compose.yml
+            echo '    image: "shinhyeok22/dumpster:latest"' >> docker-compose.yml
+            echo '    container_name: "dumpster"' >> docker-compose.yml
+            echo '    restart: "unless-stopped"' >> docker-compose.yml
+            echo '    ports:' >> docker-compose.yml
+            echo '      - "8808:8080"' >> docker-compose.yml
+            echo '    mem_limit: "512m"' >> docker-compose.yml
+            echo '    environment:' >> docker-compose.yml
+            echo '      APP_BASE_URL: "https://debrisdecision.com"' >> docker-compose.yml
+            echo '      APP_SEO_MAX_WAVE: "2"' >> docker-compose.yml
+            echo '    deploy:' >> docker-compose.yml
+            echo '      resources:' >> docker-compose.yml
+            echo '        limits:' >> docker-compose.yml
+            echo '          memory: "512M"' >> docker-compose.yml
 
             sed -i 's/\r$//' docker-compose.yml
             echo "[debug] generated docker-compose.yml"
