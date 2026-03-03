@@ -39,4 +39,5 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	systemProperty 'gg.jte.developmentMode', 'true'
 }
