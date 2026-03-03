@@ -4,11 +4,7 @@
 }
 
 .calc-hero {
-    border: 1px solid var(--line);
-    border-radius: var(--radius-panel);
-    background: var(--surface);
-    box-shadow: var(--shadow-soft);
-    padding: clamp(var(--space-4), 2.2vw, var(--space-6));
+    padding: var(--space-4) 0 var(--space-5);
     display: grid;
     gap: var(--space-4);
 }
@@ -30,12 +26,11 @@
 }
 
 .calc-benefit {
-    border: 1px solid var(--line);
     border-radius: var(--radius-control);
-    background: var(--surface-muted);
-    padding: var(--space-3);
+    background: transparent;
+    padding: var(--space-2) 0;
     display: grid;
-    gap: var(--space-1);
+    gap: 2px;
 }
 
 .calc-benefit strong {
@@ -44,19 +39,23 @@
 
 .calc-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
-    gap: var(--space-4);
+    grid-template-columns: 1fr 1fr;
+    /* 5:5 Split (Split-screen Dashboard feel) */
+    gap: 48px;
+    /* Slightly wider gap for equal breathing room */
     align-items: start;
 }
 
 .calc-workflow {
-    border: 1px solid var(--line);
-    border-radius: var(--radius-panel);
     background: var(--surface);
-    box-shadow: var(--shadow-soft);
-    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.02);
+    /* Apple light elevation */
+    padding: var(--space-5);
+    /* Breathe out */
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-5);
 }
 
 .calc-stepper {
@@ -66,12 +65,19 @@
 }
 
 .calc-step {
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    background: var(--surface);
-    padding: var(--space-4);
+    padding: var(--space-4) 0;
     display: grid;
     gap: var(--space-3);
+    border-bottom: 1px solid var(--line);
+}
+
+.calc-step:first-child {
+    padding-top: 0;
+}
+
+.calc-step:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .calc-step__head {
@@ -119,28 +125,37 @@
 }
 
 .choice-chip {
-    min-height: 44px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-control);
-    background: var(--surface-muted);
-    color: var(--text);
-    font-size: var(--font-14);
-    font-weight: 700;
+    min-height: 48px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    /* Apple crisp weight */
     text-align: left;
-    padding: 9px 10px;
+    padding: 12px 16px;
     cursor: pointer;
-    transition: border-color 120ms ease, background-color 120ms ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: all var(--transition-fast);
 }
 
 .choice-chip:hover,
 .choice-chip:focus-visible {
-    border-color: var(--line-strong);
-    background: #ececef;
+    border-color: var(--text-subtle);
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .choice-chip.is-active {
-    border-color: #111827;
-    background: #e8e8eb;
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--surface);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+    /* Apple Blue Glow */
+    transform: translateY(-1px);
 }
 
 .choice-chip:disabled {
@@ -216,11 +231,11 @@
     transition: transform 140ms ease;
 }
 
-.switch-field input:checked + .switch-ui {
+.switch-field input:checked+.switch-ui {
     background: #4b5563;
 }
 
-.switch-field input:checked + .switch-ui::after {
+.switch-field input:checked+.switch-ui::after {
     transform: translateX(20px);
 }
 
@@ -277,39 +292,48 @@
 .result-rail {
     position: sticky;
     top: 90px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-panel);
-    background: var(--surface);
-    box-shadow: var(--shadow-soft);
-    padding: var(--space-4);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    color: var(--text);
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+    /* Pro heavy popup shadow */
+    padding: 28px;
     display: grid;
-    gap: var(--space-3);
+    gap: 20px;
 }
 
 .result-rail__header {
     display: grid;
-    gap: var(--space-1);
+    gap: 4px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
 }
 
 .result-rail__header h2 {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text);
 }
 
 .result-status {
-    color: var(--text-subtle);
+    color: var(--text-muted);
     font-size: 0.84rem;
 }
 
 .gauge-list {
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-3);
 }
 
 .gauge-card {
     border: 1px solid var(--line);
     border-radius: var(--radius-control);
     padding: var(--space-3);
-    background: var(--surface-muted);
+    background: var(--surface-subtle);
     display: grid;
     gap: var(--space-1);
 }
@@ -318,7 +342,8 @@
     font-size: 0.78rem;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--text-subtle);
+    color: var(--text-muted);
+    font-weight: 700;
 }
 
 .gauge-track {
@@ -327,22 +352,23 @@
     border-radius: var(--radius-pill);
     background: #e5e7eb;
     overflow: hidden;
+    margin-top: 5px;
 }
 
 .gauge-fill {
     display: block;
     width: 8%;
     height: 100%;
-    background: #374151;
+    background: var(--primary);
     transition: width 220ms ease;
 }
 
 .gauge-fill.warn {
-    background: #4b5563;
+    background: var(--status-warn);
 }
 
 .gauge-fill.danger {
-    background: #111827;
+    background: var(--status-danger);
 }
 
 .gauge-card p {
@@ -354,15 +380,16 @@
     border: 1px solid var(--line);
     border-radius: var(--radius-card);
     background: var(--surface);
-    padding: var(--space-3);
+    padding: var(--space-4);
     display: grid;
     gap: var(--space-3);
+    box-shadow: var(--shadow-sm);
 }
 
 .result-state-banner {
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
     border-radius: var(--radius-control);
-    background: #ececef;
+    background: var(--surface-subtle);
     padding: var(--space-3);
     display: grid;
     gap: 4px;
@@ -370,6 +397,7 @@
 
 .result-state-banner strong {
     font-size: 0.9rem;
+    color: var(--text);
 }
 
 .result-state-banner p {
@@ -378,21 +406,24 @@
 }
 
 .result-state-banner.is-ok {
-    background: #efeff1;
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.3);
 }
 
 .result-state-banner.is-warn {
-    background: #e7e7ea;
+    background: rgba(245, 158, 11, 0.05);
+    border-color: rgba(245, 158, 11, 0.3);
 }
 
 .result-state-banner.is-danger {
-    background: #dfdfe4;
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 .result-hard-stops {
-    border: 1px solid #111827;
+    border: 1px solid rgba(239, 68, 68, 0.4);
     border-radius: var(--radius-control);
-    background: #e5e7eb;
+    background: rgba(239, 68, 68, 0.1);
     padding: var(--space-3);
     display: grid;
     gap: var(--space-2);
@@ -402,6 +433,7 @@
     font-size: 0.85rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    color: #FCA5A5;
 }
 
 .result-hard-stops ul {
@@ -425,6 +457,7 @@
 
 .result-header h3 {
     font-size: 1.05rem;
+    color: var(--text);
 }
 
 .result-header a {
@@ -443,7 +476,7 @@
 .input-impact-list {
     border: 1px solid var(--line);
     border-radius: var(--radius-control);
-    background: var(--surface-muted);
+    background: transparent;
     padding: 10px 12px;
 }
 
@@ -474,7 +507,7 @@
 .stat {
     border: 1px solid var(--line);
     border-radius: var(--radius-control);
-    background: var(--surface-muted);
+    background: transparent;
     padding: 10px;
     display: grid;
     gap: 4px;
@@ -484,7 +517,7 @@
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--text-subtle);
+    color: var(--text-muted);
 }
 
 .stat p {
@@ -503,15 +536,18 @@
 }
 
 .result-card.safe {
-    background: #efeff1;
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
 }
 
 .result-card.budget {
-    background: #f1f1f3;
+    background: rgba(245, 158, 11, 0.05);
+    border-color: rgba(245, 158, 11, 0.2);
 }
 
 .result-card h3 {
     font-size: 0.92rem;
+    color: var(--text);
 }
 
 .result-card p,
@@ -535,7 +571,7 @@
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--text-subtle);
+    color: var(--text-muted);
 }
 
 .notes ul {
@@ -552,11 +588,11 @@
 .trust-drawer {
     border: 1px solid var(--line);
     border-radius: var(--radius-control);
-    background: var(--surface);
+    background: transparent;
     overflow: hidden;
 }
 
-.trust-drawer > summary {
+.trust-drawer>summary {
     list-style: none;
     cursor: pointer;
     padding: 10px 12px;
@@ -565,7 +601,7 @@
     color: var(--text);
 }
 
-.trust-drawer > summary::-webkit-details-marker {
+.trust-drawer>summary::-webkit-details-marker {
     display: none;
 }
 
@@ -649,11 +685,8 @@
 }
 
 .calc-support-card {
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    background: var(--surface);
-    box-shadow: var(--shadow-soft);
-    padding: var(--space-4);
+    background: transparent;
+    padding: var(--space-4) 0;
     display: grid;
     gap: var(--space-3);
 }
@@ -667,10 +700,11 @@
     left: var(--space-2);
     right: var(--space-2);
     bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line);
     border-radius: var(--radius-card);
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: var(--shadow-soft);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-inverted);
     padding: var(--space-3);
     display: none;
     z-index: 120;
@@ -761,6 +795,7 @@
 }
 
 @media (max-width: 640px) {
+
     .calc-workflow,
     .result-rail,
     .calc-support-card,
@@ -784,6 +819,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
