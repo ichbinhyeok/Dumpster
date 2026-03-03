@@ -635,9 +635,9 @@
         const volumePct = Math.min((volumeHigh / capacityReference) * 100, 100);
         const riskPct = riskToPercent(result.priceRisk);
 
-        setGauge(gaugeWeight, gaugeWeightLabel, weightPct, `High estimate ${fmt(weightHigh)} tons`);
-        setGauge(gaugeVolume, gaugeVolumeLabel, volumePct, `High estimate ${fmt(volumeHigh)} yd3`);
-        setGauge(gaugeRisk, gaugeRiskLabel, riskPct, `Risk tier ${result.priceRisk}`);
+        setGauge(gaugeWeight, gaugeWeightLabel, weightPct, `${fmt(weightHigh)}<br><span style='font-size:0.6rem;font-weight:600;color:var(--text-muted)'>tons</span>`);
+        setGauge(gaugeVolume, gaugeVolumeLabel, volumePct, `${fmt(volumeHigh)}<br><span style='font-size:0.6rem;font-weight:600;color:var(--text-muted)'>yd3</span>`);
+        setGauge(gaugeRisk, gaugeRiskLabel, riskPct, `${result.priceRisk || 'UNK'}`);
 
         if (liveStatus) {
             const lead = topRecommendation ? `${topRecommendation.label} ${topRecommendation.sizeYd}yd` : "No recommendation";
@@ -665,15 +665,20 @@
         if (!gaugeEl || !labelEl) {
             return;
         }
-        const bounded = Math.max(4, Math.min(percent, 100));
-        gaugeEl.style.width = bounded + "%";
+        const bounded = Math.max(0, Math.min(percent, 100));
+
+        // Circular gauge math (r=40, circum = 2 * pi * 40 = ~251.2)
+        const circumference = 251.2;
+        const offset = circumference - (bounded / 100) * circumference;
+        gaugeEl.style.strokeDashoffset = offset;
+
         gaugeEl.classList.remove("warn", "danger");
         if (bounded >= 80) {
             gaugeEl.classList.add("danger");
         } else if (bounded >= 55) {
             gaugeEl.classList.add("warn");
         }
-        labelEl.textContent = labelText;
+        labelEl.innerHTML = labelText;
     }
 
     function setLoadingState(isLoading, trigger, runId) {

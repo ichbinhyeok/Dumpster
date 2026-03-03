@@ -1,6 +1,7 @@
 package com.dumpster.calculator.api.controller;
 
 import com.dumpster.calculator.api.dto.EstimateApiResponse;
+import com.dumpster.calculator.api.dto.EstimatePreviewResponse;
 import com.dumpster.calculator.domain.model.EstimateCommand;
 import com.dumpster.calculator.domain.model.EstimateResult;
 import com.dumpster.calculator.domain.service.EstimationFacade;
@@ -55,6 +56,12 @@ public class EstimateApiController {
                 storedEstimate.payload().result()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/preview")
+    public ResponseEntity<EstimatePreviewResponse> previewEstimate(@Valid @RequestBody EstimateCommand command) {
+        EstimateResult result = estimationFacade.estimate(command);
+        return ResponseEntity.ok(new EstimatePreviewResponse(result));
     }
 
     @GetMapping("/{estimateId}")

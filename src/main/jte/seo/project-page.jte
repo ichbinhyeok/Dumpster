@@ -99,8 +99,9 @@
 @template.components.appHeader(trustLabel = "Project preset", primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.defaultMaterialId(), primaryLabel = "Open simulator")
 
 <main class="app-container app-main">
-    <section class="entry-surface">
-        <div class="entry-grid">
+    <div class="calc-layout">
+        <!-- Sidebar / Details (Sticky Layout) -->
+        <aside class="sticky-panel">
             <article class="quick-answer-card">
                 <p class="eyebrow">Project Guide</p>
                 <h1 class="font-display">${model.title()}</h1>
@@ -141,94 +142,100 @@
                     </select>
                     <button type="submit" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"launch_card"}'>Start with preset</button>
                 </form>
-                <div class="mistake-strip">
-                    <strong>Mistake prevention</strong>
-                    <p>${model.commonMistake()}</p>
-                    <p><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
+                <div class="mistake-strip" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
+                    <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">⚠️ Mistake prevention</strong>
+                    <p style="color: #991B1B; font-weight: 500;">${model.commonMistake()}</p>
+                    <p style="color: #991B1B; font-size: 0.8rem;"><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
                 </div>
             </aside>
-        </div>
-    </section>
+        </aside>
 
-    <section class="table-card">
+        <!-- Main Dashboard Surface -->
+        <div class="module-stack">
+
+    <section class="table-card" style="box-shadow: var(--shadow-glass); border: none;">
         <h2 class="font-display">Decision snapshot</h2>
         <div class="decision-snapshot-grid">
-            <article class="decision-tile">
-                <h3>Quick rules</h3>
-                <ul>
+            <article class="decision-tile" style="background: var(--surface-muted); box-shadow: none; border-radius: var(--radius-control);">
+                <h3 style="color: var(--text-subtle); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;">Quick rules</h3>
+                <ul style="gap: 6px; font-weight: 600; font-size: 0.85rem;">
                     @for(var rule : model.quickRules())
                         <li>${rule}</li>
                     @endfor
                 </ul>
             </article>
-            <article class="decision-tile">
-                <h3>Typical planning baseline</h3>
-                <p>${model.sampleInput()}</p>
-                <p>${model.sampleDecision()}</p>
+            <article class="decision-tile" style="background: var(--surface-muted); box-shadow: none; border-radius: var(--radius-control);">
+                <h3 style="color: var(--text-subtle); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;">Planning baseline</h3>
+                <p style="font-weight: 800; font-size: 1.1rem; color: var(--text);">${model.sampleInput()}</p>
+                <p style="font-weight: 600; color: var(--primary);">${model.sampleDecision()}</p>
             </article>
-            <article class="decision-tile">
-                <h3>When recommendation flips</h3>
-                <p>Material mix, moisture, and included-ton constraints are the most common reason the cheapest option stops being cheapest.</p>
-                <p><strong>Direct strategy:</strong> ${model.recommendedStrategy()}</p>
+            <article class="decision-tile" style="background: var(--surface-muted); box-shadow: none; border-radius: var(--radius-control);">
+                <h3 style="color: var(--text-subtle); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;">When it flips</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Material mix, moisture, and included-ton constraints are the most common reason the cheapest option stops being cheapest.</p>
+                <p style="font-size: 0.85rem; font-weight: 600; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px;"><strong>Direct strategy:</strong> ${model.recommendedStrategy()}</p>
             </article>
         </div>
-        <div class="inline-cta-row">
-            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"inline_cta"}'>Open calculator preset flow</a>
-            <a class="ui-button ui-button--ghost" href="${model.projectGuidesUrl()}">Browse all project guides</a>
+        <div class="inline-cta-row" style="margin-top: 12px; border-top: 1px solid var(--line); padding-top: 16px;">
+            <a class="ui-button ui-button--primary" style="flex: 1;" href="/dumpster/size-weight-calculator?project=${model.projectId()}&material=${model.defaultMaterialId()}" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"inline_cta"}'>Launch preset calculator</a>
+            <a class="ui-button ui-button--ghost" style="flex: 1;" href="${model.projectGuidesUrl()}">View all project guides</a>
         </div>
     </section>
 
-    <section class="table-card">
-        <h2 class="font-display">Related guides and FAQ</h2>
-        <h3>FAQ</h3>
-        <div class="compact-faq">
-            @for(var faq : model.faqItems())
-                <details class="faq-item">
-                    <summary>${faq.question()}</summary>
-                    <p>${faq.answer()}</p>
+        <section class="table-card" style="box-shadow: var(--shadow-glass); border: none;">
+            <h2 class="font-display">Related guides and FAQ</h2>
+            
+            <h3 style="margin-top: 12px;">FAQ</h3>
+            <div class="compact-faq">
+                @for(var faq : model.faqItems())
+                    <details class="faq-item" style="box-shadow: none; border: 1px solid var(--line); border-radius: var(--radius-control);">
+                        <summary style="font-size: 0.95rem;">${faq.question()}</summary>
+                        <p style="font-size: 0.85rem; line-height: 1.6;">${faq.answer()}</p>
+                    </details>
+                @endfor
+            </div>
+
+            <h3 style="margin-top: 12px;">Related material guides</h3>
+            <ul class="link-grid">
+                @for(var link : model.relatedMaterialLinks())
+                    <li style="box-shadow: none; background: var(--surface-muted); border: 1px solid transparent; transition: all 0.2s;">
+                        <a href="${link.href()}" style="color: var(--primary); font-size: 0.95rem;">${link.label()}</a>
+                        <span style="font-size: 0.8rem; font-weight: 500;">${link.summary()}</span>
+                    </li>
+                @endfor
+            </ul>
+
+            @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
+                <details class="ui-accordion" style="box-shadow: none; border: 1px dashed var(--line); margin-top: 8px;">
+                    <summary>
+                        <span>Long-tail intent guides</span>
+                        <small>Advanced variants</small>
+                    </summary>
+                    <div class="ui-accordion__body">
+                        <ul class="link-grid" style="grid-template-columns: 1fr;">
+                            @for(var link : model.intentClusterLinks())
+                                <li style="box-shadow: none; border-bottom: 1px solid var(--line); border-radius: 0; padding-bottom: 12px;">
+                                    <a href="${link.href()}" style="font-size: 0.9rem;">${link.label()}</a>
+                                    <span style="font-size: 0.78rem;">${link.summary()}</span>
+                                </li>
+                            @endfor
+                        </ul>
+                    </div>
                 </details>
-            @endfor
-        </div>
+            @endif
 
-        <h3>Related material guides</h3>
-        <ul class="link-grid">
-            @for(var link : model.relatedMaterialLinks())
-                <li>
-                    <a href="${link.href()}">${link.label()}</a>
-                    <span>${link.summary()}</span>
-                </li>
-            @endfor
-        </ul>
-
-        @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
-            <details class="ui-accordion">
-                <summary>
-                    <span>Long-tail intent guides</span>
-                    <small>Expanded only when needed</small>
-                </summary>
-                <div class="ui-accordion__body">
-                    <ul class="link-grid">
-                        @for(var link : model.intentClusterLinks())
-                            <li>
-                                <a href="${link.href()}">${link.label()}</a>
-                                <span>${link.summary()}</span>
-                            </li>
-                        @endfor
-                    </ul>
-                </div>
-            </details>
-        @endif
-
-        <h3>Related project guides</h3>
-        <ul class="link-grid">
-            @for(var link : model.relatedProjectLinks())
-                <li>
-                    <a href="${link.href()}">${link.label()}</a>
-                    <span>${link.summary()}</span>
-                </li>
-            @endfor
-        </ul>
-    </section>
+            <h3 style="margin-top: 12px;">Related project guides</h3>
+            <ul class="link-grid">
+                @for(var link : model.relatedProjectLinks())
+                    <li style="box-shadow: none; background: var(--surface-muted); border: 1px solid transparent; transition: all 0.2s;">
+                        <a href="${link.href()}" style="color: var(--primary); font-size: 0.95rem;">${link.label()}</a>
+                        <span style="font-size: 0.8rem; font-weight: 500;">${link.summary()}</span>
+                    </li>
+                @endfor
+            </ul>
+        </section>
+        
+        </div> <!-- End Module Stack -->
+    </div> <!-- End Grid Layout -->
 </main>
 @template.components.appFooter()
 </body>

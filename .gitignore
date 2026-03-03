@@ -44,3 +44,10 @@ node_modules/
 playwright-report/
 test-results/
 jte-classes/
+
+# Local Tools
+.tools/
+.gradle-cache/
+build-local.bat
+test-local.bat
+

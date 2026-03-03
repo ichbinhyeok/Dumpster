@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.dumpster.calculator.api.controller.EstimateApiController;
 import com.dumpster.calculator.api.controller.TrackingApiController;
 import com.dumpster.calculator.api.dto.EstimateApiResponse;
+import com.dumpster.calculator.api.dto.EstimatePreviewResponse;
 import com.dumpster.calculator.api.dto.TrackingEventRequest;
 import com.dumpster.calculator.domain.model.EstimateCommand;
 import com.dumpster.calculator.domain.model.EstimateItemInput;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,6 +34,9 @@ class EstimateApiTests {
 
     @Autowired
     private CalculatorPageController calculatorPageController;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void createAndFetchEstimateById() {
@@ -100,5 +105,30 @@ class EstimateApiTests {
 
         assertThat(response.getHeader("X-Robots-Tag")).contains("noindex");
         assertThat(modelAndView.getViewName()).isEqualTo("calculator/share-estimate");
+    }
+
+    @Test
+    void previewEstimateDoesNotPersistStoredEstimate() {
+        EstimateCommand command = new EstimateCommand(
+                "bathroom_remodel",
+                "homeowner",
+                List.of(new EstimateItemInput(
+                        "tile_ceramic",
+                        3,
+                        "pickup_load",
+                        new ItemConditions(false, false, "MEDIUM")
+                )),
+                new EstimateOptions(false, null, 1.2d),
+                "research"
+        );
+
+        Integer beforeCount = jdbcTemplate.queryForObject("select count(*) from estimates", Integer.class);
+        ResponseEntity<EstimatePreviewResponse> preview = estimateApiController.previewEstimate(command);
+        Integer afterCount = jdbcTemplate.queryForObject("select count(*) from estimates", Integer.class);
+
+        assertThat(preview.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(preview.getBody()).isNotNull();
+        assertThat(preview.getBody().result()).isNotNull();
+        assertThat(afterCount).isEqualTo(beforeCount);
     }
 }

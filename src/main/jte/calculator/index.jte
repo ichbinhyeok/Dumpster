@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="/css/calculator-modern.css">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple2">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple2">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -276,21 +276,36 @@
                 <p id="live-status" class="result-status">Change any input to refresh your estimate.</p>
             </div>
 
-            <div class="gauge-list">
-                <article class="gauge-card">
-                    <h3>Will it fit? <span class="gauge-hint" style="font-weight:400; font-size:0.875rem; color:var(--text-muted);">(Volume)</span></h3>
-                    <div class="gauge-track"><span id="gauge-volume" class="gauge-fill"></span></div>
-                    <p id="gauge-volume-label">Run estimate</p>
+            <div class="gauge-dashboard">
+                <article class="radial-card">
+                    <h3>Volume</h3>
+                    <div class="radial-wrap">
+                        <svg class="radial-svg" viewBox="0 0 100 100">
+                            <circle class="radial-bg" cx="50" cy="50" r="40" />
+                            <circle id="gauge-volume" class="radial-fill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                        </svg>
+                        <div class="radial-label-center" id="gauge-volume-label">...</div>
+                    </div>
                 </article>
-                <article class="gauge-card">
-                    <h3>Is it too heavy? <span class="gauge-hint" style="font-weight:400; font-size:0.875rem; color:var(--text-muted);">(Weight)</span></h3>
-                    <div class="gauge-track"><span id="gauge-weight" class="gauge-fill"></span></div>
-                    <p id="gauge-weight-label">Run estimate</p>
+                <article class="radial-card">
+                    <h3>Weight</h3>
+                    <div class="radial-wrap">
+                        <svg class="radial-svg" viewBox="0 0 100 100">
+                            <circle class="radial-bg" cx="50" cy="50" r="40" />
+                            <circle id="gauge-weight" class="radial-fill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                        </svg>
+                        <div class="radial-label-center" id="gauge-weight-label">...</div>
+                    </div>
                 </article>
-                <article class="gauge-card">
-                    <h3>Overage risk <span class="gauge-hint" style="font-weight:400; font-size:0.875rem; color:var(--text-muted);">(Cost)</span></h3>
-                    <div class="gauge-track"><span id="gauge-risk" class="gauge-fill"></span></div>
-                    <p id="gauge-risk-label">Run estimate</p>
+                <article class="radial-card">
+                    <h3>Risk</h3>
+                    <div class="radial-wrap">
+                        <svg class="radial-svg" viewBox="0 0 100 100">
+                            <circle class="radial-bg" cx="50" cy="50" r="40" />
+                            <circle id="gauge-risk" class="radial-fill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                        </svg>
+                        <div class="radial-label-center" id="gauge-risk-label">...</div>
+                    </div>
                 </article>
             </div>
 

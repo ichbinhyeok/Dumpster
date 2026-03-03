@@ -13,9 +13,9 @@
     --space-10: 96px;
 
     /* Radius: Stripe structural crispness */
-    --radius-control: 8px;
-    --radius-card: 16px;
-    --radius-panel: 24px;
+    --radius-control: 10px;
+    --radius-card: 20px;
+    --radius-panel: 28px;
     --radius-pill: 999px;
 
     /* Typography */
@@ -28,53 +28,57 @@
     --container-max: 1180px;
     --content-max: 760px;
 
-    /* Colors: "Apple Pro" Neo-SaaS */
-    --bg: #F5F5F7;
-    /* Apple system background (Zinc 100) */
+    /* Colors: True Apple/Stripe Premium Light Mode (Vibrant & Structural) */
+    --bg: #F7F9FC;
+    /* Soft, airy, slightly cool off-white background */
     --surface: #FFFFFF;
-    /* Pure white for elevated components */
-    --surface-muted: #F4F4F5;
-    /* Inset shaded areas */
-    --surface-subtle: #FAFAFA;
+    /* Pure crisp white for cards */
+    --surface-muted: #F1F5F9;
+    /* Slate 100 for soft interactive zones */
+    --surface-subtle: #F8FAFC;
+    /* Slate 50 */
 
-    /* Inverted -> Replaced with Apple Pro Elevation separation */
-    --surface-inverted: #FFFFFF;
-    --surface-inverted-muted: #F9FAFB;
-    --text-inverted: #1D1D1F;
-    /* Apple dark gray */
-    --text-inverted-muted: #636366;
-    --line-inverted: #E5E5EA;
+    /* Lines - Extremely soft, purely structural */
+    --line: rgba(15, 23, 42, 0.05);
+    /* Very faint slate line */
+    --line-strong: rgba(15, 23, 42, 0.12);
 
-    --line: #E5E5EA;
-    /* Apple structural border */
-    --line-strong: #D1D1D6;
+    /* Typography - Deep Slate, softer and richer than pure black */
+    --text: #0F172A;
+    /* Slate 900 */
+    --text-muted: #475569;
+    /* Slate 600 */
+    --text-subtle: #64748B;
+    /* Slate 500 */
 
-    --text: #1D1D1F;
-    /* Apple dark gray */
-    --text-muted: #515154;
-    /* Apple secondary */
-    --text-subtle: #636366;
-    /* Apple tertiary */
+    /* Semantic: Vibrant Stripe Blurple */
+    --primary: #635BFF;
+    /* Stripe's signature Blurple */
+    --primary-hover: #5247E5;
+    /* Deeper vibrant blurple */
+    --primary-glow: rgba(99, 91, 255, 0.2);
+    /* Rich glow */
 
-    /* Semantic: Apple Blue Accent */
-    --primary: #0066CC;
-    /* Apple System Blue */
-    --primary-hover: #0055BB;
-    --status-ok: #34C759;
-    /* Apple Green */
-    --status-warn: #FF9500;
-    --status-danger: #FF3B30;
+    --status-ok: #10B981;
+    /* Emerald */
+    --status-warn: #F59E0B;
+    /* Amber */
+    --status-danger: #EF4444;
+    /* Red */
 
-    /* Shadows: Apple Premium Elevation */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
-    --shadow-soft: 0 4px 8px -2px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-    --shadow-glow: 0 0 0 4px rgba(0, 102, 204, 0.2);
-    /* Massive floating shadow for the Decision Board */
-    --shadow-inverted: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 20px 40px -8px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+    /* Shadows: The magic of Stripe - deep, diffused, multi-layered */
+    --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+    --shadow-soft: 0 12px 24px -6px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+    --shadow-float: 0 24px 48px -12px rgba(15, 23, 42, 0.08), 0 8px 24px -4px rgba(15, 23, 42, 0.06);
+    --shadow-glow: 0 0 0 4px var(--primary-glow);
 
-    /* Interactions (Fluid Apple Physics) */
+    /* Floating glass for panels - premium Apple-like depth */
+    --shadow-glass: 0 40px 80px -20px rgba(15, 23, 42, 0.12), 0 20px 40px -10px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+
+    /* Interactions */
     --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
     --transition-smooth: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -95,7 +99,8 @@ body.neo-body {
     min-height: 100%;
     background: var(--bg);
     color: var(--text);
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 500;
     line-height: 1.6;
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
@@ -130,8 +135,8 @@ h2,
 h3 {
     margin: 0;
     color: var(--text);
-    font-family: inherit;
-    font-weight: 700;
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', inherit;
+    font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.15;
 }
@@ -176,8 +181,8 @@ h3 {
     top: 0;
     z-index: 80;
     border-bottom: 1px solid var(--line);
-    background: rgba(244, 244, 245, 0.94);
-    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
 }
 
 .app-header-row,
@@ -352,14 +357,16 @@ textarea {
     background: var(--surface);
     color: var(--text);
     padding: 10px 12px;
+    transition: all var(--transition-fast);
 }
 
 input:focus,
 select:focus,
 textarea:focus,
 .ui-input:focus {
-    outline: 2px solid #111827;
-    outline-offset: 1px;
+    outline: none;
+    border-color: var(--text);
+    box-shadow: 0 0 0 1px var(--text);
 }
 
 .ui-field {
@@ -381,10 +388,10 @@ textarea:focus,
 .hero-proof,
 .result-card,
 .rule-card {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-card);
     background: var(--surface);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-float);
     padding: var(--space-4);
 }
 
@@ -482,9 +489,10 @@ textarea:focus,
 
 .ui-accordion,
 .faq-item {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-control);
     background: var(--surface);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
 
@@ -578,12 +586,19 @@ textarea:focus,
 }
 
 .link-grid li {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-control);
     background: var(--surface);
+    box-shadow: var(--shadow-sm);
     padding: var(--space-3);
     display: grid;
     gap: var(--space-1);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.link-grid li:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
 }
 
 .link-grid li a {
@@ -603,9 +618,10 @@ textarea:focus,
 }
 
 .mistake-callout {
-    border: 1px solid var(--line-strong);
+    border: none;
     border-radius: var(--radius-card);
-    background: var(--surface-subtle);
+    background: var(--surface-muted);
+    box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.02);
     padding: var(--space-4);
     display: grid;
     gap: var(--space-2);
@@ -634,10 +650,10 @@ textarea:focus,
 }
 
 .entry-surface {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-panel);
     background: var(--surface);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-float);
     padding: clamp(var(--space-4), 2vw, var(--space-6));
     display: grid;
     gap: var(--space-4);
@@ -651,7 +667,7 @@ textarea:focus,
 }
 
 .quick-answer-card {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-card);
     background: var(--surface-muted);
     padding: var(--space-4);
@@ -670,9 +686,10 @@ textarea:focus,
 }
 
 .fact-chip {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-control);
     background: var(--surface);
+    box-shadow: var(--shadow-sm);
     padding: 10px 12px;
     display: grid;
     gap: 2px;
@@ -689,18 +706,19 @@ textarea:focus,
 }
 
 .launch-card {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-card);
     background: var(--surface);
+    box-shadow: var(--shadow-soft);
     padding: var(--space-4);
     display: grid;
     gap: var(--space-3);
 }
 
 .mistake-strip {
-    border: 1px solid var(--line-strong);
+    border: none;
     border-radius: var(--radius-control);
-    background: var(--surface-subtle);
+    background: var(--surface-muted);
     padding: var(--space-3);
     display: grid;
     gap: var(--space-1);
@@ -729,9 +747,10 @@ textarea:focus,
 }
 
 .decision-tile {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-card);
     background: var(--surface);
+    box-shadow: var(--shadow-soft);
     padding: var(--space-3);
     display: grid;
     gap: var(--space-2);
@@ -763,9 +782,10 @@ textarea:focus,
 }
 
 .table-card {
-    border: 1px solid var(--line);
+    border: none;
     border-radius: var(--radius-card);
     background: var(--surface);
+    box-shadow: var(--shadow-float);
     padding: var(--space-4);
     display: grid;
     gap: var(--space-3);
