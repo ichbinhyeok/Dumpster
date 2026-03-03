@@ -58,9 +58,11 @@ tasks.named('bootJar') {
 
 tasks.named('bootRun') {
 	systemProperty 'gg.jte.developmentMode', 'true'
+	systemProperty 'gg.jte.usePrecompiledTemplates', 'false'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 	systemProperty 'gg.jte.developmentMode', 'true'
+	systemProperty 'gg.jte.usePrecompiledTemplates', 'false'
 }
