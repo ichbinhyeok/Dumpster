@@ -24,6 +24,9 @@ repositories {
 	mavenCentral()
 }
 
+def jteTemplateDir = file('src/main/jte')
+def jteOutputDir = file("$buildDir/jte-classes")
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -35,6 +38,26 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.register('precompileJteTemplates', JavaExec) {
+	group = 'build'
+	description = 'Precompile JTE templates for self-contained jar runtime.'
+	dependsOn tasks.named('compileJava')
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.dumpster.calculator.config.JtePrecompiler'
+	args jteTemplateDir.absolutePath, jteOutputDir.absolutePath
+}
+
+tasks.named('bootJar') {
+	dependsOn tasks.named('precompileJteTemplates')
+	from(jteOutputDir) {
+		into('BOOT-INF/classes')
+	}
+}
+
+tasks.named('bootRun') {
+	systemProperty 'gg.jte.developmentMode', 'true'
 }
 
 tasks.named('test') {
