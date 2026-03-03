@@ -401,6 +401,6 @@
     <a id="floating-quote" href="#estimate-form">Online quote</a>
 </div>
 
-<script src="/js/calculator.js"></script>
+<script src="/js/calculator.js?v=stripeapple2"></script>
 </body>
 </html>

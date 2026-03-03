@@ -1,4 +1,4 @@
-﻿# Dumpster Organic Execution Anchor v1
+# Dumpster Organic Execution Anchor v1
 
 ## Scope Lock
 - This track covers only organic/SEO/pSEO execution.
@@ -7,11 +7,23 @@
 
 ## Non-Negotiables
 - Keep `/dumpster/size-weight-calculator` as the canonical hub.
-- Keep Phase 1 indexable surface to 20-35 URLs.
+- Keep index growth controlled with explicit wave and quality gates.
 - Do not build city/ZIP/near-me mass pages.
 - Every indexable page must include quick answer, calculator/preset entry, unique data, mistakes block, and CTA.
 - Do not publish numeric claims that are missing from source registry.
 - Resolve conflicting values as ranges with caveats, not single-value certainty.
+
+## Current Operating Policy (2026-03-03)
+- `app.seo.max-wave` default is `3`.
+- `/sitemap.xml` is a sitemap index that points to:
+  - `/sitemap-core.xml`
+  - `/sitemap-money.xml`
+  - `/sitemap-experiments.xml`
+- `/dumpster/answers/` is crawl-allowed in `robots.txt`.
+- Intent pages use selective indexing:
+  - curated allowlist paths: `index, follow`
+  - all other intent combinations: `noindex, follow`
+- Hub pages (`/dumpster/material-guides`, `/dumpster/project-guides`) remain crawlable but currently `noindex, follow` and tracked in experiments sitemap.
 
 ## Execution Order (A->G)
 1. URL inventory classification (`KEEP`, `MERGE`, `REWRITE`, `NOINDEX`, `DO NOT BUILD`).
@@ -25,9 +37,10 @@
 ## Drift Guard Checklist
 - Did we accidentally add broad wiki-style pages?
 - Did any page type lose calculator-entry behavior?
-- Did any route expansion increase thin indexable combinations?
+- Did any route expansion increase thin indexable combinations without evidence?
 - Are intent pages creating cannibalization or duplicate SERP targets?
 - Are confidence labels present for all filled data fields?
+- Are split sitemap buckets (`core`, `money`, `experiments`) still aligned with current indexing policy?
 
 ## Output Contract
 - `docs/seo/PHASE1_EXECUTION_PACK_v1.md`
@@ -38,8 +51,10 @@
 ## Execution Log
 - 2026-03-03: Created phase-one execution pack, source gap audit, URL classification, intent map, final slug/meta table, and filled source registry.
 - 2026-03-03: Synced final CSV outputs to user-provided Downloads files for immediate operational use.
-- 2026-03-03: Applied indexing policy in code: intent/hub pages noindex, robots disallow for intent/hub routes, sitemap reduced to phase-one indexables.
+- 2026-03-03: Applied initial conservative policy in code (intent/hub mostly noindex, reduced sitemap exposure).
 - 2026-03-03: Added canonical slug normalization (public slugs) for key material/project routes with permanent redirects from legacy ID paths.
 - 2026-03-03: Implemented dedicated phase-one special decision pages (`rule/limit/comparison/unit`) and connected sitemap wave gating via `app.seo.max-wave`.
 - 2026-03-03: Updated default canonical base domain to `https://debrisdecision.com` via `APP_BASE_URL` default.
-- 2026-03-03: Set default rollout to `app.seo.max-wave=2` for launch mode (`wave1 + wave2` indexed by default).
+- 2026-03-03: Updated rollout default to `app.seo.max-wave=3` to include validated wave3 assets.
+- 2026-03-03: Switched to split sitemap strategy (`/sitemap.xml` index + `core/money/experiments` children).
+- 2026-03-03: Re-opened `/dumpster/answers/` crawling and introduced curated indexable intent allowlist while keeping remaining intent pages `noindex, follow`.

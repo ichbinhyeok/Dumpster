@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="/css/calculator-modern.css">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple2">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple2">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -143,7 +143,7 @@
                     <button type="submit" data-analytics-event="project_page_to_calculator_click" data-analytics-params='{"source":"launch_card"}'>Start with preset</button>
                 </form>
                 <div class="mistake-strip" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
-                    <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">⚠️ Mistake prevention</strong>
+                    <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">?�️ Mistake prevention</strong>
                     <p style="color: #991B1B; font-weight: 500;">${model.commonMistake()}</p>
                     <p style="color: #991B1B; font-size: 0.8rem;"><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
                 </div>

@@ -1,4 +1,4 @@
-﻿# Dumpster Phase 1 Execution Pack v1
+# Dumpster Phase 1 Execution Pack v1
 
 ## 0) Scope and Anchor
 - Source anchor: `docs/seo/EXECUTION_ANCHOR_ORGANIC_PSEO_v1.md`
@@ -7,33 +7,37 @@
 
 ## 1) A. URL Classification (Current + Planned)
 
-### KEEP
+### KEEP (Indexable)
 - `/dumpster/size-weight-calculator`
 - `/dumpster/heavy-debris-rules`
-- `/dumpster/weight/concrete/`
-- `/dumpster/weight/shingles/`
-- `/dumpster/weight/drywall/`
-- `/dumpster/weight/dirt/`
-- `/dumpster/how-many-tons-can-a-10-yard-dumpster-hold/`
-- `/dumpster/can-you-put-concrete-in-a-dumpster/`
-- `/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster/`
-- `/dumpster/dumpster-vs-junk-removal/`
-- `/dumpster/pickup-truck-loads-to-dumpster-size/`
-- `/dumpster/roofing-squares-to-dumpster-size/`
+- `/dumpster/weight/concrete`
+- `/dumpster/weight/shingles`
+- `/dumpster/weight/drywall`
+- `/dumpster/weight/dirt`
+- `/dumpster/weight/brick-block`
+- `/dumpster/how-many-tons-can-a-10-yard-dumpster-hold`
+- `/dumpster/can-you-put-concrete-in-a-dumpster`
+- `/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster`
+- `/dumpster/dumpster-vs-junk-removal`
+- `/dumpster/pickup-truck-loads-to-dumpster-size`
+- `/dumpster/roofing-squares-to-dumpster-size`
+- project family `/dumpster/size/{project-slug}` for enabled wave set
+- curated intent family `/dumpster/answers/{project}/{material}/{intent}` allowlist only
 
 ### MERGE
 - Query variants of 10-yard tonnage intent into one canonical limit page.
 - Query variants of concrete calculator intent into one canonical concrete page.
 
 ### REWRITE
-- `/dumpster/weight/{materialId}` dynamic family: keep only mapped high-ROI materials as indexable; rewrite copy by template to avoid thin duplication.
+- `/dumpster/weight/{materialId}` dynamic family: keep mapped high-ROI materials as indexable; rewrite copy by template to avoid thin duplication.
 - `/dumpster/size/{projectId}` dynamic family: normalize slug conventions and tighten scenario-specific differentiation.
-- `/dumpster/material-guides` and `/dumpster/project-guides`: convert to decision-routing hubs, not broad guide hubs.
+- `/dumpster/material-guides` and `/dumpster/project-guides`: remain decision-routing hubs with stronger internal routing.
 
 ### NOINDEX
-- `/dumpster/answers/{projectId}/{materialId}/{intent}` (combinatorial long-tail pages).
-- `/dumpster/estimate/{estimateId}` share/session pages (already noindex header on response).
+- Non-curated `/dumpster/answers/{projectId}/{materialId}/{intent}` combinations.
+- `/dumpster/estimate/{estimateId}` share/session pages.
 - Query/preset parameter permutations.
+- Hub pages currently remain `noindex, follow` for experiment-mode routing.
 
 ### DO NOT BUILD
 - City/state/county doorway pages.
@@ -42,22 +46,24 @@
 
 ## 2) B. Phase 1 Roadmap (Build Waves)
 
-### Wave 1 (Immediate)
-- Calculator hub + heavy-debris core + concrete/shingles/drywall/dirt + 10-yard limit + concrete rule pages + dumpster vs junk removal + two converter pages.
+### Wave 1
+- Calculator hub + heavy-debris core.
+- Concrete/shingles/drywall/dirt material pages.
+- Core special pages:
+  - what-size intent
+  - 10-yard limit
+  - concrete rule
+  - dumpster vs junk removal
+  - pickup-load converter
+  - roofing squares converter
 
-### Wave 2 (After Wave 1 baseline)
-- Bagster vs dumpster.
-- Bathroom remodel.
-- Roof tear-off.
-- Deck removal.
+### Wave 2
+- `bathroom_remodel`, `roof_tearoff`, `deck_demolition`, `kitchen_remodel` project pages.
+- supporting special pages and intent candidates validated by CTR/CVR.
 
-### Wave 3 (Later in Phase 1)
-- Brick/block.
-- Fill-line rules standalone page.
-- One 20-yard vs two 10-yard.
-- Garage cleanout.
-- Kitchen remodel.
-- Drywall sheets converter.
+### Wave 3 (Current default enabled)
+- `garage_cleanout`, `estate_cleanout`, `yard_cleanup`, `dirt_grading`, `concrete_removal`, `light_commercial_fitout`.
+- experimental hubs remain noindex but crawlable.
 
 ## 3) C. Template Spec Lock
 
@@ -118,14 +124,31 @@ Track at minimum:
 - `quote_cta_click`
 - `junk_compare_cta_click`
 
-## 8) Conflict Resolution Notes
+## 8) Indexing and Sitemap Layers
+- `/sitemap.xml` -> sitemap index file only.
+- `/sitemap-core.xml` -> core trust + calculator pages.
+- `/sitemap-money.xml` -> indexable special/material/project + curated intent allowlist.
+- `/sitemap-experiments.xml` -> crawlable test pages (currently guide hubs).
+
+## 9) Conflict Resolution Notes
 - `included_tons` and `max_haul_tons` must remain separate fields in both data and page copy.
 - Where provider rules conflict, publish range + caveat, not a single fixed statement.
 - Local policy variance can appear as note blocks only; no local landing-page expansion in Phase 1.
 
-## 9) Implementation Status (2026-03-03)
-- Applied noindex policy to hub and intent pages.
-- Removed combinatorial intent pages from sitemap and robots allowlist.
-- Added canonical slug normalization for key material/project routes.
-- Added dedicated phase-one special pages: `/dumpster/how-many-tons-can-a-10-yard-dumpster-hold`, `/dumpster/can-you-put-concrete-in-a-dumpster`, `/dumpster/can-you-mix-concrete-and-wood-in-a-dumpster`, `/dumpster/dumpster-vs-junk-removal`, `/dumpster/pickup-truck-loads-to-dumpster-size`, `/dumpster/roofing-squares-to-dumpster-size`.
-- Added sitemap wave gating via `app.seo.max-wave` (default `2`).
+## 10) Curated Indexable Intent Set (Current)
+Current intent allowlist is intentionally small and quality-screened (10 routes), including:
+- roof tear-off + asphalt shingles: `weight-estimate`, `overage-risk`
+- concrete removal + concrete: `size-guide`, `overage-risk`
+- dirt grading + dirt/soil: `size-guide`, `overage-risk`
+- concrete removal + brick/block: `size-guide`
+- kitchen remodel + drywall: `size-guide`
+- bathroom remodel + drywall: `size-guide`
+- light commercial fit-out + drywall: `size-guide`
+
+## 11) Implementation Status (2026-03-03)
+- Canonical slug normalization added for key material/project routes.
+- Dedicated phase-one special pages shipped.
+- `robots.txt` now crawl-allows `/dumpster/answers/`.
+- Intent pages now use route-level selective robots (`index, follow` vs `noindex, follow`).
+- Sitemap is split into `core`, `money`, and `experiments` layers with sitemap index entrypoint.
+- Default rollout uses `app.seo.max-wave=3`.

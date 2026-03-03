@@ -11,10 +11,16 @@ Current state: implementation + hardening complete, automated tests green.
    - `/dumpster/heavy-debris-rules`
    - `/robots.txt`
    - `/sitemap.xml`
+   - `/sitemap-core.xml`
+   - `/sitemap-money.xml`
+   - `/sitemap-experiments.xml`
 3. Validate must-fail paths:
    - concrete heavy load => `feasibility != OK`
    - no allowance => assumed allowance badge
    - high risk => junk CTA routing preference
+4. Validate selective intent indexing:
+   - allowlisted `/dumpster/answers/...` routes => `index, follow`
+   - non-allowlisted `/dumpster/answers/...` routes => `noindex, follow`
 
 ## Step 2. Data Tuning for Launch
 
@@ -28,8 +34,9 @@ Current state: implementation + hardening complete, automated tests green.
 
 1. Ensure `./gradlew.bat test` passes.
 2. Verify canonical/noindex/sitemap behaviors on deployed environment.
-3. Configure production `APP_BASE_URL` to `https://debrisdecision.com` (now the project default).
-4. Launch and monitor:
+3. Configure production `APP_BASE_URL` to `https://debrisdecision.com`.
+4. Confirm production `APP_SEO_MAX_WAVE` value (default `3`).
+5. Launch and monitor:
    - `calc_completed`
    - `feasibility_not_ok`
    - `cta_click_dumpster_call`
