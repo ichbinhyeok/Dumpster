@@ -26,16 +26,18 @@ test.describe("Launch smoke - infrastructure and calculator", () => {
     const robotsTxt = await robotsResponse.text();
     expect(robotsTxt).toContain("Allow: /dumpster/size-weight-calculator");
     expect(robotsTxt).not.toContain("Disallow: /dumpster/estimate/");
-    expect(robotsTxt).toContain("Disallow: /dumpster/answers/");
-    expect(robotsTxt).toContain("Sitemap:");
+    expect(robotsTxt).toContain("Allow: /dumpster/answers/");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap.xml");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap-core.xml");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap-money.xml");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap-experiments.xml");
 
     const sitemapResponse = await request.get("/sitemap.xml");
     expect(sitemapResponse.ok()).toBeTruthy();
     const sitemapXml = await sitemapResponse.text();
-    expect(sitemapXml).toContain("/dumpster/heavy-debris-rules");
-    expect(sitemapXml).toContain("/dumpster/weight/concrete");
-    expect(sitemapXml).not.toContain("/dumpster/material-guides");
-    expect(sitemapXml).not.toContain("/dumpster/project-guides");
+    expect(sitemapXml).toContain("/sitemap-core.xml");
+    expect(sitemapXml).toContain("/sitemap-money.xml");
+    expect(sitemapXml).toContain("/sitemap-experiments.xml");
   });
 
   test("calculator live mode renders result, gauges, and no server errors", async ({ page }) => {

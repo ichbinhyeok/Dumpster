@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SeoContentService {
 
+    private static final int MAX_WAVE = 3;
     private final MaterialFactorRepository materialFactorRepository;
     private final DumpsterSizeRepository dumpsterSizeRepository;
     private final Map<String, ProjectSeed> projectSeeds = new LinkedHashMap<>();
@@ -102,12 +103,17 @@ public class SeoContentService {
             "dirt_soil", 1,
             "brick", 3
     );
-    private static final Map<String, Integer> PROJECT_INDEX_WAVE = Map.of(
-            "bathroom_remodel", 2,
-            "roof_tearoff", 2,
-            "deck_demolition", 2,
-            "garage_cleanout", 3,
-            "kitchen_remodel", 2
+    private static final Map<String, Integer> PROJECT_INDEX_WAVE = Map.ofEntries(
+            Map.entry("bathroom_remodel", 2),
+            Map.entry("roof_tearoff", 2),
+            Map.entry("deck_demolition", 2),
+            Map.entry("kitchen_remodel", 2),
+            Map.entry("garage_cleanout", 3),
+            Map.entry("estate_cleanout", 3),
+            Map.entry("yard_cleanup", 3),
+            Map.entry("dirt_grading", 3),
+            Map.entry("concrete_removal", 3),
+            Map.entry("light_commercial_fitout", 3)
     );
     private static final Map<String, Integer> SPECIAL_PAGE_INDEX_WAVE = Map.ofEntries(
             Map.entry("what-size-dumpster-do-i-need", 1),
@@ -150,6 +156,18 @@ public class SeoContentService {
             "concrete_removal", List.of("concrete", "brick", "asphalt_pavement"),
             "light_commercial_fitout", List.of("mixed_cd", "drywall", "cardboard_packaging")
     );
+    private static final List<IndexableIntentSeed> INDEXABLE_INTENT_SEEDS = List.of(
+            new IndexableIntentSeed("roof_tearoff", "asphalt_shingles", "overage-risk"),
+            new IndexableIntentSeed("roof_tearoff", "asphalt_shingles", "weight-estimate"),
+            new IndexableIntentSeed("concrete_removal", "concrete", "size-guide"),
+            new IndexableIntentSeed("concrete_removal", "concrete", "overage-risk"),
+            new IndexableIntentSeed("dirt_grading", "dirt_soil", "size-guide"),
+            new IndexableIntentSeed("dirt_grading", "dirt_soil", "overage-risk"),
+            new IndexableIntentSeed("concrete_removal", "brick", "size-guide"),
+            new IndexableIntentSeed("kitchen_remodel", "drywall", "size-guide"),
+            new IndexableIntentSeed("bathroom_remodel", "drywall", "size-guide"),
+            new IndexableIntentSeed("light_commercial_fitout", "drywall", "size-guide")
+    );
     private static final Map<String, CopyBlock> MATERIAL_COPY = buildMaterialCopy();
     private static final Map<String, CopyBlock> PROJECT_COPY = buildProjectCopy();
 
@@ -157,12 +175,12 @@ public class SeoContentService {
             MaterialFactorRepository materialFactorRepository,
             DumpsterSizeRepository dumpsterSizeRepository,
             Clock clock,
-            @Value("${app.seo.max-wave:2}") int seoMaxWave
+            @Value("${app.seo.max-wave:3}") int seoMaxWave
     ) {
         this.materialFactorRepository = materialFactorRepository;
         this.dumpsterSizeRepository = dumpsterSizeRepository;
         this.clock = clock;
-        this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, 3));
+        this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, MAX_WAVE));
         addProject(
                 "roof_tearoff",
                 "Dumpster Size for Roof Tear-off",
@@ -401,7 +419,7 @@ public class SeoContentService {
     }
 
     public List<String> projectIndexPaths(int maxWave) {
-        int waveLimit = Math.max(1, Math.min(maxWave, 3));
+        int waveLimit = Math.max(1, Math.min(maxWave, MAX_WAVE));
         return PROJECT_INDEX_WAVE.entrySet().stream()
                 .filter(entry -> entry.getValue() <= waveLimit)
                 .map(Map.Entry::getKey)
@@ -412,10 +430,25 @@ public class SeoContentService {
 
     public List<String> intentIndexPaths() {
         return projectSeeds.keySet().stream()
+                .filter(this::isProjectEnabled)
                 .flatMap(projectId -> projectIntentMaterialsForProject(projectId).stream()
                         .flatMap(materialId -> INTENT_TYPES.stream()
                                 .map(intentType -> intentPath(projectId, materialId, intentType))))
                 .toList();
+    }
+
+    public List<String> indexableIntentPaths() {
+        return INDEXABLE_INTENT_SEEDS.stream()
+                .filter(seed -> isProjectEnabled(seed.projectId()))
+                .filter(seed -> projectIntentMaterialsForProject(seed.projectId()).contains(seed.materialId()))
+                .filter(seed -> IntentType.fromSlug(seed.intentSlug()).isPresent())
+                .map(seed -> intentPath(seed.projectId(), seed.materialId(), seed.intentSlug()))
+                .toList();
+    }
+
+    public boolean isIndexableIntentPath(String projectId, String materialId, String intentSlug) {
+        String canonicalPath = intentPath(projectId, materialId, intentSlug);
+        return indexableIntentPaths().contains(canonicalPath);
     }
 
     public Optional<IntentPageViewModel> intentPage(
@@ -493,7 +526,7 @@ public class SeoContentService {
     }
 
     public List<String> indexableMaterialIds(int maxWave) {
-        int waveLimit = Math.max(1, Math.min(maxWave, 3));
+        int waveLimit = Math.max(1, Math.min(maxWave, MAX_WAVE));
         List<String> available = materialFactorRepository.findAll().stream()
                 .map(MaterialFactor::materialId)
                 .toList();
@@ -535,7 +568,7 @@ public class SeoContentService {
     }
 
     public List<String> specialPageIndexPaths(int maxWave) {
-        int waveLimit = Math.max(1, Math.min(maxWave, 3));
+        int waveLimit = Math.max(1, Math.min(maxWave, MAX_WAVE));
         return SPECIAL_PAGE_INDEX_WAVE.entrySet().stream()
                 .filter(entry -> entry.getValue() <= waveLimit)
                 .map(entry -> "/dumpster/" + entry.getKey())
@@ -1240,11 +1273,13 @@ public class SeoContentService {
     }
 
     public boolean isMaterialEnabled(String materialId) {
-        return MATERIAL_INDEX_WAVE.getOrDefault(materialId, Integer.MAX_VALUE) <= seoMaxWave;
+        return MATERIAL_INDEX_WAVE.getOrDefault(materialId, MAX_WAVE) <= seoMaxWave
+                && materialFactorRepository.findById(materialId).isPresent();
     }
 
     public boolean isProjectEnabled(String projectId) {
-        return PROJECT_INDEX_WAVE.getOrDefault(projectId, Integer.MAX_VALUE) <= seoMaxWave;
+        return PROJECT_INDEX_WAVE.getOrDefault(projectId, MAX_WAVE) <= seoMaxWave
+                && projectSeeds.containsKey(projectId);
     }
 
     private List<ProjectSeed> sortedIndexableProjects() {
@@ -1296,7 +1331,7 @@ public class SeoContentService {
 
     private List<String> projectIntentMaterialsForProject(String projectId) {
         ProjectSeed seed = projectSeeds.get(projectId);
-        if (seed == null) {
+        if (seed == null || !isProjectEnabled(projectId)) {
             return List.of();
         }
         List<String> configured = PROJECT_INTENT_MATERIALS.getOrDefault(
@@ -1304,12 +1339,16 @@ public class SeoContentService {
                 List.of(seed.defaultMaterialId())
         );
         return configured.stream()
-                .filter(materialId -> materialFactorRepository.findById(materialId).isPresent())
+                .filter(this::isMaterialEnabled)
                 .toList();
     }
 
     private String intentPath(String projectId, String materialId, IntentType intentType) {
         return INTENT_BASE_PATH + "/" + projectId + "/" + materialId + "/" + intentType.slug();
+    }
+
+    private String intentPath(String projectId, String materialId, String intentSlug) {
+        return INTENT_BASE_PATH + "/" + projectId + "/" + materialId + "/" + intentSlug;
     }
 
     private String materialDisplayName(String materialId) {
@@ -2188,6 +2227,13 @@ public class SeoContentService {
             String operatorQuestion,
             String sampleInput,
             String sampleDecision
+    ) {
+    }
+
+    private record IndexableIntentSeed(
+            String projectId,
+            String materialId,
+            String intentSlug
     ) {
     }
 

@@ -2,6 +2,7 @@ package com.dumpster.calculator;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -87,6 +88,33 @@ class SeoPageRenderingTests {
     }
 
     @Test
+    void intentPageRendersForRoofSecondaryMaterials() throws Exception {
+        mockMvc.perform(get("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")));
+
+        mockMvc.perform(get("/dumpster/answers/roof_tearoff/metal_scrap_light/size-guide"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")));
+    }
+
+    @Test
+    void whitelistedIntentPageIsIndexable() throws Exception {
+        mockMvc.perform(get("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
+    }
+
+    @Test
+    void nonWhitelistedIntentPageRemainsNoindex() throws Exception {
+        mockMvc.perform(get("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"noindex,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
+    }
+
+    @Test
     void specialDecisionPageRendersDirectAnswerMatrixAndSchema() throws Exception {
         mockMvc.perform(get("/dumpster/dumpster-vs-junk-removal-which-is-cheaper"))
                 .andExpect(status().isOk())
@@ -112,14 +140,14 @@ class SeoPageRenderingTests {
     }
 
     @Test
-    void waveThreePagesReturnNotFoundWhenMaxWaveIsTwo() throws Exception {
+    void waveThreePagesRenderWithDefaultWaveThree() throws Exception {
         mockMvc.perform(get("/dumpster/weight/brick-block"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
 
         mockMvc.perform(get("/dumpster/size/garage-cleanout"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
 
         mockMvc.perform(get("/dumpster/fill-line-rules-for-heavy-debris"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 }

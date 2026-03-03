@@ -43,17 +43,27 @@ test.describe("Dumpster calculator local e2e", () => {
     );
   });
 
-  test("sitemap exposes phase-one calculator and decision pages", async ({ request }) => {
-    const response = await request.get("/sitemap.xml");
-    expect(response.ok()).toBeTruthy();
-    const xml = await response.text();
-    expect(xml).toContain("/dumpster/size-weight-calculator");
-    expect(xml).toContain("/dumpster/heavy-debris-rules");
-    expect(xml).toContain("/dumpster/weight/shingles");
-    expect(xml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
-    expect(xml).toContain("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
-    expect(xml).not.toContain("/dumpster/material-guides");
-    expect(xml).not.toContain("/dumpster/project-guides");
-    expect(xml).not.toContain("/dumpster/answers/");
+  test("split sitemap endpoints expose core and money pages", async ({ request }) => {
+    const indexResponse = await request.get("/sitemap.xml");
+    expect(indexResponse.ok()).toBeTruthy();
+    const indexXml = await indexResponse.text();
+    expect(indexXml).toContain("/sitemap-core.xml");
+    expect(indexXml).toContain("/sitemap-money.xml");
+    expect(indexXml).toContain("/sitemap-experiments.xml");
+
+    const coreResponse = await request.get("/sitemap-core.xml");
+    expect(coreResponse.ok()).toBeTruthy();
+    const coreXml = await coreResponse.text();
+    expect(coreXml).toContain("/dumpster/size-weight-calculator");
+    expect(coreXml).toContain("/dumpster/heavy-debris-rules");
+    expect(coreXml).toContain("/about/methodology");
+
+    const moneyResponse = await request.get("/sitemap-money.xml");
+    expect(moneyResponse.ok()).toBeTruthy();
+    const moneyXml = await moneyResponse.text();
+    expect(moneyXml).toContain("/dumpster/weight/shingles");
+    expect(moneyXml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
+    expect(moneyXml).toContain("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
+    expect(moneyXml).toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
   });
 });

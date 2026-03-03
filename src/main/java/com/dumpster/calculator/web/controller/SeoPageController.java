@@ -149,13 +149,15 @@ public class SeoPageController {
             @PathVariable("intent") String intent,
             HttpServletResponse response
     ) {
-        response.setHeader("X-Robots-Tag", "noindex, follow");
         String resolvedProjectId = seoContentService.resolveProjectId(projectId);
         String resolvedMaterialId = seoContentService.resolveMaterialId(materialId);
+        boolean indexableIntent = seoContentService.isIndexableIntentPath(resolvedProjectId, resolvedMaterialId, intent);
+        response.setHeader("X-Robots-Tag", indexableIntent ? "index, follow" : "noindex, follow");
         IntentPageViewModel model = seoContentService.intentPage(resolvedProjectId, resolvedMaterialId, intent, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/intent-page");
         modelAndView.addObject("model", model);
+        modelAndView.addObject("indexableIntent", indexableIntent);
         return modelAndView;
     }
 

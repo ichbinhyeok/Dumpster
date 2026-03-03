@@ -7,13 +7,15 @@ function extractFirstMatch(input: string, pattern: RegExp): string | null {
 }
 
 test.describe("Mass intent-cluster coverage", () => {
-  test("sitemap excludes combinatorial intent cluster", async ({ request }) => {
-    const sitemap = await request.get("/sitemap.xml");
+  test("money sitemap includes only whitelisted intent pages", async ({ request }) => {
+    const sitemap = await request.get("/sitemap-money.xml");
     expect(sitemap.ok()).toBeTruthy();
     const xml = await sitemap.text();
     const locs = sitemapLocs(xml);
     const intentLocs = locs.filter((loc) => loc.includes("/dumpster/answers/"));
-    expect(intentLocs.length).toBe(0);
+    expect(intentLocs.length).toBe(10);
+    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+    expect(intentLocs).not.toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
   });
 
   test("phase-one decision pages return 200 with direct-answer structure", async ({ request }) => {

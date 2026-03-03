@@ -20,7 +20,8 @@ class SeoContentServiceTests {
         assertThat(topMaterial.answerFirst()).isNotBlank();
         assertThat(topMaterial.quickRules()).hasSize(3);
         assertThat(topMaterial.faqItems()).hasSize(3);
-        assertThat(seoContentService.materialPage("plaster", "http://localhost:8080")).isEmpty();
+        assertThat(seoContentService.materialPage("plaster", "http://localhost:8080")).isPresent();
+        assertThat(seoContentService.materialPage("does_not_exist", "http://localhost:8080")).isEmpty();
     }
 
     @Test
@@ -59,5 +60,17 @@ class SeoContentServiceTests {
         assertThat(intent.decisionChecklist()).hasSize(5);
         assertThat(intent.faqItems()).hasSize(3);
         assertThat(intent.relatedIntentLinks()).isNotEmpty();
+    }
+
+    @Test
+    void indexableIntentPathsContainOnlyWhitelistedMoneyRoutes() {
+        var paths = seoContentService.indexableIntentPaths();
+
+        assertThat(paths).hasSize(10);
+        assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+        assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/size-guide");
+        assertThat(paths).contains("/dumpster/answers/dirt_grading/dirt_soil/size-guide");
+        assertThat(paths).contains("/dumpster/answers/light_commercial_fitout/drywall/size-guide");
+        assertThat(paths).doesNotContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
     }
 }

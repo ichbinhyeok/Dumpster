@@ -100,25 +100,47 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     }
   });
 
-  test("robots and sitemap expose crawlable phase-one assets and block combinatorial intent pages", async ({ request }) => {
+  test("robots and split sitemaps expose money assets with answer allowlist", async ({ request }) => {
     const robots = await request.get("/robots.txt");
     expect(robots.ok()).toBeTruthy();
     const robotsTxt = await robots.text();
-    expect(robotsTxt).toContain("Disallow: /dumpster/answers/");
+    expect(robotsTxt).toContain("Allow: /dumpster/answers/");
+    expect(robotsTxt).not.toContain("Disallow: /dumpster/answers/");
     expect(robotsTxt).toContain("Allow: /about/");
     expect(robotsTxt).toContain("Disallow: /api/");
-    expect(robotsTxt).toContain("Sitemap:");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap.xml");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap-core.xml");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap-money.xml");
+    expect(robotsTxt).toContain("Sitemap: http://127.0.0.1:4173/sitemap-experiments.xml");
 
-    const sitemap = await request.get("/sitemap.xml");
-    expect(sitemap.ok()).toBeTruthy();
-    const xml = await sitemap.text();
-    expect(xml).toContain("/about/methodology");
-    expect(xml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
-    expect(xml).toContain("/dumpster/weight/concrete");
-    expect(xml).not.toContain("/dumpster/material-guides");
-    expect(xml).not.toContain("/dumpster/project-guides");
-    expect(xml).not.toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
-    expect(xml).not.toContain("/dumpster/answers/concrete_removal/concrete/overage-risk");
+    const sitemapIndex = await request.get("/sitemap.xml");
+    expect(sitemapIndex.ok()).toBeTruthy();
+    const indexXml = await sitemapIndex.text();
+    expect(indexXml).toContain("/sitemap-core.xml");
+    expect(indexXml).toContain("/sitemap-money.xml");
+    expect(indexXml).toContain("/sitemap-experiments.xml");
+
+    const coreSitemap = await request.get("/sitemap-core.xml");
+    expect(coreSitemap.ok()).toBeTruthy();
+    const coreXml = await coreSitemap.text();
+    expect(coreXml).toContain("/about/methodology");
+    expect(coreXml).toContain("/dumpster/size-weight-calculator");
+    expect(coreXml).not.toContain("/dumpster/material-guides");
+
+    const moneySitemap = await request.get("/sitemap-money.xml");
+    expect(moneySitemap.ok()).toBeTruthy();
+    const moneyXml = await moneySitemap.text();
+    expect(moneyXml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
+    expect(moneyXml).toContain("/dumpster/weight/concrete");
+    expect(moneyXml).toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+    expect(moneyXml).toContain("/dumpster/answers/concrete_removal/concrete/size-guide");
+    expect(moneyXml).not.toContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
+
+    const experimentsSitemap = await request.get("/sitemap-experiments.xml");
+    expect(experimentsSitemap.ok()).toBeTruthy();
+    const experimentsXml = await experimentsSitemap.text();
+    expect(experimentsXml).toContain("/dumpster/material-guides");
+    expect(experimentsXml).toContain("/dumpster/project-guides");
   });
 
   test("intent page includes direct answer block, table, checklist and related links", async ({ page }) => {

@@ -15,8 +15,8 @@ const highIntentPaths = [
 ];
 
 test.describe("High-intent page pack", () => {
-  test("sitemap includes all 10 high-intent pages", async ({ request }) => {
-    const sitemap = await request.get("/sitemap.xml");
+  test("money sitemap includes all 10 high-intent pages", async ({ request }) => {
+    const sitemap = await request.get("/sitemap-money.xml");
     expect(sitemap.ok()).toBeTruthy();
     const xml = await sitemap.text();
     const locs = sitemapLocs(xml);
