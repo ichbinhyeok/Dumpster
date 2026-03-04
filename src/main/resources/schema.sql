@@ -11,10 +11,12 @@ create table if not exists material_factors (
     wet_multiplier_high double precision not null,
     data_quality varchar(10) not null,
     source varchar(255),
+    source_url varchar(1000),
     source_version_date date,
     updated_at timestamp default current_timestamp
 );
 alter table material_factors add column if not exists source_version_date date;
+alter table material_factors add column if not exists source_url varchar(1000);
 
 create table if not exists unit_conversions (
     unit_id varchar(120) primary key,
@@ -54,6 +56,58 @@ create table if not exists pricing_assumptions (
     junk_rate_basis varchar(120) not null,
     updated_at timestamp default current_timestamp
 );
+
+create table if not exists junk_pricing_profiles (
+    profile_id varchar(80) primary key,
+    display_name varchar(200) not null,
+    min_service_fee_low double precision not null,
+    min_service_fee_typ double precision not null,
+    min_service_fee_high double precision not null,
+    per_cy_fee_low double precision not null,
+    per_cy_fee_typ double precision not null,
+    per_cy_fee_high double precision not null,
+    minimum_billable_volume_cy double precision not null,
+    truck_capacity_cy double precision not null,
+    billing_increment_fraction double precision not null,
+    dense_material_threshold_ton_per_cy double precision not null,
+    dense_material_multiplier_low double precision not null,
+    dense_material_multiplier_typ double precision not null,
+    dense_material_multiplier_high double precision not null,
+    data_quality varchar(10) not null,
+    source varchar(255) not null,
+    source_url varchar(1000),
+    source_version_date date,
+    notes varchar(2000),
+    updated_at timestamp default current_timestamp
+);
+
+create table if not exists junk_pricing_profile_rules (
+    rule_id varchar(80) primary key,
+    market_tier varchar(40) not null,
+    need_timing varchar(40) not null,
+    profile_id varchar(80) not null,
+    priority integer not null,
+    source varchar(255) not null,
+    source_url varchar(1000),
+    source_version_date date,
+    notes varchar(2000),
+    updated_at timestamp default current_timestamp
+);
+
+create table if not exists market_tier_zip_overrides (
+    rule_id varchar(80) primary key,
+    zip_start varchar(5) not null,
+    zip_end varchar(5) not null,
+    market_tier varchar(40) not null,
+    priority integer not null,
+    source varchar(255) not null,
+    source_url varchar(1000),
+    source_version_date date,
+    notes varchar(2000),
+    updated_at timestamp default current_timestamp
+);
+create index if not exists idx_market_tier_zip_overrides_range
+    on market_tier_zip_overrides (zip_start, zip_end, priority);
 
 create table if not exists estimates (
     estimate_id varchar(64) primary key,

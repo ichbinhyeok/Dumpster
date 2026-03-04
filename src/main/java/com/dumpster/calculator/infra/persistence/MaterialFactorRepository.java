@@ -25,6 +25,7 @@ public class MaterialFactorRepository {
             rs.getDouble("wet_multiplier_high"),
             DataQuality.valueOf(rs.getString("data_quality").toUpperCase()),
             rs.getString("source"),
+            readOptionalSourceUrl(rs),
             readOptionalSourceVersionDate(rs)
     );
 
@@ -54,6 +55,15 @@ public class MaterialFactorRepository {
         } catch (SQLException ignored) {
             // Backward compatibility for local DB files created before this column existed.
             return null;
+        }
+    }
+
+    private static String readOptionalSourceUrl(ResultSet rs) {
+        try {
+            return rs.getString("source_url");
+        } catch (SQLException ignored) {
+            // Backward compatibility for local DB files created before this column existed.
+            return "";
         }
     }
 }

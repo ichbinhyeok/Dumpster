@@ -1,0 +1,10 @@
+rule_id,zip_start,zip_end,market_tier,priority,source,source_url,source_version_date,notes
+coastal_northeast_ct,06000,06999,coastal,35,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/connecticut/,2026-03-04,"Coastal premium tendency for CT corridor markets."
+coastal_northeast_nj,07000,08999,coastal,35,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/new-jersey/,2026-03-04,"Coastal premium tendency for NJ corridor markets."
+coastal_hawaii_core,96700,96899,coastal,35,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/hawaii/,2026-03-04,"Island logistics premium."
+mountain_idaho_band,83200,83899,mountain,40,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/idaho/,2026-03-04,"Sparse-dispatch mountain profile."
+mountain_montana_band,59000,59999,mountain,40,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/montana/,2026-03-04,"Sparse-dispatch mountain profile."
+mountain_wyoming_band,82000,83199,mountain,40,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/wyoming/,2026-03-04,"Sparse-dispatch mountain profile."
+heartland_ohio_band,43000,45999,heartland,45,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/ohio/,2026-03-04,"Balanced heartland profile."
+heartland_indiana_band,46000,47999,heartland,45,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/indiana/,2026-03-04,"Balanced heartland profile."
+heartland_missouri_band,63000,65899,heartland,45,CENSUS_ZCTA+USZIP_REFERENCE,https://www.unitedstateszipcodes.org/missouri/,2026-03-04,"Balanced heartland profile."

@@ -87,7 +87,9 @@ public class EstimationFacade {
                 multiHaulCount,
                 totalWeight,
                 safeVolume,
-                includedTons
+                includedTons,
+                command.needTiming(),
+                command.safeOptions().zipCode()
         );
 
         List<String> hardStops = collectHardStops(evaluations);

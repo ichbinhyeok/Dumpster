@@ -7,12 +7,15 @@
     "e2e:smoke": "playwright test tests/e2e/launch-smoke.spec.ts tests/e2e/smoke-critical.spec.ts",
     "e2e:launch": "playwright test tests/e2e/calculator.spec.ts tests/e2e/launch-smoke.spec.ts",
     "e2e:full": "playwright test tests/e2e",
-    "e2e:beta": "playwright test tests/e2e/business-rules.spec.ts tests/e2e/persona-journeys.spec.ts tests/e2e/negative-validation.spec.ts tests/e2e/seo-aeo.spec.ts tests/e2e/accessibility.spec.ts tests/e2e/design-quality.spec.ts tests/e2e/intent-cluster-mass.spec.ts",
+    "e2e:beta": "playwright test tests/e2e/business-rules.spec.ts tests/e2e/domain-sanity.spec.ts tests/e2e/persona-journeys.spec.ts tests/e2e/negative-validation.spec.ts tests/e2e/seo-aeo.spec.ts tests/e2e/accessibility.spec.ts tests/e2e/design-quality.spec.ts tests/e2e/intent-cluster-mass.spec.ts tests/e2e/high-intent-pages.spec.ts tests/e2e/smoke-critical.spec.ts tests/e2e/iphone-se-scenarios.spec.ts tests/e2e/iphone-se-beta-expansion.spec.ts tests/e2e/beta-scenario-matrix.spec.ts",
     "e2e:visual:update": "playwright test tests/e2e/visual-regression.spec.ts tests/e2e/visual-regression-extended.spec.ts --update-snapshots",
     "e2e:ui": "playwright test --ui",
     "e2e:headed": "playwright test --headed",
     "e2e:report": "playwright show-report",
-    "build:tailwind": "tailwindcss -c tailwind.config.cjs -i ./src/main/resources/static/css/tailwind.input.css -o ./src/main/resources/static/css/tailwind.generated.css --minify"
+    "build:tailwind": "tailwindcss -c tailwind.config.cjs -i ./src/main/resources/static/css/tailwind.input.css -o ./src/main/resources/static/css/tailwind.generated.css --minify",
+    "data:market-tier": "node scripts/build-market-tier-zip-overrides.mjs",
+    "data:source-freshness:report": "node scripts/source-freshness-report.mjs --max-age-days 180 --write",
+    "data:source-freshness:check": "node scripts/source-freshness-report.mjs --max-age-days 180 --fail-on-stale"
   },
   "keywords": [],
   "author": "",

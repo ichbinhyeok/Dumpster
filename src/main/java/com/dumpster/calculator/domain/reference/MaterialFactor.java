@@ -13,6 +13,7 @@ public record MaterialFactor(
         double wetMultiplierHigh,
         DataQuality dataQuality,
         String source,
+        String sourceUrl,
         LocalDate sourceVersionDate
 ) {
 }

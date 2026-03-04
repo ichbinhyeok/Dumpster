@@ -2,20 +2,39 @@ package com.dumpster.calculator.domain.service;
 
 import com.dumpster.calculator.domain.model.CostComparisonOption;
 import com.dumpster.calculator.domain.model.RangeValue;
+import com.dumpster.calculator.domain.reference.JunkPricingProfile;
 import com.dumpster.calculator.domain.reference.PricingAssumption;
+import com.dumpster.calculator.infra.persistence.JunkPricingProfileRepository;
+import com.dumpster.calculator.infra.persistence.JunkPricingProfileRuleRepository;
+import com.dumpster.calculator.infra.persistence.MarketTierZipRuleRepository;
 import com.dumpster.calculator.infra.persistence.PricingAssumptionRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CostComparisonService {
 
     private final PricingAssumptionRepository pricingAssumptionRepository;
+    private final JunkPricingProfileRepository junkPricingProfileRepository;
+    private final JunkPricingProfileRuleRepository junkPricingProfileRuleRepository;
+    private final MarketTierZipRuleRepository marketTierZipRuleRepository;
+    private final String defaultMarketTier;
 
-    public CostComparisonService(PricingAssumptionRepository pricingAssumptionRepository) {
+    public CostComparisonService(
+            PricingAssumptionRepository pricingAssumptionRepository,
+            JunkPricingProfileRepository junkPricingProfileRepository,
+            JunkPricingProfileRuleRepository junkPricingProfileRuleRepository,
+            MarketTierZipRuleRepository marketTierZipRuleRepository,
+            @Value("${app.pricing.market-tier:national}") String marketTier
+    ) {
         this.pricingAssumptionRepository = pricingAssumptionRepository;
+        this.junkPricingProfileRepository = junkPricingProfileRepository;
+        this.junkPricingProfileRuleRepository = junkPricingProfileRuleRepository;
+        this.marketTierZipRuleRepository = marketTierZipRuleRepository;
+        this.defaultMarketTier = normalizeMarketTier(marketTier);
     }
 
     public List<CostComparisonOption> compare(
@@ -24,12 +43,15 @@ public class CostComparisonService {
             int multiHaulCount,
             RangeValue totalWeightTons,
             RangeValue totalVolumeYd3,
-            double includedTons
+            double includedTons,
+            String needTiming,
+            String zipCode
     ) {
+        ResolvedMarketTier resolvedMarketTier = resolveMarketTier(zipCode);
         List<CostComparisonOption> options = new ArrayList<>();
         options.add(singleDumpsterOption(safeSizeYd, totalWeightTons, includedTons));
         options.add(multiHaulOption(multiHaulSizeYd, multiHaulCount, totalWeightTons, includedTons));
-        options.add(junkRemovalOption(totalVolumeYd3));
+        options.add(junkRemovalOption(totalVolumeYd3, totalWeightTons, needTiming, resolvedMarketTier));
         return options;
     }
 
@@ -70,28 +92,50 @@ public class CostComparisonService {
         );
     }
 
-    private CostComparisonOption junkRemovalOption(RangeValue volumeYd3) {
-        Optional<PricingAssumption> junkPricing = pricingAssumptionRepository.findBySize(0);
-        if (junkPricing.isEmpty()) {
+    private CostComparisonOption junkRemovalOption(
+            RangeValue volumeYd3,
+            RangeValue weightTons,
+            String needTiming,
+            ResolvedMarketTier resolvedMarketTier
+    ) {
+        Optional<JunkPricingProfile> junkProfile = resolveProfile(resolvedMarketTier.marketTier(), needTiming);
+        if (junkProfile.isEmpty()) {
             return unavailable("junk_removal", "Junk removal");
         }
-        PricingAssumption pricing = junkPricing.get();
-        // For size_yd=0 row, rental fields represent per-yd rates and haul_typ is service minimum.
-        double minServiceLow = pricing.haulFeeLow();
-        double minServiceTyp = pricing.haulFeeTyp();
-        double minServiceHigh = pricing.haulFeeHigh();
+        JunkPricingProfile profile = junkProfile.get();
+        boolean denseLoad = isDenseLoad(volumeYd3, weightTons, profile);
+        double billedVolumeLow = billedVolume(volumeYd3.low(), profile);
+        double billedVolumeTyp = billedVolume(volumeYd3.typ(), profile);
+        double billedVolumeHigh = billedVolume(volumeYd3.high(), profile);
         RangeValue cost = RangeValue.of(
-                minServiceLow + (volumeYd3.low() * pricing.rentalFeeLow()),
-                minServiceTyp + (volumeYd3.typ() * pricing.rentalFeeTyp()),
-                minServiceHigh + (volumeYd3.high() * pricing.rentalFeeHigh())
+                (profile.minServiceFeeLow() + (billedVolumeLow * profile.perCyFeeLow()))
+                        * (denseLoad ? profile.denseMaterialMultiplierLow() : 1.0d),
+                (profile.minServiceFeeTyp() + (billedVolumeTyp * profile.perCyFeeTyp()))
+                        * (denseLoad ? profile.denseMaterialMultiplierTyp() : 1.0d),
+                (profile.minServiceFeeHigh() + (billedVolumeHigh * profile.perCyFeeHigh()))
+                        * (denseLoad ? profile.denseMaterialMultiplierHigh() : 1.0d)
         );
+
+        List<String> notes = new ArrayList<>();
+        notes.add("model: " + profile.displayName());
+        notes.add("profile: " + profile.profileId());
+        notes.add("market tier: " + resolvedMarketTier.marketTier()
+                + " (" + resolvedMarketTier.resolutionSource() + ")");
+        notes.add("source pack: " + profile.source());
+        notes.add("billed in " + billingIncrementLabel(profile) + " truck increments");
+        if (denseLoad) {
+            notes.add("dense-load surcharge likely due to tons-per-yard profile");
+        } else {
+            notes.add("dense-load surcharge not applied under current assumptions");
+        }
+
         return new CostComparisonOption(
                 "junk_removal",
                 "Junk removal service",
                 cost.round2(),
                 true,
-                "often competitive when sorting and hauling are difficult",
-                List.of("price can vary by local labor and access constraints")
+                "often faster for mixed/bulky loads or access-heavy cleanup",
+                notes
         );
     }
 
@@ -121,6 +165,91 @@ public class CostComparisonService {
                 "pricing unavailable",
                 List.of("missing pricing assumptions for this option")
         );
+    }
+
+    private static boolean isDenseLoad(
+            RangeValue volumeYd3,
+            RangeValue weightTons,
+            JunkPricingProfile profile
+    ) {
+        double denominator = Math.max(volumeYd3.typ(), 0.1d);
+        double tonsPerYd = weightTons.typ() / denominator;
+        return tonsPerYd >= profile.denseMaterialThresholdTonPerCy();
+    }
+
+    private static double billedVolume(double volumeYd3, JunkPricingProfile profile) {
+        double safeVolume = Math.max(volumeYd3, profile.minimumBillableVolumeCy());
+        double increment = Math.max(0.01d, profile.truckCapacityCy() * profile.billingIncrementFraction());
+        return Math.ceil(safeVolume / increment) * increment;
+    }
+
+    private static String billingIncrementLabel(JunkPricingProfile profile) {
+        int denominator = (int) Math.round(1.0d / Math.max(0.01d, profile.billingIncrementFraction()));
+        return "1/" + denominator;
+    }
+
+    private Optional<JunkPricingProfile> resolveProfile(String marketTier, String needTiming) {
+        String normalizedTiming = normalizeNeedTiming(needTiming);
+        return junkPricingProfileRuleRepository.resolveProfileId(normalizeMarketTier(marketTier), normalizedTiming)
+                .flatMap(junkPricingProfileRepository::findById)
+                .or(junkPricingProfileRepository::findDefaultProfile);
+    }
+
+    private ResolvedMarketTier resolveMarketTier(String zipCode) {
+        String normalizedZip = normalizeZip(zipCode);
+        if (normalizedZip != null) {
+            return marketTierZipRuleRepository.resolveByZip(normalizedZip)
+                    .map(rule -> new ResolvedMarketTier(
+                            normalizeMarketTier(rule.marketTier()),
+                            "zip rule " + rule.ruleId() + " (" + rule.zipStart() + "-" + rule.zipEnd() + ")"
+                    ))
+                    .orElseGet(() -> new ResolvedMarketTier(
+                            defaultMarketTier,
+                            "default tier (zip unmapped)"
+                    ));
+        }
+        return new ResolvedMarketTier(defaultMarketTier, "default tier (zip missing)");
+    }
+
+    private static String normalizeMarketTier(String tier) {
+        if (tier == null || tier.isBlank()) {
+            return "national";
+        }
+        String normalized = tier.trim().toLowerCase();
+        if ("urban".equals(normalized)
+                || "value".equals(normalized)
+                || "national".equals(normalized)
+                || "coastal".equals(normalized)
+                || "mountain".equals(normalized)
+                || "heartland".equals(normalized)) {
+            return normalized;
+        }
+        return "national";
+    }
+
+    private static String normalizeNeedTiming(String needTiming) {
+        if (needTiming == null || needTiming.isBlank()) {
+            return "any";
+        }
+        String normalized = needTiming.trim().toLowerCase();
+        if ("48h".equals(normalized) || "research".equals(normalized) || "this_week".equals(normalized)) {
+            return normalized;
+        }
+        return "any";
+    }
+
+    private static String normalizeZip(String zipCode) {
+        if (zipCode == null) {
+            return null;
+        }
+        String digits = zipCode.replaceAll("[^0-9]", "");
+        if (digits.length() != 5) {
+            return null;
+        }
+        return digits;
+    }
+
+    private record ResolvedMarketTier(String marketTier, String resolutionSource) {
     }
 }
 

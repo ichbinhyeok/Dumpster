@@ -40,6 +40,9 @@ public class CsvBootstrapService {
         seedUnitConversions();
         seedDumpsterSizes();
         seedPricingAssumptions();
+        seedJunkPricingProfiles();
+        seedJunkPricingProfileRules();
+        seedMarketTierZipOverrides();
     }
 
     private void seedMaterialFactors() {
@@ -48,8 +51,8 @@ public class CsvBootstrapService {
             jdbcTemplate.update("""
                     merge into material_factors (
                         material_id, name, category, density_low, density_typ, density_high,
-                        wet_multiplier_low, wet_multiplier_high, data_quality, source, source_version_date
-                    ) key(material_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        wet_multiplier_low, wet_multiplier_high, data_quality, source, source_url, source_version_date
+                    ) key(material_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     row.get("material_id"),
                     row.get("name"),
@@ -61,6 +64,7 @@ public class CsvBootstrapService {
                     parseDouble(row.get("wet_multiplier_high")),
                     row.get("data_quality"),
                     row.getOrDefault("source", ""),
+                    row.getOrDefault("source_url", ""),
                     row.getOrDefault("source_version_date", null));
         }
         log.info("Upserted material_factors: {}", rows.size());
@@ -132,6 +136,115 @@ public class CsvBootstrapService {
                     row.get("junk_rate_basis"));
         }
         log.info("Upserted pricing_assumptions: {}", rows.size());
+    }
+
+    private void seedJunkPricingProfiles() {
+        List<Map<String, String>> rows = readCsv("classpath:data/junk_pricing_profiles.csv");
+        for (Map<String, String> row : rows) {
+            jdbcTemplate.update("""
+                    merge into junk_pricing_profiles (
+                        profile_id,
+                        display_name,
+                        min_service_fee_low, min_service_fee_typ, min_service_fee_high,
+                        per_cy_fee_low, per_cy_fee_typ, per_cy_fee_high,
+                        minimum_billable_volume_cy,
+                        truck_capacity_cy,
+                        billing_increment_fraction,
+                        dense_material_threshold_ton_per_cy,
+                        dense_material_multiplier_low,
+                        dense_material_multiplier_typ,
+                        dense_material_multiplier_high,
+                        data_quality,
+                        source,
+                        source_url,
+                        source_version_date,
+                        notes
+                    ) key(profile_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    row.get("profile_id"),
+                    row.get("display_name"),
+                    parseDouble(row.get("min_service_fee_low")),
+                    parseDouble(row.get("min_service_fee_typ")),
+                    parseDouble(row.get("min_service_fee_high")),
+                    parseDouble(row.get("per_cy_fee_low")),
+                    parseDouble(row.get("per_cy_fee_typ")),
+                    parseDouble(row.get("per_cy_fee_high")),
+                    parseDouble(row.get("minimum_billable_volume_cy")),
+                    parseDouble(row.get("truck_capacity_cy")),
+                    parseDouble(row.get("billing_increment_fraction")),
+                    parseDouble(row.get("dense_material_threshold_ton_per_cy")),
+                    parseDouble(row.get("dense_material_multiplier_low")),
+                    parseDouble(row.get("dense_material_multiplier_typ")),
+                    parseDouble(row.get("dense_material_multiplier_high")),
+                    row.get("data_quality"),
+                    row.get("source"),
+                    row.get("source_url"),
+                    row.getOrDefault("source_version_date", null),
+                    row.getOrDefault("notes", ""));
+        }
+        log.info("Upserted junk_pricing_profiles: {}", rows.size());
+    }
+
+    private void seedJunkPricingProfileRules() {
+        List<Map<String, String>> rows = readCsv("classpath:data/junk_pricing_profile_rules.csv");
+        for (Map<String, String> row : rows) {
+            jdbcTemplate.update("""
+                    merge into junk_pricing_profile_rules (
+                        rule_id,
+                        market_tier,
+                        need_timing,
+                        profile_id,
+                        priority,
+                        source,
+                        source_url,
+                        source_version_date,
+                        notes
+                    ) key(rule_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    row.get("rule_id"),
+                    row.get("market_tier"),
+                    row.get("need_timing"),
+                    row.get("profile_id"),
+                    parseInteger(row.get("priority")),
+                    row.get("source"),
+                    row.get("source_url"),
+                    row.getOrDefault("source_version_date", null),
+                    row.getOrDefault("notes", ""));
+        }
+        log.info("Upserted junk_pricing_profile_rules: {}", rows.size());
+    }
+
+    private void seedMarketTierZipOverrides() {
+        List<Map<String, String>> rows = new ArrayList<>(readCsv("classpath:data/market_tier_zip_overrides.csv"));
+        Resource regionalOverrides = resourceLoader.getResource("classpath:data/market_tier_zip_overrides_regional.csv");
+        if (regionalOverrides.exists()) {
+            rows.addAll(readCsv("classpath:data/market_tier_zip_overrides_regional.csv"));
+        }
+        for (Map<String, String> row : rows) {
+            jdbcTemplate.update("""
+                    merge into market_tier_zip_overrides (
+                        rule_id,
+                        zip_start,
+                        zip_end,
+                        market_tier,
+                        priority,
+                        source,
+                        source_url,
+                        source_version_date,
+                        notes
+                    ) key(rule_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    row.get("rule_id"),
+                    row.get("zip_start"),
+                    row.get("zip_end"),
+                    row.get("market_tier"),
+                    parseInteger(row.get("priority")),
+                    row.get("source"),
+                    row.get("source_url"),
+                    row.getOrDefault("source_version_date", null),
+                    row.getOrDefault("notes", ""));
+        }
+        log.info("Upserted market_tier_zip_overrides: {}", rows.size());
     }
 
     private List<Map<String, String>> readCsv(String location) {
