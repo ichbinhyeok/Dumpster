@@ -59,7 +59,7 @@
           "@context": "https://schema.org",
           "@type": "HowTo",
           "name": "How to choose dumpster size for ${model.title()}",
-          "description": "Follow project preset, compare strategy, and confirm operator constraints before booking.",
+          "description": "Follow the project preset, compare strategy, and confirm booking constraints before committing.",
           "step": [
             {
               "@type": "HowToStep",
@@ -145,7 +145,7 @@
                 <div class="mistake-strip" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
                     <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">Warning: Mistake prevention</strong>
                     <p style="color: #991B1B; font-weight: 500;">${model.commonMistake()}</p>
-                    <p style="color: #991B1B; font-size: 0.8rem;"><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
+                    <p style="color: #991B1B; font-size: 0.8rem;"><strong>Ask before booking:</strong> ${model.operatorQuestion()}</p>
                 </div>
             </aside>
         </aside>

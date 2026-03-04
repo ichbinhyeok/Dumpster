@@ -196,106 +196,106 @@ public class SeoContentService {
         this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, MAX_WAVE));
         addProject(
                 "roof_tearoff",
-                "Dumpster Size for Roof Tear-off",
+                "Roof tear-off dumpster size guide",
                 "roof_square",
                 "asphalt_shingles",
                 "Choosing 20yd by volume alone can trigger overweight fees.",
                 "Use weight-first sizing and check clean-load requirements.",
-                "What max haul tons apply for shingle loads in my market?",
+                "What weight limit applies per container for roof shingle loads?",
                 "Input 22 roof squares with asphalt shingles and compare 15yd vs 20yd risk.",
                 "Even when volume looks close, weight can force a safer or split-haul strategy."
         );
         addProject(
                 "kitchen_remodel",
-                "Dumpster Size for Kitchen Remodel",
+                "Kitchen remodel dumpster size guide",
                 "pickup_load",
                 "mixed_cd",
                 "Underestimating cabinet and countertop weight is common.",
                 "Pick safe size first, then compare budget option if risk is low.",
-                "What included tons and overage rates apply to mixed C&D?",
+                "What included tons and overage fee apply to mixed construction debris?",
                 "Input 5 pickup loads with mixed C&D and enable mixed-load bulking.",
                 "Budget option is viable only when overage exposure stays acceptable."
         );
         addProject(
                 "bathroom_remodel",
-                "Dumpster Size for Bathroom Remodel",
+                "Bathroom remodel dumpster size guide",
                 "pickup_load",
                 "tile_ceramic",
                 "Tile and mortar can turn a small cleanup into a heavy load.",
                 "If tile share is high, use smaller bins with staged hauling.",
-                "Do you allow mixed tile and drywall in one container?",
+                "Can tile and drywall go in one container without extra fees?",
                 "Input 4 pickup loads where tile is dominant and compare haul feasibility.",
                 "Tile-dominant jobs often need weight-first planning over pure cubic volume."
         );
         addProject(
                 "deck_demolition",
-                "Dumpster Size for Deck Demolition",
+                "Deck demolition dumpster size guide",
                 "pickup_load",
                 "decking_wood",
                 "Ignoring nails, railings, and wet lumber inflates risk.",
                 "Estimate with mixed-load bulking and weather adjustment.",
-                "Is treated lumber accepted and charged at standard rates?",
+                "Is treated lumber accepted at standard pricing?",
                 "Input 7 pickup loads for decking wood with wet toggle after rain.",
                 "Moisture and mixed hardware can move the job from budget to safe recommendation."
         );
         addProject(
                 "garage_cleanout",
-                "Dumpster Size for Garage Cleanout",
+                "Garage cleanout dumpster size guide",
                 "pickup_load",
                 "household_junk",
                 "Volume looks small until furniture and bulky items stack poorly.",
                 "Choose risk-aware sizing with mixed-load inefficiency enabled.",
-                "Are appliances or e-waste surcharges applied separately?",
+                "Are appliance or e-waste add-on fees charged separately?",
                 "Input 6 pickup loads with furniture and household junk mixed together.",
                 "Stack inefficiency can require more volume than visual estimates suggest."
         );
         addProject(
                 "estate_cleanout",
-                "Dumpster Size for Estate Cleanout",
+                "Estate cleanout dumpster size guide",
                 "pickup_load",
                 "household_junk",
                 "One-trip assumptions fail when bulky items and recyclables mix.",
                 "Plan for two-stage loading or compare junk removal routing.",
-                "Can partial pulls be scheduled within the same rental window?",
+                "Can partial pickups be scheduled in the same rental window?",
                 "Input 10 pickup loads and evaluate dumpster vs junk-removal handoff.",
                 "Large mixed cleanouts often convert better with a split strategy."
         );
         addProject(
                 "yard_cleanup",
-                "Dumpster Size for Yard Cleanup",
+                "Yard cleanup dumpster size guide",
                 "pickup_load",
                 "yard_waste",
                 "Wet yard waste can spike weight quickly after rain.",
                 "Toggle wet-load assumptions before selecting budget option.",
-                "Do wet green waste loads have weight caps or special rules?",
+                "Do wet green-waste loads have stricter weight limits?",
                 "Input 8 pickup loads of yard waste and compare dry vs wet assumptions.",
                 "Moisture variance is the main reason risk bands widen for green waste."
         );
         addProject(
                 "dirt_grading",
-                "Dumpster Strategy for Dirt and Grading Debris",
+                "Dirt and grading debris dumpster strategy guide",
                 "sqft_4in",
                 "dirt_soil",
                 "Large bins can become operationally infeasible for dense soil.",
                 "Use low fill ratio and multi-haul planning from the start.",
-                "What is the per-container haul cap for soil and rock?",
+                "What weight limit applies per container for soil and rock?",
                 "Input 240 sqft at 4in for dirt/soil and check feasibility before booking.",
                 "For dense soil, transport constraints dominate container size decisions."
         );
         addProject(
                 "concrete_removal",
-                "Dumpster Strategy for Concrete Removal",
+                "Concrete removal dumpster strategy guide",
                 "sqft_4in",
                 "concrete",
                 "Large bins are often not feasible for heavy concrete loads.",
                 "Default to small container strategy with explicit haul count.",
-                "Do you require clean concrete-only loads for pickup?",
+                "Do you require clean concrete-only loads for pickup day?",
                 "Input 180 sqft at 4in for concrete and validate multi-haul requirement.",
                 "Concrete usually reaches haul limits long before volume capacity."
         );
         addProject(
                 "light_commercial_fitout",
-                "Dumpster Plan for Light Commercial Fit-out",
+                "Light commercial fit-out dumpster plan guide",
                 "pickup_load",
                 "mixed_cd",
                 "Mixed materials hide risk until final day rush loading.",
@@ -323,9 +323,9 @@ public class SeoContentService {
                         default -> "Moisture swings can widen the expected weight range.";
                     };
                     String operatorQuestion = switch (material.category()) {
-                        case HEAVY -> "What is the operational haul cap for this heavy material?";
-                        case MIXED -> "Are mixed loads billed with additional sorting or contamination fees?";
-                        default -> "Do wet loads have seasonal restrictions or surcharge rules?";
+                        case HEAVY -> "What weight limit applies per container for this material?";
+                        case MIXED -> "Are mixed loads billed with sorting or contamination add-on fees?";
+                        default -> "Do wet loads have seasonal restrictions or extra charges?";
                     };
                     MaterialScenario scenario = materialScenario(material);
                     CopyBlock copy = materialCopyFor(material);
@@ -396,9 +396,10 @@ public class SeoContentService {
         String defaultMaterialName = materialFactorRepository.findById(seed.defaultMaterialId())
                 .map(MaterialFactor::name)
                 .orElse(seed.defaultMaterialId().replace('_', ' '));
-        String seoTitle = seed.title() + " | Dumpster Strategy + Live Calculator";
-        String metaDescription = seed.title() + " guide with " + seed.recommendedUnit()
-                + " input defaults, " + defaultMaterialName + " baseline, and risk-aware recommendation notes.";
+        String projectTopic = IntentType.humanProjectTopic(seed.title()).toLowerCase(Locale.US);
+        String seoTitle = "Best dumpster size for " + projectTopic + " | homeowner decision guide";
+        String metaDescription = "Find the safer disposal route for " + projectTopic + ": dumpster size baseline, "
+                + defaultMaterialName + " weight risk, and when junk removal is the better move.";
         String modifiedDateIso = defaultLastModifiedDate().toString();
         return Optional.of(new ProjectPageViewModel(
                 seed.projectId(),
@@ -494,6 +495,7 @@ public class SeoContentService {
         String canonicalUrl = absoluteUrl(baseUrl, canonicalPath);
         String materialName = materialPage.materialName();
         String projectTitle = projectPage.title();
+        String projectTopic = IntentType.humanProjectTopic(projectTitle).toLowerCase(Locale.US);
         MaterialPageViewModel.SizeWeightRow anchorRow = anchorSizeRow(materialPage.sizeWeightTable());
         String directAnswer = intentDirectAnswer(intentType, materialPage, projectPage, anchorRow);
         String intentQuestion = intentQuestion(intentType, projectTitle, materialName);
@@ -502,7 +504,7 @@ public class SeoContentService {
                 + round2(materialPage.densityLow()) + " to "
                 + round2(materialPage.densityHigh()) + " lbs/yd3,"
                 + " size-level included tonnage, and project workflow assumptions for "
-                + projectTitle.toLowerCase(Locale.US) + ".";
+                + projectTopic + ".";
         String modifiedDateIso = materialLastModifiedDate(materialId).toString();
 
         return Optional.of(new IntentPageViewModel(
@@ -1540,7 +1542,7 @@ public class SeoContentService {
                 "Validate max haul tons and clean-load rules for heavy or mixed debris.",
                 "Use wet-load assumptions when weather exposure is possible.",
                 "If schedule is tight, keep the safe recommendation instead of volume-only downsizing.",
-                "Ask this vendor question: " + projectPage.operatorQuestion()
+                "Ask before booking: " + projectPage.operatorQuestion()
         );
         return switch (intentType) {
             case SIZE_GUIDE -> base;
@@ -1645,7 +1647,9 @@ public class SeoContentService {
                     faq(
                             "What should I confirm with the vendor first?",
                             "Confirm included tons, overage fee per ton, same-day swap availability, and any clean-load requirements."
-                                    + " These four checks prevent most avoidable surprises for " + projectPage.title().toLowerCase(Locale.US) + "."
+                                    + " These four checks prevent most avoidable surprises for "
+                                    + IntentType.humanProjectTopic(projectPage.title()).toLowerCase(Locale.US)
+                                    + "."
                     )
             );
             case WEIGHT_ESTIMATE -> List.of(
@@ -1935,7 +1939,7 @@ public class SeoContentService {
                 .map(candidate -> new LinkItemViewModel(
                         projectCanonicalPath(candidate.projectId()),
                         candidate.title(),
-                        "Compare strategy and operator constraints"
+                        "Compare strategy and booking constraints"
                 ))
                 .toList();
     }
@@ -2421,11 +2425,15 @@ public class SeoContentService {
         }
 
         private static String humanProjectTopic(String projectTitle) {
-            return projectTitle
+            String topic = projectTitle
                     .replace("Dumpster Size for ", "")
                     .replace("Dumpster Strategy for ", "")
                     .replace("Dumpster Plan for ", "")
+                    .replaceAll("(?i)\\s+dumpster\\s+size\\s+guide$", "")
+                    .replaceAll("(?i)\\s+dumpster\\s+strategy\\s+guide$", "")
+                    .replaceAll("(?i)\\s+dumpster\\s+plan\\s+guide$", "")
                     .trim();
+            return topic;
         }
     }
 

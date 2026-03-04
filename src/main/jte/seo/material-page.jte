@@ -146,7 +146,7 @@
                 <div class="mistake-strip">
                     <strong>Common mistake</strong>
                     <p>Picking size by volume only can create heavy overage fees.</p>
-                    <p><strong>Ask vendor:</strong> ${model.operatorQuestion()}</p>
+                    <p><strong>Ask before booking:</strong> ${model.operatorQuestion()}</p>
                 </div>
             </aside>
         </div>

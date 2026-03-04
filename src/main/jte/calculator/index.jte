@@ -28,10 +28,10 @@
         {
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": "Dumpster Size and Weight Calculator",
+          "name": "Debris Disposal Decision Engine",
           "applicationCategory": "UtilitiesApplication",
           "operatingSystem": "Web",
-          "description": "Range-based estimator for dumpster size, debris weight, and overweight risk.",
+          "description": "Homeowner-first decision tool for choosing between dumpster rental and junk removal while reducing overage risk.",
           "url": "${model.canonicalUrl()}"
         }
     </script>

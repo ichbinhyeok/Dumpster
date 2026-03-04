@@ -1,5 +1,6 @@
 package com.dumpster.calculator.api.controller;
 
+import com.dumpster.calculator.web.support.BuildInfo;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,10 @@ public class HealthApiController {
 
     @GetMapping("/health")
     public Map<String, Object> health() {
-        return Map.of("status", "ok", "service", "dumpster-calculator");
+        return Map.of(
+                "status", "ok",
+                "service", "dumpster-calculator",
+                "buildRef", BuildInfo.shortRef()
+        );
     }
 }

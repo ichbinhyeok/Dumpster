@@ -5,6 +5,10 @@ test.describe("Post-deploy critical smoke suite", () => {
   test("critical endpoints are up and return expected status", async ({ request }) => {
     const health = await request.get("/api/health");
     expect(health.ok()).toBeTruthy();
+    const healthBody = await health.json();
+    expect(healthBody.status).toBe("ok");
+    expect(typeof healthBody.buildRef).toBe("string");
+    expect((healthBody.buildRef as string).length).toBeGreaterThan(0);
 
     const home = await request.get("/");
     expect(home.ok()).toBeTruthy();
