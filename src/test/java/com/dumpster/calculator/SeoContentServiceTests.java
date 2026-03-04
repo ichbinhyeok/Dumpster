@@ -20,6 +20,10 @@ class SeoContentServiceTests {
         assertThat(topMaterial.answerFirst()).isNotBlank();
         assertThat(topMaterial.quickRules()).hasSize(3);
         assertThat(topMaterial.faqItems()).hasSize(3);
+        assertThat(topMaterial.decisionStageLinks()).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(topMaterial.decisionStageLinks())
+                .extracting(link -> link.href())
+                .contains("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
         assertThat(seoContentService.materialPage("plaster", "http://localhost:8080")).isPresent();
         assertThat(seoContentService.materialPage("does_not_exist", "http://localhost:8080")).isEmpty();
     }
@@ -31,6 +35,10 @@ class SeoContentServiceTests {
         assertThat(project.answerFirst()).isNotBlank();
         assertThat(project.quickRules()).hasSize(3);
         assertThat(project.faqItems()).hasSize(3);
+        assertThat(project.decisionStageLinks()).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(project.decisionStageLinks())
+                .extracting(link -> link.href())
+                .contains("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
     }
 
     @Test
@@ -58,7 +66,12 @@ class SeoContentServiceTests {
         assertThat(intent.directAnswer()).contains("yard");
         assertThat(intent.sizeWeightTable()).hasSize(5);
         assertThat(intent.decisionChecklist()).hasSize(5);
+        assertThat(intent.homeownerDecisionBlocks()).hasSize(8);
         assertThat(intent.faqItems()).hasSize(3);
+        assertThat(intent.decisionStageLinks()).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(intent.decisionStageLinks())
+                .extracting(link -> link.href())
+                .contains("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
         assertThat(intent.relatedIntentLinks()).isNotEmpty();
     }
 
@@ -66,11 +79,15 @@ class SeoContentServiceTests {
     void indexableIntentPathsContainOnlyWhitelistedMoneyRoutes() {
         var paths = seoContentService.indexableIntentPaths();
 
-        assertThat(paths).hasSize(10);
+        assertThat(paths).hasSize(19);
         assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+        assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/size-guide");
+        assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/weight-estimate");
         assertThat(paths).contains("/dumpster/answers/dirt_grading/dirt_soil/size-guide");
         assertThat(paths).contains("/dumpster/answers/light_commercial_fitout/drywall/size-guide");
+        assertThat(paths).contains("/dumpster/answers/garage_cleanout/household_junk/size-guide");
+        assertThat(paths).contains("/dumpster/answers/yard_cleanup/yard_waste/size-guide");
         assertThat(paths).doesNotContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
     }
 }

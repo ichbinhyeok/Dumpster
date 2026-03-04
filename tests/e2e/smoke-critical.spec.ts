@@ -26,13 +26,16 @@ test.describe("Post-deploy critical smoke suite", () => {
 
     await page.goto("/dumpster/size-weight-calculator");
     await expect(page.getByRole("button", { name: "Calculate" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Request quote" })).toBeVisible();
+    await expect(page.locator("header.site-header").getByRole("link", { name: "Run live estimate" })).toBeVisible();
     await page.getByRole("button", { name: "Calculate" }).click();
     await waitForLiveEstimate(page);
 
-    await expect(page.locator("#result-actions")).toContainText("Contact for quote");
-    await expect(page.locator("#result-actions")).toContainText("Request online quote");
+    await expect(page.locator("#result-actions")).toContainText("Get dumpster quotes");
+    await expect(page.locator("#result-actions")).toContainText("Run the live estimate");
     await expect(page.locator("#result-actions")).toContainText("Compare junk removal");
+    await expect(page.locator("#result-actions")).toContainText("Check heavy-load rules first");
+    await expect(page.locator("#result-summary")).toContainText("Decision scorecard");
+    await expect(page.locator("#result-summary .decision-score-row")).toHaveCount(4);
     expect(serverErrors).toEqual([]);
   });
 
@@ -52,5 +55,18 @@ test.describe("Post-deploy critical smoke suite", () => {
       await expect(page.locator("footer.site-footer")).toBeVisible();
       await expect(page.locator("h1")).toBeVisible();
     }
+  });
+
+  test("comparison hub priority toggles update scenario ordering", async ({ page }) => {
+    await page.goto("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
+    const topPlanTitle = page.locator("#comparison-plan-grid .comparison-plan-card.is-priority-top h3");
+
+    await expect(topPlanTitle).toContainText("Remodel Standard");
+
+    await page.getByRole("button", { name: "Fastest completion" }).click();
+    await expect(topPlanTitle).toContainText("Starter Cleanout");
+
+    await page.getByRole("button", { name: "Heavy-load safety" }).click();
+    await expect(topPlanTitle).toContainText("Heavy High-Risk");
   });
 });

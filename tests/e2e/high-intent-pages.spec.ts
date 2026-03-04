@@ -12,10 +12,14 @@ const highIntentPaths = [
   "/dumpster/size/kitchen-remodel",
   "/dumpster/size/bathroom-remodel",
   "/dumpster/drywall-disposal-dumpster-rules",
+  "/dumpster/answers/garage_cleanout/household_junk/size-guide",
+  "/dumpster/answers/concrete_removal/concrete/weight-estimate",
+  "/dumpster/answers/deck_demolition/decking_wood/size-guide",
+  "/dumpster/answers/kitchen_remodel/mixed_cd/overage-risk",
 ];
 
 test.describe("High-intent page pack", () => {
-  test("money sitemap includes all 10 high-intent pages", async ({ request }) => {
+  test("money sitemap includes all curated high-intent pages", async ({ request }) => {
     const sitemap = await request.get("/sitemap-money.xml");
     expect(sitemap.ok()).toBeTruthy();
     const xml = await sitemap.text();

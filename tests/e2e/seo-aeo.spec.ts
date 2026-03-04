@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { jsonLdTypes } from "./helpers";
+import { captureEvents, jsonLdTypes } from "./helpers";
 
 type SeoExpectation = {
   path: string;
@@ -40,7 +40,7 @@ const pages: SeoExpectation[] = [
   },
   {
     path: "/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide",
-    expectedTitlePart: "What size dumpster",
+    expectedTitlePart: "Best dumpster size",
     expectedType: "FAQPage",
   },
 ];
@@ -143,12 +143,75 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     expect(experimentsXml).toContain("/dumpster/project-guides");
   });
 
-  test("intent page includes direct answer block, table, checklist and related links", async ({ page }) => {
+  test("intent page includes decision blocks, table/checklist skeleton and next-step links", async ({ page }) => {
     await page.goto("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
     await expect(page.locator(".answer-first")).toContainText("Direct answer:");
     await expect(page.getByRole("heading", { name: "Size-by-size load comparison" })).toBeVisible();
     await expect(page.locator("table.data-table tbody tr")).toHaveCount(5);
     await expect(page.getByRole("heading", { name: "Decision checklist" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Homeowner decision blocks" })).toBeVisible();
+    await expect(page.locator(".homeowner-decision-blocks .decision-tile")).toHaveCount(8);
+    await expect(page.getByRole("heading", { name: "Next decision steps" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Compare dumpster vs junk/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Related intent guides" })).toBeVisible();
+  });
+
+  test("material and project pages expose decision-stage next-step links", async ({ page }) => {
+    await page.goto("/dumpster/weight/shingles");
+    await expect(page.getByRole("heading", { name: "Next decision steps" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Check overage-risk answer/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Compare dumpster vs junk/i })).toBeVisible();
+
+    await page.goto("/dumpster/size/roof-tear-off");
+    await expect(page.getByRole("heading", { name: "Next decision steps" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Check overage-risk answer/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Check heavy-load rules/i })).toBeVisible();
+  });
+
+  test("guide hubs and heavy rules expose comparison hub as a first-class route", async ({ page }) => {
+    await page.goto("/dumpster/material-guides");
+    await expect(page.getByRole("link", { name: /Compare dumpster vs junk/i }).first()).toBeVisible();
+
+    await page.goto("/dumpster/project-guides");
+    await expect(page.getByRole("link", { name: /Compare dumpster vs junk/i }).first()).toBeVisible();
+
+    await page.goto("/dumpster/heavy-debris-rules");
+    await expect(page.getByRole("link", { name: /Compare dumpster vs junk/i })).toBeVisible();
+  });
+
+  test("decision-stage and comparison entry links emit analytics events", async ({ page }) => {
+    const events = await captureEvents(page);
+
+    await page.goto("/dumpster/weight/shingles");
+    await page.getByRole("link", { name: "Check overage-risk answer" }).click();
+    await expect(page).toHaveURL(/\/dumpster\/answers\/roof_tearoff\/asphalt_shingles\/overage-risk/);
+
+    await page.goto("/dumpster/project-guides");
+    await page.getByRole("link", { name: /Compare dumpster vs junk/i }).first().click();
+    await expect(page).toHaveURL(/\/dumpster\/dumpster-vs-junk-removal-which-is-cheaper/);
+
+    await expect
+      .poll(
+        () =>
+          events.some(
+            (event) =>
+              event.eventName === "decision_stage_link_click" &&
+              String((event.payload as Record<string, unknown>).source || "") === "material_page"
+          ),
+        { timeout: 10_000 }
+      )
+      .toBeTruthy();
+
+    await expect
+      .poll(
+        () =>
+          events.some(
+            (event) =>
+              event.eventName === "comparison_hub_entry_click" &&
+              String((event.payload as Record<string, unknown>).source || "") === "project_guides_hub"
+          ),
+        { timeout: 10_000 }
+      )
+      .toBeTruthy();
   });
 });

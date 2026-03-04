@@ -34,6 +34,7 @@ class SeoPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Quick rules")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Next decision steps")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Asphalt shingles are weight-first debris.")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("/dumpster/size-weight-calculator?material=asphalt_shingles")));
@@ -46,6 +47,7 @@ class SeoPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Quick rules")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Next decision steps")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Roof tear-off decisions should be weight-first.")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles")));
@@ -66,7 +68,16 @@ class SeoPageRenderingTests {
         mockMvc.perform(get("/dumpster/material-guides"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Heavy Debris")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("/dumpster/dumpster-vs-junk-removal-which-is-cheaper")));
+    }
+
+    @Test
+    void projectGuidesHubIncludesComparisonHubLink() throws Exception {
+        mockMvc.perform(get("/dumpster/project-guides"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("All project guides")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("/dumpster/dumpster-vs-junk-removal-which-is-cheaper")));
     }
 
     @Test
@@ -74,7 +85,8 @@ class SeoPageRenderingTests {
         mockMvc.perform(get("/dumpster/heavy-debris-rules"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("data-table")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Max haul")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Max haul")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("/dumpster/dumpster-vs-junk-removal-which-is-cheaper")));
     }
 
     @Test
@@ -83,6 +95,8 @@ class SeoPageRenderingTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Size-by-size load comparison")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Homeowner decision blocks")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Next decision steps")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"BreadcrumbList\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Related intent guides")));
     }

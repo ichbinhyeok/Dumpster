@@ -13,8 +13,9 @@ test.describe("Mass intent-cluster coverage", () => {
     const xml = await sitemap.text();
     const locs = sitemapLocs(xml);
     const intentLocs = locs.filter((loc) => loc.includes("/dumpster/answers/"));
-    expect(intentLocs.length).toBe(10);
+    expect(intentLocs.length).toBe(19);
     expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/garage_cleanout/household_junk/size-guide");
     expect(intentLocs).not.toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
   });
 

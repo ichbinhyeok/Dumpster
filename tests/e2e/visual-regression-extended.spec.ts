@@ -7,6 +7,13 @@ const desktopPages = [
   { path: "/dumpster/answers/concrete_removal/concrete/overage-risk", name: "intent-overage-desktop-extended.png" },
 ];
 
+async function waitForLiveEstimate(page: import("@playwright/test").Page) {
+  await expect(page.locator("#result-panel")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("#share-link")).toHaveAttribute("href", /\/dumpster\/estimate\/[a-zA-Z0-9-]+/, {
+    timeout: 20_000,
+  });
+}
+
 test.describe("Extended visual baselines", () => {
   test.describe("Desktop", () => {
     test.use({ viewport: { width: 1440, height: 900 } });
@@ -34,7 +41,9 @@ test.describe("Extended visual baselines", () => {
 
     test("calculator mobile shell", async ({ page }) => {
       await page.goto("/dumpster/size-weight-calculator");
-      await expect(page.locator("#floating-cta")).toBeVisible({ timeout: 15_000 });
+      await waitForLiveEstimate(page);
+      await expect(page.locator("#floating-cta")).toBeHidden();
+      await expect(page.locator("#mobile-result-dock")).toBeVisible();
       await expect(page).toHaveScreenshot("calculator-iphone-se-extended.png", {
         fullPage: true,
         animations: "disabled",

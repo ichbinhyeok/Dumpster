@@ -8,12 +8,19 @@ async function assertNoHorizontalOverflow(page: Page) {
   expect(hasOverflow).toBeFalsy();
 }
 
+async function waitForLiveEstimate(page: Page) {
+  await expect(page.locator("#result-panel")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("#share-link")).toHaveAttribute("href", /\/dumpster\/estimate\/[a-zA-Z0-9-]+/, {
+    timeout: 20_000,
+  });
+}
+
 test.describe("Visual regression and responsive rendering", () => {
   test.describe("Desktop 1080p", () => {
     test.use({ viewport: { width: 1920, height: 1080 } });
 
     test("calculator shell baseline", async ({ page }) => {
-      await page.route("**/js/calculator.js", async (route) => route.abort());
+      await page.route("**/js/calculator.js*", async (route) => route.abort());
       await page.goto("/dumpster/size-weight-calculator");
       await assertNoHorizontalOverflow(page);
       await expect(page).toHaveScreenshot("calculator-desktop-1080.png", {
@@ -62,9 +69,11 @@ test.describe("Visual regression and responsive rendering", () => {
       hasTouch: iphone13.hasTouch,
     });
 
-    test("calculator mobile baseline with floating CTA", async ({ page }) => {
+    test("calculator mobile baseline with result dock", async ({ page }) => {
       await page.goto("/dumpster/size-weight-calculator");
-      await expect(page.locator("#floating-cta")).toBeVisible({ timeout: 15_000 });
+      await waitForLiveEstimate(page);
+      await expect(page.locator("#floating-cta")).toBeHidden();
+      await expect(page.locator("#mobile-result-dock")).toBeVisible();
       await assertNoHorizontalOverflow(page);
       await expect(page).toHaveScreenshot("calculator-iphone13.png", {
         fullPage: true,
