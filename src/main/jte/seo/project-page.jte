@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css?v=stripeapple3">
-    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple3">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -96,7 +96,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Project preset", primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.defaultMaterialId(), primaryLabel = "Open simulator")
+@template.components.appHeader(trustLabel = "Project preset", primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.defaultMaterialId(), primaryLabel = "Run live estimate")
 
 <main class="app-container app-main">
     <div class="calc-layout">
@@ -183,6 +183,18 @@
 
         <section class="table-card" style="box-shadow: var(--shadow-glass); border: none;">
             <h2 class="font-display">Related guides and FAQ</h2>
+
+            @if(model.decisionStageLinks() != null && !model.decisionStageLinks().isEmpty())
+                <h3 style="margin-top: 12px;">Next decision steps</h3>
+                <ul class="link-grid">
+                    @for(var link : model.decisionStageLinks())
+                        <li style="box-shadow: none; background: var(--surface-muted); border: 1px solid transparent; transition: all 0.2s;">
+                            <a href="${link.href()}" style="color: var(--primary); font-size: 0.95rem;" data-analytics-event="decision_stage_link_click" data-analytics-params='{"source":"project_page","section":"next_steps"}'>${link.label()}</a>
+                            <span style="font-size: 0.8rem; font-weight: 500;">${link.summary()}</span>
+                        </li>
+                    @endfor
+                </ul>
+            @endif
             
             <h3 style="margin-top: 12px;">FAQ</h3>
             <div class="compact-faq">
@@ -240,3 +252,4 @@
 @template.components.appFooter()
 </body>
 </html>
+

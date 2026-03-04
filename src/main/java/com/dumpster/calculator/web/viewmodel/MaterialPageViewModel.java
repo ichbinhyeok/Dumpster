@@ -35,6 +35,7 @@ public record MaterialPageViewModel(
         List<FaqItemViewModel> faqItems,
         String materialGuidesUrl,
         List<LinkItemViewModel> intentClusterLinks,
+        List<LinkItemViewModel> decisionStageLinks,
         List<LinkItemViewModel> relatedMaterialLinks,
         List<LinkItemViewModel> relatedProjectLinks
 ) {

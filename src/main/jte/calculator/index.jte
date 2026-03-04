@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css?v=stripeapple3">
-    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple3">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -96,27 +96,34 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Range-based, heavy-debris aware", primaryHref = "#estimate-form", primaryLabel = "Request quote")
+@template.components.appHeader(trustLabel = "Range-based, heavy-debris aware", primaryHref = "#estimate-form", primaryLabel = "Run live estimate")
 
 <main class="app-container app-main calc-page">
     <section class="calc-hero">
         <div class="calc-hero__head">
-            <p class="eyebrow">Dumpster sizing tool</p>
+            <p class="eyebrow">Debris disposal decision engine</p>
             <h1 class="font-display">${model.pageTitle()}</h1>
-            <p>Get a size recommendation, overage risk, and next action in about 60 seconds.</p>
+            <p>Choose the safer route in about 60 seconds: dumpster, junk removal, or staged multi-haul.</p>
+            <p>Answer three homeowner-first questions: which route wins, how to avoid overage, and what size is safe on the first try.</p>
         </div>
+        <nav class="decision-strip" aria-label="Quick decision routes">
+            <a class="decision-pill" data-decision-mode="cheapest_route" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=4&timing=research&priority=cost">I want the cheapest route</a>
+            <a class="decision-pill" data-decision-mode="easiest_option" href="/dumpster/size-weight-calculator?project=estate_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=this_week&priority=labor">I want the easiest route</a>
+            <a class="decision-pill" data-decision-mode="heavy_material" href="/dumpster/size-weight-calculator?project=concrete_removal&material=concrete&unit=sqft_4in&qty=180&timing=research&priority=heavy">I have heavy material</a>
+            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=kitchen_remodel&material=mixed_cd&unit=pickup_load&qty=4&timing=48h&priority=speed">I need it gone fast</a>
+        </nav>
         <div class="calc-benefits">
             <article class="calc-benefit">
                 <strong>Decision first</strong>
-                <p>Safe fit and budget fit, side by side.</p>
+                <p>See your best next move before shopping quotes.</p>
             </article>
             <article class="calc-benefit">
                 <strong>Risk visible</strong>
-                <p>Weight and allowance risk in ranges, not guesses.</p>
+                <p>Weight and allowance risk shown as ranges, not guesswork.</p>
             </article>
             <article class="calc-benefit">
                 <strong>Actionable output</strong>
-                <p>Primary route, backup route, and vendor checklist.</p>
+                <p>Dumpsters, junk removal, and heavy-load fallback in one board.</p>
             </article>
         </div>
     </section>
@@ -128,6 +135,7 @@
             <input id="material-id" type="hidden" value="asphalt_shingles">
             <input id="unit-id" type="hidden" value="pickup_load">
             <input id="need-timing" type="hidden" value="research">
+            <input id="decision-priority" type="hidden" value="balanced">
 
             <div class="calc-stepper">
                 <section class="calc-step" data-choice-target="project-id">
@@ -198,7 +206,7 @@
                     </div>
                     <div class="calc-quantity">
                         <label class="ui-field__label" for="quantity">Quantity</label>
-                        <p id="unit-helper-text" class="calc-step__hint" style="margin-top: -0.25rem; margin-bottom: 0.5rem;">Standard 8ft pickup truck bed, level full (~2.5 yd³).</p>
+                        <p id="unit-helper-text" class="calc-step__hint" style="margin-top: -0.25rem; margin-bottom: 0.5rem;">Standard 8ft pickup truck bed, level full (~2.5 yd3).</p>
                         <div class="calc-quantity-stepper">
                             <button type="button" id="quantity-dec" class="calc-stepper-btn" aria-label="Decrease quantity">-</button>
                             <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
@@ -231,6 +239,11 @@
                                 <button type="button" class="choice-chip is-active" data-choice-value="research">Researching</button>
                                 <button type="button" class="choice-chip" data-choice-value="this_week">This week</button>
                                 <button type="button" class="choice-chip" data-choice-value="48h">48 hours</button>
+                            </div>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="market-zip">ZIP code for market-rate routing (optional)</label>
+                                <input id="market-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339">
+                                <p class="calc-step__hint">Used to refine junk pricing profile tier before quote-matching.</p>
                             </div>
                         </div>
                     </details>
@@ -397,10 +410,11 @@
 </div>
 
 <div id="floating-cta" class="floating-cta" hidden>
-    <a id="floating-call" href="/about/contact">Contact now</a>
-    <a id="floating-quote" href="#estimate-form">Online quote</a>
+    <a id="floating-call" href="/about/contact">Get dumpster quotes</a>
+    <a id="floating-quote" href="#estimate-form">Run live estimate</a>
 </div>
 
-<script src="/js/calculator.js?v=stripeapple3"></script>
+<script src="/js/calculator.js?v=stripeapple4"></script>
 </body>
 </html>
+

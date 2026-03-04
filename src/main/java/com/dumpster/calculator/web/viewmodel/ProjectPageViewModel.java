@@ -25,6 +25,7 @@ public record ProjectPageViewModel(
         List<FaqItemViewModel> faqItems,
         String projectGuidesUrl,
         List<LinkItemViewModel> intentClusterLinks,
+        List<LinkItemViewModel> decisionStageLinks,
         List<LinkItemViewModel> relatedMaterialLinks,
         List<LinkItemViewModel> relatedProjectLinks
 ) {

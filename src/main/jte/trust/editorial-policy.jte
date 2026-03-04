@@ -21,8 +21,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
-    <link rel="stylesheet" href="/css/app.css?v=stripeapple3">
-    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple3">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -35,7 +35,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Editorial", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")
+@template.components.appHeader(trustLabel = "Editorial", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
 <main class="app-container app-main">
     <section class="panel">
         <p class="eyebrow">Editorial Policy</p>
@@ -66,6 +66,7 @@
 @template.components.appFooter()
 </body>
 </html>
+
 
 
 

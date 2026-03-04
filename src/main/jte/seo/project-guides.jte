@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css?v=stripeapple3">
-    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple3">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -66,7 +66,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Project library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Open simulator")
+@template.components.appHeader(trustLabel = "Project library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -95,8 +95,9 @@
                 <h2 class="font-display">Jump into a project flow</h2>
                 <p>Use one of the presets below or open the base calculator.</p>
                 <div class="inline-cta-row">
-                    <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Open simulator</a>
+                    <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/size/roof_tearoff">Try roof tear-off</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
                 </div>
             </aside>
         </div>
@@ -141,8 +142,10 @@
             @endif
         </div>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
+        <p><a href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"footer_link"}'>Compare dumpster vs junk for this project flow</a></p>
     </section>
 </main>
 @template.components.appFooter()
 </body>
 </html>
+

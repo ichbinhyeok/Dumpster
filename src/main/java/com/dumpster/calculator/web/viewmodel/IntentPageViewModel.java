@@ -23,7 +23,9 @@ public record IntentPageViewModel(
         String modifiedDateIso,
         List<MaterialPageViewModel.SizeWeightRow> sizeWeightTable,
         List<String> decisionChecklist,
+        List<IntentDecisionBlockViewModel> homeownerDecisionBlocks,
         List<FaqItemViewModel> faqItems,
+        List<LinkItemViewModel> decisionStageLinks,
         List<LinkItemViewModel> relatedIntentLinks,
         List<LinkItemViewModel> relatedMaterialLinks,
         List<LinkItemViewModel> relatedProjectLinks

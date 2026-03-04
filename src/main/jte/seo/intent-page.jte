@@ -27,8 +27,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css?v=stripeapple3">
-    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple3">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -77,7 +77,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = model.intentLabel(), primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.materialId(), primaryLabel = "Open simulator")
+@template.components.appHeader(trustLabel = model.intentLabel(), primaryHref = "/dumpster/size-weight-calculator?project=" + model.projectId() + "&material=" + model.materialId(), primaryLabel = "Run live estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -159,6 +159,37 @@
         </div>
     </section>
 
+    @if(model.homeownerDecisionBlocks() != null && !model.homeownerDecisionBlocks().isEmpty())
+        <section class="table-card homeowner-decision-blocks">
+            <h2 class="font-display">Homeowner decision blocks</h2>
+            <div class="decision-snapshot-grid">
+                @for(var block : model.homeownerDecisionBlocks())
+                    <article class="decision-tile">
+                        <h3>${block.title()}</h3>
+                        <p>${block.body()}</p>
+                        @if(block.ctaLabel() != null && block.ctaHref() != null)
+                            <p><a href="${block.ctaHref()}">${block.ctaLabel()}</a></p>
+                        @endif
+                    </article>
+                @endfor
+            </div>
+        </section>
+    @endif
+
+    @if(model.decisionStageLinks() != null && !model.decisionStageLinks().isEmpty())
+        <section class="panel">
+            <h2 class="font-display">Next decision steps</h2>
+            <ul class="link-grid">
+                @for(var link : model.decisionStageLinks())
+                    <li>
+                        <a href="${link.href()}" data-analytics-event="decision_stage_link_click" data-analytics-params='{"source":"intent_page","section":"next_steps"}'>${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
+                @endfor
+            </ul>
+        </section>
+    @endif
+
     <section class="table-card">
         <h2 class="font-display">Frequently asked questions</h2>
         <div class="compact-faq">
@@ -217,3 +248,4 @@
 @template.components.appFooter()
 </body>
 </html>
+

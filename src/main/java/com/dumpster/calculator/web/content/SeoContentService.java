@@ -7,6 +7,7 @@ import com.dumpster.calculator.infra.persistence.MaterialFactorRepository;
 import com.dumpster.calculator.web.viewmodel.FaqItemViewModel;
 import com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel;
 import com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel;
+import com.dumpster.calculator.web.viewmodel.IntentDecisionBlockViewModel;
 import com.dumpster.calculator.web.viewmodel.IntentPageViewModel;
 import com.dumpster.calculator.web.viewmodel.LinkItemViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
@@ -138,6 +139,9 @@ public class SeoContentService {
     private static final String MATERIAL_GUIDES_PATH = "/dumpster/material-guides";
     private static final String PROJECT_GUIDES_PATH = "/dumpster/project-guides";
     private static final String HEAVY_RULES_PATH = "/dumpster/heavy-debris-rules";
+    private static final String COMPARISON_HUB_PATH = "/dumpster/dumpster-vs-junk-removal-which-is-cheaper";
+    private static final String PICKUP_CONVERTER_PATH = "/dumpster/pickup-truck-loads-to-dumpster-size";
+    private static final String DECISION_OVERVIEW_PATH = "/dumpster/what-size-dumpster-do-i-need";
     private static final String INTENT_BASE_PATH = "/dumpster/answers";
     private static final List<IntentType> INTENT_TYPES = List.of(
             IntentType.SIZE_GUIDE,
@@ -157,16 +161,25 @@ public class SeoContentService {
             "light_commercial_fitout", List.of("mixed_cd", "drywall", "cardboard_packaging")
     );
     private static final List<IndexableIntentSeed> INDEXABLE_INTENT_SEEDS = List.of(
+            new IndexableIntentSeed("roof_tearoff", "asphalt_shingles", "size-guide"),
             new IndexableIntentSeed("roof_tearoff", "asphalt_shingles", "overage-risk"),
             new IndexableIntentSeed("roof_tearoff", "asphalt_shingles", "weight-estimate"),
             new IndexableIntentSeed("concrete_removal", "concrete", "size-guide"),
+            new IndexableIntentSeed("concrete_removal", "concrete", "weight-estimate"),
             new IndexableIntentSeed("concrete_removal", "concrete", "overage-risk"),
             new IndexableIntentSeed("dirt_grading", "dirt_soil", "size-guide"),
             new IndexableIntentSeed("dirt_grading", "dirt_soil", "overage-risk"),
+            new IndexableIntentSeed("dirt_grading", "gravel_rock", "weight-estimate"),
             new IndexableIntentSeed("concrete_removal", "brick", "size-guide"),
             new IndexableIntentSeed("kitchen_remodel", "drywall", "size-guide"),
+            new IndexableIntentSeed("kitchen_remodel", "mixed_cd", "overage-risk"),
             new IndexableIntentSeed("bathroom_remodel", "drywall", "size-guide"),
-            new IndexableIntentSeed("light_commercial_fitout", "drywall", "size-guide")
+            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "overage-risk"),
+            new IndexableIntentSeed("light_commercial_fitout", "drywall", "size-guide"),
+            new IndexableIntentSeed("deck_demolition", "decking_wood", "size-guide"),
+            new IndexableIntentSeed("garage_cleanout", "household_junk", "size-guide"),
+            new IndexableIntentSeed("estate_cleanout", "household_junk", "size-guide"),
+            new IndexableIntentSeed("yard_cleanup", "yard_waste", "size-guide")
     );
     private static final Map<String, CopyBlock> MATERIAL_COPY = buildMaterialCopy();
     private static final Map<String, CopyBlock> PROJECT_COPY = buildProjectCopy();
@@ -363,6 +376,7 @@ public class SeoContentService {
                             copy.faqItems(),
                             absoluteUrl(baseUrl, MATERIAL_GUIDES_PATH),
                             intentClusterLinksForMaterial(material.materialId()),
+                            materialDecisionStageLinks(material.materialId()),
                             relatedMaterialsForMaterial(material),
                             relatedProjectsForMaterial(material.materialId())
                     );
@@ -409,6 +423,7 @@ public class SeoContentService {
                 copy.faqItems(),
                 absoluteUrl(baseUrl, PROJECT_GUIDES_PATH),
                 intentClusterLinksForProject(seed.projectId()),
+                projectDecisionStageLinks(seed.projectId(), seed.defaultMaterialId()),
                 relatedMaterialsForProject(seed),
                 relatedProjectsForProject(seed)
         ));
@@ -438,10 +453,7 @@ public class SeoContentService {
     }
 
     public List<String> indexableIntentPaths() {
-        return INDEXABLE_INTENT_SEEDS.stream()
-                .filter(seed -> isProjectEnabled(seed.projectId()))
-                .filter(seed -> projectIntentMaterialsForProject(seed.projectId()).contains(seed.materialId()))
-                .filter(seed -> IntentType.fromSlug(seed.intentSlug()).isPresent())
+        return activeIndexableIntentSeeds().stream()
                 .map(seed -> intentPath(seed.projectId(), seed.materialId(), seed.intentSlug()))
                 .toList();
     }
@@ -514,7 +526,9 @@ public class SeoContentService {
                 modifiedDateIso,
                 materialPage.sizeWeightTable(),
                 intentChecklist(intentType, materialPage, projectPage),
+                intentDecisionBlocks(intentType, materialPage, projectPage, materialOptional.get(), anchorRow),
                 intentFaq(intentType, materialPage, projectPage, anchorRow),
+                decisionStageLinks(projectId, materialId, intentType),
                 relatedIntentLinks(projectId, materialId, intentType),
                 relatedMaterialsForMaterial(materialOptional.get()),
                 relatedProjectsForMaterial(materialId)
@@ -767,37 +781,51 @@ public class SeoContentService {
             case "dumpster-vs-junk-removal-which-is-cheaper" -> Optional.of(new SpecialSeoPageViewModel(
                     resolvedSlug,
                     "Dumpster vs Junk Removal",
-                    "Dumpster vs Junk Removal: Which Costs Less for Heavy Debris?",
-                    "Compare dumpster rental and junk removal by labor, urgency, and heavy-debris risk to choose the better option.",
+                    "Dumpster vs Junk Removal: Best Route by Cost, Speed, and Risk",
+                    "Compare dumpster rental and junk removal for homeowner jobs using labor, urgency, heavy-load risk, and worked cost examples.",
                     absoluteUrl(baseUrl, canonicalPath),
                     ogImageUrl(baseUrl),
                     absoluteUrl(baseUrl, CALCULATOR_PATH),
                     modifiedDateIso,
                     "Comparison Intent",
-                    "Dumpster usually wins for larger planned loads; junk removal often wins when speed and labor convenience matter most.",
-                    "Use decision criteria, not headline price alone. Labor availability, loading certainty, and heavy-load feasibility can flip the best option.",
+                    "Dumpster often wins on larger planned jobs, while junk removal often wins on small urgent jobs where convenience is critical.",
+                    "Pick the route with the best execution profile for your situation. Headline price alone misses labor burden, speed requirements, and heavy-load feasibility risk.",
                     List.of(
-                            "If labor is constrained, convenience can outweigh nominal disposal cost.",
-                            "If debris volume is large and staged, dumpster often scales better.",
-                            "When heavy-feasibility is poor, compare alternate method early."
+                            "Do not choose by headline price only. Include labor and timeline cost.",
+                            "If debris is dense, verify feasibility before booking any single-haul plan.",
+                            "If you are unsure about composition, compare routes before you request quotes.",
+                            "Use worked examples, then run your live estimate with your actual material mix."
                     ),
                     List.of(
-                            row("Small urgent cleanout", "High convenience need", "Junk removal can be lower-friction."),
-                            row("Large multi-day project", "Predictable loading window", "Dumpster often has lower unit economics."),
-                            row("Heavy dense debris", "Strict haul constraints", "Route by feasibility first, then cost.")
+                            row("Small urgent cleanout", "High convenience priority", "Junk removal can be the lower-friction path."),
+                            row("Large staged remodel", "Predictable loading window", "Dumpster usually gives better unit economics."),
+                            row("Single bulky-item cleanup", "Unknown stacking and carry burden", "Junk removal can prevent labor bottlenecks."),
+                            row("Uncertain composition", "Debris mix unknown before teardown", "Compare both routes before booking to avoid false assumptions."),
+                            row("Labor burden", "DIY loading required for dumpster", "If labor is unavailable, junk removal value increases."),
+                            row("Speed requirement", "Need same-day completion", "Junk route frequently wins on completion time."),
+                            row("Heavy dense debris", "Strict haul and fill constraints", "Route by feasibility first, then compare cost."),
+                            row("No labor availability", "Weekend-only or one-person crew", "Convenience-first junk routing can beat nominal dumpster savings."),
+                            row("Two smaller vs one larger", "High pickup-failure risk on dense loads", "Smaller staged hauls may beat one oversized attempt.")
                     ),
                     List.of(
-                            faq("Is junk removal always more expensive?", "Not always. For small urgent jobs, convenience can offset price differences."),
-                            faq("When is dumpster usually better?", "When you control loading schedule and total debris is large enough to amortize rental."),
-                            faq("How do I choose quickly?", "Start with size and weight risk, then compare labor and urgency requirements.")
+                            faq("Is junk removal always more expensive?", "No. For small urgent jobs, convenience and labor inclusion can offset price differences."),
+                            faq("When is dumpster usually better?", "When you can stage loading and total volume is large enough to spread rental cost."),
+                            faq("What changes the answer fastest?", "Urgency, available labor, and heavy-material feasibility constraints."),
+                            faq("Should I compare junk removal before running the calculator?", "Yes. If your top priority is speed or low effort, comparing routes first prevents overfocusing on dumpster-only assumptions."),
+                            faq("What if I am unsure about debris weight?", "Use the weight-estimate and overage-risk intent pages before booking. If uncertainty remains high, convenience-first routing is often safer."),
+                            faq("Can two smaller hauls beat one larger dumpster?", "Yes, especially when dense debris pushes haul limits and pickup risk."),
+                            faq("How should a homeowner choose quickly?", "Start with feasibility and overage risk, then compare speed and labor tradeoffs.")
                     ),
-                    "Compare your options",
-                    "/dumpster/size-weight-calculator?project=garage_cleanout",
-                    "Start calculator",
-                    "/dumpster/size-weight-calculator",
+                    "Run the live estimate",
+                    "/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=4",
+                    "Check heavy-load rules first",
+                    HEAVY_RULES_PATH,
                     List.of(
-                            link("/dumpster/pickup-truck-loads-to-dumpster-size", "Pickup Load Converter", "Estimate whether job size favors dumpster flow."),
-                            link("/dumpster/heavy-debris-rules", "Heavy Rules", "Check feasibility constraints before comparing cost.")
+                            link(PICKUP_CONVERTER_PATH, "Pickup Load Converter", "Estimate whether job size favors dumpster flow."),
+                            link(HEAVY_RULES_PATH, "Heavy Rules", "Check feasibility constraints before comparing cost."),
+                            link("/dumpster/one-20-yard-vs-two-10-yard", "One 20-Yard vs Two 10-Yard", "See when staged smaller hauls are safer."),
+                            link("/dumpster/answers/garage_cleanout/household_junk/size-guide", "Garage cleanout size guide", "See homeowner-focused size guidance for uncertain mixed-junk cleanup."),
+                            link("/dumpster/answers/concrete_removal/concrete/overage-risk", "Concrete overage-risk answer", "If heavy material appears, route by feasibility first.")
                     )
             ));
             case "bagster-vs-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
@@ -1036,19 +1064,22 @@ public class SeoContentService {
 
     public List<LinkItemViewModel> intentClusterLinksForMaterialHub() {
         LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
-        for (String projectId : projectSeeds.keySet()) {
-            for (String materialId : projectIntentMaterialsForProject(projectId)) {
-                String materialName = materialDisplayName(materialId);
-                String href = intentPath(projectId, materialId, IntentType.WEIGHT_ESTIMATE);
-                String label = "How much does " + materialName + " weigh for " + projectSeeds.get(projectId).title() + "?";
-                deduped.putIfAbsent(href, new LinkItemViewModel(
-                        href,
-                        label,
-                        "Weight-estimate intent page with size-level tonnage and overage risk context."
-                ));
-                if (deduped.size() >= 18) {
-                    return List.copyOf(deduped.values());
-                }
+        for (IndexableIntentSeed seed : activeIndexableIntentSeeds()) {
+            Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
+            ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
+            if (intentTypeOptional.isEmpty() || projectSeed == null) {
+                continue;
+            }
+            IntentType intentType = intentTypeOptional.get();
+            String materialName = materialDisplayName(seed.materialId());
+            String href = intentPath(seed.projectId(), seed.materialId(), intentType);
+            deduped.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    intentType.linkLabel(projectSeed.title(), materialName),
+                    intentType.linkSummary()
+            ));
+            if (deduped.size() >= 20) {
+                return List.copyOf(deduped.values());
             }
         }
         return List.copyOf(deduped.values());
@@ -1056,22 +1087,22 @@ public class SeoContentService {
 
     public List<LinkItemViewModel> intentClusterLinksForProjectHub() {
         LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
-        for (String projectId : projectSeeds.keySet()) {
-            for (String materialId : projectIntentMaterialsForProject(projectId)) {
-                String href = intentPath(projectId, materialId, IntentType.SIZE_GUIDE);
-                String label = "What size dumpster for "
-                        + projectSeeds.get(projectId).title()
-                        + " with "
-                        + materialDisplayName(materialId)
-                        + "?";
-                deduped.putIfAbsent(href, new LinkItemViewModel(
-                        href,
-                        label,
-                        "Size-guide intent page with direct answer, checklist, and scenario constraints."
-                ));
-                if (deduped.size() >= 18) {
-                    return List.copyOf(deduped.values());
-                }
+        for (IndexableIntentSeed seed : activeIndexableIntentSeeds()) {
+            Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
+            ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
+            if (intentTypeOptional.isEmpty() || projectSeed == null) {
+                continue;
+            }
+            IntentType intentType = intentTypeOptional.get();
+            String materialName = materialDisplayName(seed.materialId());
+            String href = intentPath(seed.projectId(), seed.materialId(), intentType);
+            deduped.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    intentType.linkLabel(projectSeed.title(), materialName),
+                    intentType.linkSummary()
+            ));
+            if (deduped.size() >= 20) {
+                return List.copyOf(deduped.values());
             }
         }
         return List.copyOf(deduped.values());
@@ -1351,6 +1382,14 @@ public class SeoContentService {
         return INTENT_BASE_PATH + "/" + projectId + "/" + materialId + "/" + intentSlug;
     }
 
+    private List<IndexableIntentSeed> activeIndexableIntentSeeds() {
+        return INDEXABLE_INTENT_SEEDS.stream()
+                .filter(seed -> isProjectEnabled(seed.projectId()))
+                .filter(seed -> projectIntentMaterialsForProject(seed.projectId()).contains(seed.materialId()))
+                .filter(seed -> IntentType.fromSlug(seed.intentSlug()).isPresent())
+                .toList();
+    }
+
     private String materialDisplayName(String materialId) {
         return materialFactorRepository.findById(materialId)
                 .map(MaterialFactor::name)
@@ -1360,23 +1399,24 @@ public class SeoContentService {
     private List<LinkItemViewModel> intentClusterLinksForMaterial(String materialId) {
         String materialName = materialDisplayName(materialId);
         LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
-        List<String> candidateProjects = projectSeeds.keySet().stream()
-                .filter(projectId -> projectIntentMaterialsForProject(projectId).contains(materialId))
-                .limit(2)
-                .toList();
-
-        for (String projectId : candidateProjects) {
-            ProjectSeed seed = projectSeeds.get(projectId);
-            for (IntentType intentType : INTENT_TYPES) {
-                String href = intentPath(projectId, materialId, intentType);
-                links.putIfAbsent(href, new LinkItemViewModel(
-                        href,
-                        intentType.linkLabel(seed.title(), materialName),
-                        intentType.linkSummary()
-                ));
-                if (links.size() >= 6) {
-                    return List.copyOf(links.values());
-                }
+        for (IndexableIntentSeed seed : activeIndexableIntentSeeds()) {
+            if (!seed.materialId().equals(materialId)) {
+                continue;
+            }
+            Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
+            ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
+            if (intentTypeOptional.isEmpty() || projectSeed == null) {
+                continue;
+            }
+            IntentType intentType = intentTypeOptional.get();
+            String href = intentPath(seed.projectId(), materialId, intentType);
+            links.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    intentType.linkLabel(projectSeed.title(), materialName),
+                    intentType.linkSummary()
+            ));
+            if (links.size() >= 6) {
+                return List.copyOf(links.values());
             }
         }
         return List.copyOf(links.values());
@@ -1388,21 +1428,24 @@ public class SeoContentService {
             return List.of();
         }
         LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
-        List<String> materials = projectIntentMaterialsForProject(projectId).stream()
-                .limit(2)
-                .toList();
-        for (String materialId : materials) {
-            String materialName = materialDisplayName(materialId);
-            for (IntentType intentType : INTENT_TYPES) {
-                String href = intentPath(projectId, materialId, intentType);
-                links.putIfAbsent(href, new LinkItemViewModel(
-                        href,
-                        intentType.linkLabel(seed.title(), materialName),
-                        intentType.linkSummary()
-                ));
-                if (links.size() >= 6) {
-                    return List.copyOf(links.values());
-                }
+        for (IndexableIntentSeed indexableSeed : activeIndexableIntentSeeds()) {
+            if (!indexableSeed.projectId().equals(projectId)) {
+                continue;
+            }
+            Optional<IntentType> intentTypeOptional = IntentType.fromSlug(indexableSeed.intentSlug());
+            if (intentTypeOptional.isEmpty()) {
+                continue;
+            }
+            IntentType intentType = intentTypeOptional.get();
+            String materialName = materialDisplayName(indexableSeed.materialId());
+            String href = intentPath(projectId, indexableSeed.materialId(), intentType);
+            links.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    intentType.linkLabel(seed.title(), materialName),
+                    intentType.linkSummary()
+            ));
+            if (links.size() >= 6) {
+                return List.copyOf(links.values());
             }
         }
         return List.copyOf(links.values());
@@ -1416,10 +1459,12 @@ public class SeoContentService {
     }
 
     private static String intentQuestion(IntentType intentType, String projectTitle, String materialName) {
+        String projectTopic = IntentType.humanProjectTopic(projectTitle).toLowerCase(Locale.US);
+        String humanMaterial = materialName.toLowerCase(Locale.US);
         return switch (intentType) {
-            case SIZE_GUIDE -> "What size dumpster is safest for " + projectTitle + " with " + materialName + "?";
-            case WEIGHT_ESTIMATE -> "How much does " + materialName + " weigh for " + projectTitle + "?";
-            case OVERAGE_RISK -> "How likely are overage fees for " + materialName + " in " + projectTitle + "?";
+            case SIZE_GUIDE -> "Best dumpster size for " + projectTopic + " with " + humanMaterial;
+            case WEIGHT_ESTIMATE -> "How much does " + humanMaterial + " weigh in a dumpster for " + projectTopic + "?";
+            case OVERAGE_RISK -> "Will " + humanMaterial + " exceed dumpster weight limits for " + projectTopic + "?";
         };
     }
 
@@ -1433,7 +1478,7 @@ public class SeoContentService {
             case SIZE_GUIDE -> "Start with a "
                     + anchorRow.sizeYd()
                     + "-yard baseline for "
-                    + projectPage.title().toLowerCase(Locale.US)
+                    + IntentType.humanProjectTopic(projectPage.title()).toLowerCase(Locale.US)
                     + " and validate "
                     + anchorRow.weightLowTons()
                     + " to "
@@ -1516,6 +1561,69 @@ public class SeoContentService {
         };
     }
 
+    private List<IntentDecisionBlockViewModel> intentDecisionBlocks(
+            IntentType intentType,
+            MaterialPageViewModel materialPage,
+            ProjectPageViewModel projectPage,
+            MaterialFactor materialFactor,
+            MaterialPageViewModel.SizeWeightRow anchorRow
+    ) {
+        double pickupLoads = Math.max(1.0d, anchorRow.effectiveVolumeYd3() / 2.5d);
+        double wetHighDeltaPct = Math.max(0.0d, (materialPage.wetMultiplierHigh() - 1.0d) * 100.0d);
+        String weightRange = round2(anchorRow.weightLowTons()) + " to " + round2(anchorRow.weightHighTons()) + " tons";
+
+        String changesAnswer = switch (intentType) {
+            case SIZE_GUIDE -> "Material density mix, weather exposure, and timeline urgency are the three fastest variables. "
+                    + "If heavy share or urgency rises, safer or staged routing usually beats budget-first sizing.";
+            case WEIGHT_ESTIMATE -> "Moisture, contamination, and packing behavior move the estimate most. "
+                    + "Use the high-side range when load certainty is low or weather is unstable.";
+            case OVERAGE_RISK -> "Included tons, wet load exposure, and mixed-heavy contamination change risk tier quickly. "
+                    + "If any two move against you, route to safer option before booking.";
+        };
+
+        String expensiveMistake = switch (intentType) {
+            case SIZE_GUIDE -> "Choosing by cubic yards only and skipping haul-limit verification can force swap delays plus overage on pickup day.";
+            case WEIGHT_ESTIMATE -> "Treating typical tons as guaranteed and ignoring the high-side range is the most expensive miss.";
+            case OVERAGE_RISK -> "Using included tons as if it were max-haul policy creates double risk: surcharge plus pickup refusal.";
+        };
+
+        String junkSmarter = "Junk removal usually wins when speed or labor convenience is the top priority, or when composition is too uncertain for one-container confidence.";
+        String pickupTranslation = "A " + anchorRow.sizeYd() + "-yard scenario is roughly " + round2(pickupLoads)
+                + " pickup-load equivalents, but heavy material can hit ton limits before that visual volume is used.";
+        String wetRisk = "Wet-load multiplier can push this material up to +" + round2(wetHighDeltaPct)
+                + "% versus dry assumptions. Re-run after rain before confirming quotes.";
+        String vendorScript = "Ask in this order: included tons, overage per ton, max haul tons, and same-day swap availability.";
+        String realJob = "Example workflow: " + projectPage.sampleInput() + " Then action: " + projectPage.sampleDecision();
+        String confidence = "Confidence is range-based, not single-point. Anchor row " + anchorRow.sizeYd()
+                + "yd currently spans " + weightRange + " with source-backed density assumptions.";
+
+        return List.of(
+                decisionBlock("What changes the answer?", changesAnswer, null, null),
+                decisionBlock("Most expensive mistake", expensiveMistake, null, null),
+                decisionBlock(
+                        "When junk removal is smarter",
+                        junkSmarter,
+                        "Compare junk removal",
+                        COMPARISON_HUB_PATH
+                ),
+                decisionBlock(
+                        "Pickup-truck translation",
+                        pickupTranslation,
+                        "Use pickup converter",
+                        PICKUP_CONVERTER_PATH
+                ),
+                decisionBlock("Wet-load risk", wetRisk, null, null),
+                decisionBlock(
+                        "Vendor call script",
+                        vendorScript,
+                        "Check heavy-load rules first",
+                        HEAVY_RULES_PATH
+                ),
+                decisionBlock("Real job example", realJob, null, null),
+                decisionBlock("Confidence and assumptions", confidence, null, null)
+        );
+    }
+
     private static List<FaqItemViewModel> intentFaq(
             IntentType intentType,
             MaterialPageViewModel materialPage,
@@ -1575,6 +1683,100 @@ public class SeoContentService {
                     )
             );
         };
+    }
+
+    private List<LinkItemViewModel> decisionStageLinks(String projectId, String materialId, IntentType intentType) {
+        String calculatorHref = CALCULATOR_PATH
+                + "?project=" + projectId
+                + "&material=" + materialId
+                + "&unit=pickup_load&qty=6";
+        IntentType followupIntentType = switch (intentType) {
+            case SIZE_GUIDE -> IntentType.WEIGHT_ESTIMATE;
+            case WEIGHT_ESTIMATE -> IntentType.OVERAGE_RISK;
+            case OVERAGE_RISK -> IntentType.SIZE_GUIDE;
+        };
+        String followupIntent = intentPath(projectId, materialId, followupIntentType);
+
+        LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
+        links.put(calculatorHref, link(calculatorHref, "Run live estimate", "Validate this exact scenario in the decision engine."));
+        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs junk removal", "Decide dumpster vs junk based on speed, labor, and risk."));
+        links.put(PICKUP_CONVERTER_PATH, link(PICKUP_CONVERTER_PATH, "Use pickup-load converter", "Translate visual load count into safer size planning."));
+        links.put(HEAVY_RULES_PATH, link(HEAVY_RULES_PATH, "Check heavy-load rules first", "Confirm fill-line and haul constraints before booking."));
+        links.put(followupIntent, link(followupIntent, "Next intent question", "Move to the next decision-stage question for this scenario."));
+        String projectGuideHref = projectCanonicalPath(projectId);
+        links.put(projectGuideHref, link(projectGuideHref, "Open project workflow guide", "See the full project strategy and operator questions."));
+        String materialGuideHref = materialCanonicalPath(materialId);
+        links.put(materialGuideHref, link(materialGuideHref, "Open material weight guide", "Review density range and size-level risk table."));
+        return List.copyOf(links.values());
+    }
+
+    private List<LinkItemViewModel> materialDecisionStageLinks(String materialId) {
+        String projectId = primaryProjectForMaterial(materialId)
+                .orElseGet(() -> sortedIndexableProjects().stream()
+                        .findFirst()
+                        .map(ProjectSeed::projectId)
+                        .orElse("roof_tearoff"));
+        String intentMaterialId = intentMaterialForProject(projectId, materialId);
+        String calculatorHref = CALCULATOR_PATH
+                + "?project=" + projectId
+                + "&material=" + materialId
+                + "&unit=pickup_load&qty=6";
+        LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
+        links.put(calculatorHref, link(calculatorHref, "Run live estimate", "Start with this material and validate route feasibility."));
+        String sizeGuideHref = intentPath(projectId, intentMaterialId, IntentType.SIZE_GUIDE);
+        links.put(sizeGuideHref, link(sizeGuideHref, "Check size-guide answer", "Confirm a safe starting bin before comparing price options."));
+        String overageHref = intentPath(projectId, intentMaterialId, IntentType.OVERAGE_RISK);
+        links.put(overageHref, link(overageHref, "Check overage-risk answer", "See where included tons and haul limits diverge."));
+        String projectGuideHref = projectCanonicalPath(projectId);
+        links.put(projectGuideHref, link(projectGuideHref, "Open related project guide", "Move from material-only logic into a full project workflow."));
+        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs junk removal", "Use labor, speed, and risk tradeoffs before booking."));
+        links.put(PICKUP_CONVERTER_PATH, link(PICKUP_CONVERTER_PATH, "Use pickup-load converter", "Translate rough load count into safer size planning."));
+        links.put(HEAVY_RULES_PATH, link(HEAVY_RULES_PATH, "Check heavy-load rules first", "Validate fill and feasibility constraints for dense loads."));
+        return List.copyOf(links.values());
+    }
+
+    private List<LinkItemViewModel> projectDecisionStageLinks(String projectId, String preferredMaterialId) {
+        String intentMaterialId = intentMaterialForProject(projectId, preferredMaterialId);
+        String calculatorHref = CALCULATOR_PATH
+                + "?project=" + projectId
+                + "&material=" + intentMaterialId
+                + "&unit=pickup_load&qty=6";
+        LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
+        links.put(calculatorHref, link(calculatorHref, "Run live estimate", "Launch this project preset and confirm the current best route."));
+        String sizeGuideHref = intentPath(projectId, intentMaterialId, IntentType.SIZE_GUIDE);
+        links.put(sizeGuideHref, link(sizeGuideHref, "Check size-guide answer", "Validate the safer baseline size for this project/material pair."));
+        String overageHref = intentPath(projectId, intentMaterialId, IntentType.OVERAGE_RISK);
+        links.put(overageHref, link(overageHref, "Check overage-risk answer", "Validate allowance pressure before requesting quotes."));
+        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs junk removal", "Decide whether convenience or staged pricing should win."));
+        links.put(PICKUP_CONVERTER_PATH, link(PICKUP_CONVERTER_PATH, "Use pickup-load converter", "Map pickup-load intuition to container size."));
+        links.put(HEAVY_RULES_PATH, link(HEAVY_RULES_PATH, "Check heavy-load rules first", "Confirm fill-line and haul constraints for dense debris."));
+        links.put(DECISION_OVERVIEW_PATH, link(DECISION_OVERVIEW_PATH, "Open decision overview", "Recheck size, overage, and feasibility framework in one page."));
+        return List.copyOf(links.values());
+    }
+
+    private Optional<String> primaryProjectForMaterial(String materialId) {
+        Optional<String> direct = sortedIndexableProjects().stream()
+                .filter(seed -> seed.defaultMaterialId().equals(materialId))
+                .map(ProjectSeed::projectId)
+                .findFirst();
+        if (direct.isPresent()) {
+            return direct;
+        }
+        return sortedIndexableProjects().stream()
+                .filter(seed -> projectIntentMaterialsForProject(seed.projectId()).contains(materialId))
+                .map(ProjectSeed::projectId)
+                .findFirst();
+    }
+
+    private String intentMaterialForProject(String projectId, String preferredMaterialId) {
+        List<String> materials = projectIntentMaterialsForProject(projectId);
+        if (materials.contains(preferredMaterialId)) {
+            return preferredMaterialId;
+        }
+        if (!materials.isEmpty()) {
+            return materials.getFirst();
+        }
+        return projectSeeds.get(projectId).defaultMaterialId();
     }
 
     private List<LinkItemViewModel> relatedIntentLinks(String projectId, String materialId, IntentType currentIntent) {
@@ -2099,6 +2301,10 @@ public class SeoContentService {
         return new FaqItemViewModel(question, answer);
     }
 
+    private static IntentDecisionBlockViewModel decisionBlock(String title, String body, String ctaLabel, String ctaHref) {
+        return new IntentDecisionBlockViewModel(title, body, ctaLabel, ctaHref);
+    }
+
     private MaterialScenario materialScenario(MaterialFactor material) {
         return switch (material.materialId()) {
             case "asphalt_shingles" -> new MaterialScenario(
@@ -2171,33 +2377,38 @@ public class SeoContentService {
         }
 
         public String seoTitle(String projectTitle, String materialName, MaterialPageViewModel.SizeWeightRow anchorRow) {
+            String projectTopic = humanProjectTopic(projectTitle).toLowerCase(Locale.US);
+            String humanMaterial = materialName.toLowerCase(Locale.US);
             return switch (this) {
-                case SIZE_GUIDE -> "What size dumpster for " + projectTitle + " with " + materialName
-                        + "? " + anchorRow.sizeYd() + "yd baseline + risk chart";
-                case WEIGHT_ESTIMATE -> "How much does " + materialName + " weigh for " + projectTitle
-                        + "? Tons estimate + size chart";
-                case OVERAGE_RISK -> materialName + " overage risk for " + projectTitle
-                        + ": included tons vs estimated load";
+                case SIZE_GUIDE -> "Best dumpster size for " + projectTopic + " with " + humanMaterial
+                        + " | " + anchorRow.sizeYd() + "-yard baseline";
+                case WEIGHT_ESTIMATE -> "How much does " + humanMaterial + " weigh in a dumpster for "
+                        + projectTopic + "?";
+                case OVERAGE_RISK -> "Will " + humanMaterial + " exceed dumpster weight limits for "
+                        + projectTopic + "?";
             };
         }
 
         public String metaDescription(String projectTitle, String materialName, MaterialPageViewModel.SizeWeightRow anchorRow) {
+            String projectTopic = humanProjectTopic(projectTitle).toLowerCase(Locale.US);
             return switch (this) {
-                case SIZE_GUIDE -> "Direct size guidance for " + projectTitle + " using " + materialName
-                        + " load assumptions. Starts from a " + anchorRow.sizeYd()
+                case SIZE_GUIDE -> "Find the safest dumpster size for " + projectTopic + " with " + materialName
+                        + ". Starts from a " + anchorRow.sizeYd()
                         + "yd baseline and compares overage risk by size.";
-                case WEIGHT_ESTIMATE -> "Weight estimate for " + materialName + " in " + projectTitle
-                        + " scenarios, with low/typical/high tons and dumpster-size comparisons.";
-                case OVERAGE_RISK -> "Overage-risk breakdown for " + materialName + " during " + projectTitle
-                        + ". Compare included tons, high-side weight, and safer strategy checklists.";
+                case WEIGHT_ESTIMATE -> "Estimate how much " + materialName + " can weigh in " + projectTopic
+                        + " scenarios, with low/typical/high tons and size comparisons.";
+                case OVERAGE_RISK -> "See when " + materialName + " may exceed included tons for " + projectTopic
+                        + ". Compare allowance, high-side weight, and safer next-step options.";
             };
         }
 
         public String linkLabel(String projectTitle, String materialName) {
+            String projectTopic = humanProjectTopic(projectTitle).toLowerCase(Locale.US);
+            String humanMaterial = materialName.toLowerCase(Locale.US);
             return switch (this) {
-                case SIZE_GUIDE -> "What size dumpster for " + projectTitle + " with " + materialName + "?";
-                case WEIGHT_ESTIMATE -> "How much does " + materialName + " weigh for " + projectTitle + "?";
-                case OVERAGE_RISK -> "Overage risk for " + materialName + " in " + projectTitle;
+                case SIZE_GUIDE -> "Best dumpster size for " + projectTopic + " with " + humanMaterial;
+                case WEIGHT_ESTIMATE -> "How much does " + humanMaterial + " weigh for " + projectTopic + "?";
+                case OVERAGE_RISK -> "Will " + humanMaterial + " exceed weight limits for " + projectTopic + "?";
             };
         }
 
@@ -2207,6 +2418,14 @@ public class SeoContentService {
                 case WEIGHT_ESTIMATE -> "Intent page focused on range-based tonnage estimates.";
                 case OVERAGE_RISK -> "Intent page focused on included tons versus risk exposure.";
             };
+        }
+
+        private static String humanProjectTopic(String projectTitle) {
+            return projectTitle
+                    .replace("Dumpster Size for ", "")
+                    .replace("Dumpster Strategy for ", "")
+                    .replace("Dumpster Plan for ", "")
+                    .trim();
         }
     }
 

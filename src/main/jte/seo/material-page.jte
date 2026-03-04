@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <link rel="stylesheet" href="/css/tailwind.generated.css">
-    <link rel="stylesheet" href="/css/app.css?v=stripeapple3">
-    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple3">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
@@ -96,7 +96,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Material intelligence", primaryHref = "/dumpster/size-weight-calculator?material=" + model.materialId(), primaryLabel = "Open simulator")
+@template.components.appHeader(trustLabel = "Material intelligence", primaryHref = "/dumpster/size-weight-calculator?material=" + model.materialId(), primaryLabel = "Run live estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -226,6 +226,18 @@
 
     <section class="table-card">
         <h2 class="font-display">Related guides and FAQ</h2>
+        @if(model.decisionStageLinks() != null && !model.decisionStageLinks().isEmpty())
+            <h3>Next decision steps</h3>
+            <ul class="link-grid">
+                @for(var link : model.decisionStageLinks())
+                    <li>
+                        <a href="${link.href()}" data-analytics-event="decision_stage_link_click" data-analytics-params='{"source":"material_page","section":"next_steps"}'>${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
+                @endfor
+            </ul>
+        @endif
+
         <h3>FAQ</h3>
         <div class="compact-faq">
             @for(var faq : model.faqItems())
@@ -279,3 +291,4 @@
 @template.components.appFooter()
 </body>
 </html>
+

@@ -26,6 +26,7 @@
     const mobilePrimaryCta = document.getElementById("mobile-primary-cta");
     const quantityInput = document.getElementById("quantity");
     const allowanceInput = document.getElementById("allowance-tons");
+    const marketZipInput = document.getElementById("market-zip");
     const wetInput = document.getElementById("wet");
     const mixedInput = document.getElementById("mixed-load");
     const quantityInc = document.getElementById("quantity-inc");
@@ -47,7 +48,9 @@
     const materialInput = document.getElementById("material-id");
     const unitInput = document.getElementById("unit-id");
     const needTimingInput = document.getElementById("need-timing");
+    const decisionPriorityInput = document.getElementById("decision-priority");
     const choiceGroups = Array.from(form.querySelectorAll("[data-choice-target]"));
+    const decisionModeLinks = Array.from(document.querySelectorAll("[data-decision-mode]"));
     const roofSquareChip = form.querySelector("[data-choice-target='unit-id'] [data-choice-value='roof_square']");
 
     const heavyMaterials = new Set([
@@ -77,8 +80,8 @@
 
     const unitHelperText = document.getElementById("unit-helper-text");
     const unitHints = {
-        "pickup_load": "Standard 8ft pickup truck bed, level full (~2.5 yd³).",
-        "truckload_small": "Small box truck or large trailer (~10 yd³).",
+        "pickup_load": "Standard 8ft pickup truck bed, level full (~2.5 yd3).",
+        "truckload_small": "Small box truck or large trailer (~10 yd3).",
         "roof_square": "100 sq ft of roofing area. Include layers in quantity.",
         "sqft_4in": "Square footage of 4-inch deep concrete/dirt.",
         "sqft_2in": "Square footage of 2-inch deep material.",
@@ -100,6 +103,7 @@
     };
 
     applyPresetFromQuery();
+    bindDecisionStripTracking();
     initializeChoiceGroups();
     syncUnitOptions();
     bindStepperControls();
@@ -162,7 +166,7 @@
     }
 
     function bindFormControls() {
-        const liveInputs = [quantityInput, allowanceInput, wetInput, mixedInput];
+        const liveInputs = [quantityInput, allowanceInput, marketZipInput, wetInput, mixedInput];
         liveInputs.forEach((input) => {
             if (!input) {
                 return;
@@ -170,6 +174,15 @@
             input.addEventListener("input", () => queueLiveEstimate());
             input.addEventListener("change", () => queueLiveEstimate());
         });
+        if (marketZipInput) {
+            marketZipInput.addEventListener("blur", () => {
+                const zip = sanitizeZip(marketZipInput.value);
+                marketZipInput.value = zip;
+                if (isValidZip(zip)) {
+                    trackEvent("market_zip_entered", null, { zipPrefix3: zip.slice(0, 3) });
+                }
+            });
+        }
     }
 
     function queueLiveEstimate() {
@@ -262,6 +275,7 @@
     function buildPayload() {
         const quantity = parseFloat(quantityInput.value || "0");
         const allowanceRaw = allowanceInput.value;
+        const marketZip = sanitizeZip(marketZipInput ? marketZipInput.value : "");
         const mixed = mixedInput.checked;
         const wet = wetInput.checked;
 
@@ -284,7 +298,8 @@
             options: {
                 mixedLoad: mixed,
                 allowanceTons: allowanceRaw === "" ? null : parseFloat(allowanceRaw),
-                bulkingFactor: 1.2
+                bulkingFactor: 1.2,
+                zipCode: isValidZip(marketZip) ? marketZip : null
             }
         };
     }
@@ -300,9 +315,23 @@
         const topRecommendation = recommendations.length > 0
             ? recommendations[0]
             : null;
-        const verdictText = topRecommendation
-            ? `You likely need a ${topRecommendation.sizeYd}-yard dumpster.`
-            : "No recommendation returned. Check inputs and retry.";
+        const primaryCtaKey = resolvePrimaryCta(result, inputPayload);
+        const primaryCta = ctaConfig(primaryCtaKey);
+        const secondaryCtas = ["dumpster_call", "dumpster_form", "junk_call"]
+            .filter((key) => key !== primaryCtaKey)
+            .map((key) => ctaConfig(key));
+        const decisionMode = deriveDecisionMode(primaryCtaKey, topRecommendation, result);
+        const verdictText = decisionHeadline(primaryCtaKey, topRecommendation, result);
+        const bestMoveDetail = decisionDetail(primaryCtaKey, topRecommendation, result);
+        const junkSmartWhen = junkSmartWhenText(primaryCtaKey, result, inputPayload);
+        const activePriorityMode = currentDecisionPriority();
+        const decisionScores = buildDecisionScores(
+            result,
+            inputPayload,
+            topRecommendation,
+            primaryCtaKey,
+            activePriorityMode
+        );
 
         resultPanel.hidden = false;
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
@@ -332,11 +361,26 @@
         }
         trackEvent("share_estimate_created", apiData.estimateId, { sharePath: shareLink.href });
 
-        const primaryCtaKey = resolvePrimaryCta(result, inputPayload);
-        const primaryCta = ctaConfig(primaryCtaKey);
-        const secondaryCtas = ["dumpster_call", "dumpster_form", "junk_call"]
-            .filter((key) => key !== primaryCtaKey)
-            .map((key) => ctaConfig(key));
+        trackEvent("decision_mode_selected", apiData.estimateId, {
+            mode: decisionMode,
+            primaryCta: primaryCtaKey,
+            priorityMode: decisionScores.priorityMode,
+            priceRisk: result.priceRisk,
+            feasibility: result.feasibility
+        });
+        trackEvent("decision_scorecard_rendered", apiData.estimateId, {
+            cost: decisionScores.cost,
+            speed: decisionScores.speed,
+            effort: decisionScores.effort,
+            safety: decisionScores.safety,
+            priorityMode: decisionScores.priorityMode
+        });
+        if (decisionScores.priorityMode !== "balanced") {
+            trackEvent("decision_priority_applied", apiData.estimateId, {
+                mode: decisionScores.priorityMode,
+                source: "query_param"
+            });
+        }
         const preferredContactMethod = inputPayload.needTiming === "48h" ? "phone" : "email";
         if (!leadFormState.contactMethod) {
             leadFormState.contactMethod = preferredContactMethod;
@@ -376,6 +420,7 @@
             badge("Risk: " + result.priceRisk, toneForRisk(result.priceRisk)),
             badge("Feasibility: " + result.feasibility, result.feasibility === "OK" ? "ok" : "warn"),
             result.usedAssumedAllowance ? badge("Allowance assumed", "warn") : badge("Allowance provided", "ok"),
+            badge("Priority: " + decisionPriorityLabel(decisionScores.priorityMode), decisionScores.priorityMode === "balanced" ? "neutral" : "ok"),
             result.heavyDebrisWarning ? badge("Heavy debris policy active", "warn") : ""
         ].join("");
 
@@ -391,20 +436,30 @@
 
         resultSummary.innerHTML = `
             <article class="stat">
-                <h3>Verdict</h3>
-                <p>${topRecommendation ? topRecommendation.label + " " + topRecommendation.sizeYd + "yd" : "Pending"}</p>
+                <h3>Best next move</h3>
+                <p>${verdictText}</p>
             </article>
             <article class="stat">
-                <h3>Volume range</h3>
-                <p>${fmt(result.volumeYd3.low)} - ${fmt(result.volumeYd3.high)} yd3</p>
+                <h3>Why this route wins</h3>
+                <p>${bestMoveDetail}</p>
             </article>
             <article class="stat">
-                <h3>Weight range</h3>
-                <p>${fmt(result.weightTons.low)} - ${fmt(result.weightTons.high)} tons</p>
+                <h3>When junk is smarter</h3>
+                <p>${junkSmartWhen}</p>
             </article>
             <article class="stat">
                 <h3>Input impact</h3>
                 <p>${impactLine}</p>
+            </article>
+            <article class="stat stat--full decision-scorecard">
+                <h3>Decision scorecard</h3>
+                <p class="lead-hint" style="margin:0 0 0.75rem 0;">Priority mode: ${decisionPriorityLabel(decisionScores.priorityMode)}</p>
+                <div class="decision-score-grid">
+                    ${decisionScoreRow("Cost route", decisionScores.cost, decisionScoreNote("cost", decisionScores.cost))}
+                    ${decisionScoreRow("Speed route", decisionScores.speed, decisionScoreNote("speed", decisionScores.speed))}
+                    ${decisionScoreRow("Labor effort", decisionScores.effort, decisionScoreNote("effort", decisionScores.effort))}
+                    ${decisionScoreRow("Safety margin", decisionScores.safety, decisionScoreNote("safety", decisionScores.safety))}
+                </div>
             </article>
         `;
 
@@ -422,7 +477,10 @@
                 <h3>${cost.title}</h3>
                 <p>${cost.summary}</p>
                 <p>${cost.available ? "$" + fmt(cost.estimatedTotalCostUsd.low) + " - $" + fmt(cost.estimatedTotalCostUsd.high) : "Unavailable"}</p>
-                <p>${cost.available ? "Use as a quick compare line." : "Availability depends on market and constraints."}</p>
+                <p>${cost.available ? "Use this to choose your next route, not just price-shop." : "Availability depends on market and constraints."}</p>
+                ${Array.isArray(cost.notes) && cost.notes.length > 0
+                ? `<ul>${cost.notes.map((note) => "<li>" + note + "</li>").join("")}</ul>`
+                : ""}
             </article>
         `).join("");
 
@@ -443,8 +501,8 @@
 
         resultActions.innerHTML = `
             <section class="lead-capture">
-                <h3>Request local quotes</h3>
-                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">✓ Direct connect only. No spam.</p>
+                <h3>Get matched after you confirm the safer route</h3>
+                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">Direct connect only. No spam.</p>
                 <div class="lead-step" id="lead-step-1" ${leadFormState.step === 2 ? "hidden" : ""}>
                     <label for="lead-zip">ZIP code</label>
                     <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339" value="${escapeHtml(leadFormState.zip)}">
@@ -465,6 +523,7 @@
             <a class="ui-button ui-button--primary result-primary-cta" id="${primaryCta.id}" href="${primaryCta.href}">${primaryCta.label}</a>
             <div class="result-secondary-links">
                 ${secondaryCtas.map((item) => `<a class="ui-button ui-button--ghost" id="${item.id}" href="${item.href}">${item.label}</a>`).join("")}
+                <a class="ui-button ui-button--ghost" id="cta-heavy-rules" href="/dumpster/heavy-debris-rules">Check heavy-load rules first</a>
             </div>
             ${inputPayload.persona === "contractor" ? '<p class="lead-hint">Contractor mode: share this estimate with your crew or vendor.</p>' : ""}
         `;
@@ -482,6 +541,7 @@
         const dumpsterCall = document.getElementById("cta-dumpster-call");
         const dumpsterForm = document.getElementById("cta-dumpster-form");
         const junkCall = document.getElementById("cta-junk");
+        const heavyRules = document.getElementById("cta-heavy-rules");
         const leadStep1 = document.getElementById("lead-step-1");
         const leadStep2 = document.getElementById("lead-step-2");
         const leadZip = document.getElementById("lead-zip");
@@ -492,6 +552,15 @@
         const leadContactValue = document.getElementById("lead-contact-value");
         const leadContactLabel = document.getElementById("lead-contact-label");
         const prefersPhone = inputPayload.needTiming === "48h";
+        const emitContentGateEvent = (status, detail) => {
+            trackEvent(status === "pass" ? "content_gate_pass" : "content_gate_fail", apiData.estimateId, {
+                step: detail.step,
+                reason: detail.reason,
+                status,
+                contactMethod: leadContactMethod ? leadContactMethod.value : "",
+                needTiming: inputPayload.needTiming
+            });
+        };
 
         const emitLeadSubmitted = (source) => {
             if (!leadZip || !leadContactMethod || !leadContactValue) {
@@ -548,12 +617,14 @@
                 if (!isValidZip(zip)) {
                     leadStatus.textContent = "Enter a valid 5-digit ZIP.";
                     leadFormState.statusText = leadStatus.textContent;
+                    emitContentGateEvent("fail", { step: "zip", reason: "invalid_zip" });
                     return;
                 }
                 leadStatus.textContent = "";
                 leadFormState.statusText = "";
                 leadFormState.zip = zip;
                 leadFormState.step = 2;
+                emitContentGateEvent("pass", { step: "zip", reason: "valid_zip" });
                 leadStep1.hidden = true;
                 leadStep2.hidden = false;
                 if (leadContactValue) {
@@ -569,16 +640,19 @@
                 if (!isValidZip(zip)) {
                     leadStatus.textContent = "Enter a valid 5-digit ZIP.";
                     leadFormState.statusText = leadStatus.textContent;
+                    emitContentGateEvent("fail", { step: "submit", reason: "invalid_zip" });
                     return;
                 }
                 if (contact === "") {
                     leadStatus.textContent = "Enter your contact information.";
                     leadFormState.statusText = leadStatus.textContent;
+                    emitContentGateEvent("fail", { step: "submit", reason: "missing_contact" });
                     return;
                 }
                 leadFormState.zip = zip;
                 leadFormState.contactMethod = leadContactMethod.value;
                 leadFormState.contactValue = contact;
+                emitContentGateEvent("pass", { step: "submit", reason: "lead_ready" });
                 emitLeadSubmitted("lead_form_submit");
                 leadStatus.textContent = "Lead submitted. A quote partner can contact you next.";
                 leadFormState.statusText = leadStatus.textContent;
@@ -618,6 +692,32 @@
                 emitLeadSubmitted("cta_junk");
             });
         }
+        if (heavyRules) {
+            heavyRules.addEventListener("click", () => {
+                trackEvent("cta_click_heavy_rules", apiData.estimateId, {
+                    source: "result_secondary"
+                });
+            });
+        }
+    }
+
+    function bindDecisionStripTracking() {
+        if (!decisionModeLinks.length) {
+            return;
+        }
+        decisionModeLinks.forEach((link) => {
+            link.addEventListener("click", () => {
+                const priorityMode = parsePriorityFromHref(link.getAttribute("href"));
+                if (decisionPriorityInput) {
+                    decisionPriorityInput.value = priorityMode;
+                }
+                trackEvent("decision_mode_selected", null, {
+                    mode: link.getAttribute("data-decision-mode") || "unsure",
+                    priorityMode,
+                    source: "entry_strip"
+                });
+            });
+        });
     }
 
     function updateLiveDashboard(result, payload) {
@@ -791,6 +891,10 @@
         setPresetValue(unitInput, params.get("unit"), "unit-id");
         setPresetValue(needTimingInput, params.get("timing"), "need-timing");
         setPresetValue(needTimingInput, params.get("need_timing"), "need-timing");
+        const priorityParam = params.get("priority") || params.get("decision_priority");
+        if (decisionPriorityInput) {
+            decisionPriorityInput.value = normalizePriorityMode(priorityParam || decisionPriorityInput.value);
+        }
 
         const quantityParam = params.get("qty") || params.get("quantity");
         if (quantityInput && quantityParam) {
@@ -798,6 +902,11 @@
             if (!Number.isNaN(parsed) && parsed > 0) {
                 quantityInput.value = parsed.toString();
             }
+        }
+
+        const zipParam = params.get("zip") || params.get("zip_code");
+        if (marketZipInput && zipParam) {
+            marketZipInput.value = sanitizeZip(zipParam);
         }
     }
 
@@ -818,6 +927,49 @@
         }
         return Array.from(group.querySelectorAll("[data-choice-value]"))
             .some((button) => button.getAttribute("data-choice-value") === value);
+    }
+
+    function parsePriorityFromHref(href) {
+        if (!href) {
+            return currentDecisionPriority();
+        }
+        try {
+            const url = new URL(href, window.location.origin);
+            return normalizePriorityMode(url.searchParams.get("priority"));
+        } catch (_) {
+            return currentDecisionPriority();
+        }
+    }
+
+    function normalizePriorityMode(value) {
+        const mode = String(value || "").toLowerCase();
+        if (mode === "cost" || mode === "speed" || mode === "labor" || mode === "heavy") {
+            return mode;
+        }
+        return "balanced";
+    }
+
+    function currentDecisionPriority() {
+        if (!decisionPriorityInput) {
+            return "balanced";
+        }
+        return normalizePriorityMode(decisionPriorityInput.value);
+    }
+
+    function decisionPriorityLabel(mode) {
+        if (mode === "cost") {
+            return "Lowest cost";
+        }
+        if (mode === "speed") {
+            return "Fastest completion";
+        }
+        if (mode === "labor") {
+            return "Least effort";
+        }
+        if (mode === "heavy") {
+            return "Heavy-load safety";
+        }
+        return "Balanced";
     }
 
     function riskToPercent(priceRisk) {
@@ -925,12 +1077,199 @@
 
     function ctaConfig(key) {
         if (key === "dumpster_form") {
-            return { id: "cta-dumpster-form", href: "#estimate-form", label: "Request online quote" };
+            return { id: "cta-dumpster-form", href: "#estimate-form", label: "Run the live estimate" };
         }
         if (key === "junk_call") {
-            return { id: "cta-junk", href: "#junk", label: "Compare junk removal" };
+            return { id: "cta-junk", href: "/dumpster/dumpster-vs-junk-removal-which-is-cheaper", label: "Compare junk removal" };
         }
-        return { id: "cta-dumpster-call", href: "/about/contact", label: "Contact for quote" };
+        return { id: "cta-dumpster-call", href: "/about/contact", label: "Get dumpster quotes" };
+    }
+
+    function deriveDecisionMode(primaryCtaKey, topRecommendation, result) {
+        if (primaryCtaKey === "junk_call") {
+            return "junk";
+        }
+        if (topRecommendation && topRecommendation.multiHaul) {
+            return "multi_haul";
+        }
+        if (String(result.feasibility || "").toUpperCase().includes("MULTI")) {
+            return "multi_haul";
+        }
+        if (primaryCtaKey === "dumpster_call" || primaryCtaKey === "dumpster_form") {
+            return "dumpster";
+        }
+        return "unsure";
+    }
+
+    function decisionHeadline(primaryCtaKey, topRecommendation, result) {
+        const feasibility = String(result.feasibility || "").toUpperCase();
+        if (primaryCtaKey === "junk_call" || feasibility !== "OK") {
+            return "Best next move: compare junk removal first.";
+        }
+        if (topRecommendation && topRecommendation.multiHaul) {
+            return `Best next move: ${topRecommendation.sizeYd}yd staged multi-haul plan.`;
+        }
+        if (topRecommendation) {
+            return `Best next move: get quotes for a ${topRecommendation.sizeYd}-yard dumpster.`;
+        }
+        return "Best next move unavailable: review inputs and rerun.";
+    }
+
+    function decisionDetail(primaryCtaKey, topRecommendation, result) {
+        const risk = String(result.priceRisk || "").toUpperCase();
+        const feasibility = String(result.feasibility || "").toUpperCase();
+        if (primaryCtaKey === "junk_call") {
+            return "Current feasibility or overage risk makes crew-based pickup more predictable.";
+        }
+        if (topRecommendation && topRecommendation.multiHaul) {
+            return "Heavy or dense load signals indicate safer execution through staged hauls.";
+        }
+        if (feasibility !== "OK") {
+            return "Operational limits suggest avoiding a single overloaded dumpster run.";
+        }
+        if (risk === "HIGH") {
+            return "Price risk is elevated under current allowance assumptions.";
+        }
+        return "Weight and volume ranges fit a standard dumpster route with lower execution risk.";
+    }
+
+    function junkSmartWhenText(primaryCtaKey, result, inputPayload) {
+        const risk = String(result.priceRisk || "").toUpperCase();
+        const feasibility = String(result.feasibility || "").toUpperCase();
+        const timing = String(inputPayload.needTiming || "").toLowerCase();
+        if (primaryCtaKey === "junk_call") {
+            return "This scenario already looks like a junk-first route.";
+        }
+        if (feasibility !== "OK") {
+            return "When one-container pickup looks infeasible or likely to fail at dispatch.";
+        }
+        if (risk === "HIGH") {
+            return "When overage exposure is likely and dense material sorting is hard.";
+        }
+        if (timing === "48h") {
+            return "When same-day removal speed matters more than lowest rental cost.";
+        }
+        return "When access, labor, or sorting burden is higher than expected on site.";
+    }
+
+    function buildDecisionScores(result, inputPayload, topRecommendation, primaryCtaKey, priorityMode) {
+        const risk = String(result.priceRisk || "").toUpperCase();
+        const feasibility = String(result.feasibility || "").toUpperCase();
+        const timing = String(inputPayload.needTiming || "").toLowerCase();
+        const multiHaul = Boolean(topRecommendation && topRecommendation.multiHaul);
+        const normalizedPriority = normalizePriorityMode(priorityMode);
+
+        let cost = risk === "LOW" ? 84 : risk === "MEDIUM" ? 67 : 49;
+        if (multiHaul) {
+            cost -= 8;
+        }
+        if (primaryCtaKey === "junk_call" && feasibility !== "OK") {
+            cost += 4;
+        }
+
+        let speed = timing === "48h" ? 88 : timing === "this_week" ? 74 : 60;
+        if (primaryCtaKey === "junk_call") {
+            speed += 6;
+        }
+        if (multiHaul) {
+            speed -= 10;
+        }
+
+        let effort = primaryCtaKey === "junk_call" ? 82 : 56;
+        if (multiHaul) {
+            effort -= 12;
+        }
+        if (String(inputPayload.persona || "").toLowerCase() === "contractor") {
+            effort += 6;
+        }
+
+        let safety = feasibility === "OK" ? 84 : feasibility.includes("MULTI") ? 62 : 36;
+        if (risk === "HIGH") {
+            safety -= 10;
+        }
+        if (multiHaul && feasibility.includes("MULTI")) {
+            safety += 8;
+        }
+
+        if (normalizedPriority === "cost") {
+            cost += 10;
+            speed -= 4;
+            effort -= 2;
+            safety -= 1;
+        } else if (normalizedPriority === "speed") {
+            speed += 10;
+            cost -= 3;
+            effort += 2;
+            safety -= 3;
+        } else if (normalizedPriority === "labor") {
+            effort += 10;
+            speed += 3;
+            cost -= 4;
+            safety -= 2;
+        } else if (normalizedPriority === "heavy") {
+            safety += 12;
+            cost -= 6;
+            speed -= 4;
+            effort -= 3;
+            if (feasibility !== "OK") {
+                safety += 4;
+            }
+        }
+
+        return {
+            cost: clampScore(cost),
+            speed: clampScore(speed),
+            effort: clampScore(effort),
+            safety: clampScore(safety),
+            priorityMode: normalizedPriority
+        };
+    }
+
+    function decisionScoreRow(label, score, note) {
+        const tone = score >= 75 ? "good" : score >= 55 ? "warn" : "risk";
+        return `
+            <div class="decision-score-row">
+                <div class="decision-score-label">${label}</div>
+                <div class="decision-score-meter">
+                    <div class="decision-score-fill is-${tone}" style="width:${score}%;"></div>
+                </div>
+                <div class="decision-score-value">${score}</div>
+                <p class="decision-score-note">${note}</p>
+            </div>
+        `;
+    }
+
+    function decisionScoreNote(metric, score) {
+        if (metric === "cost") {
+            return score >= 75
+                ? "Low overage pressure under current assumptions."
+                : score >= 55
+                    ? "Cost is workable but allowance control matters."
+                    : "Cost volatility is high. Compare alternate route first.";
+        }
+        if (metric === "speed") {
+            return score >= 75
+                ? "Route aligns with faster completion."
+                : score >= 55
+                    ? "Timing is acceptable with coordination."
+                    : "Expect schedule friction or extra hauls.";
+        }
+        if (metric === "effort") {
+            return score >= 75
+                ? "Lower DIY effort expected."
+                : score >= 55
+                    ? "Moderate self-loading effort expected."
+                    : "High handling effort likely on this route.";
+        }
+        return score >= 75
+            ? "Operational safety margin looks strong."
+            : score >= 55
+                ? "Safety margin is usable with rules checked."
+                : "High pickup-risk scenario. Prioritize safer branch.";
+    }
+
+    function clampScore(value) {
+        return Math.max(0, Math.min(100, Math.round(value)));
     }
 
     function badge(text, style) {
