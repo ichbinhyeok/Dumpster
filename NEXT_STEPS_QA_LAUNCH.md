@@ -1,43 +1,37 @@
-# Next Steps (Plan-Aligned)
+# Next Steps (Refactor-Era, 2026-03-03)
 
-Current state: implementation + hardening complete, automated tests green.
+This checklist is now subordinate to the master refactor anchor:
+- `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v1_2026-03-03.md`
 
-## Step 1. Day 13-14 QA Completion
+Use this file as an operational quick list only.
 
-1. Run full regression tests (already automated, 30+ scenarios).
-2. Perform manual smoke on key routes:
+## A) Immediate Program Actions
+1. Approve the master anchor and phase windows.
+2. Open workstreams `ARCH/DATA/API/FE/SEO/ANL/QA/DOC` as tracked tickets.
+3. Create ADR and data/analytics documentation skeletons.
+
+## B) Engineering Safety Baseline
+1. Keep current regression baseline green before each phase transition.
+2. Preserve selective indexing and split sitemap policies.
+3. Keep compatibility-first migration (no big-bang rewrite).
+
+## C) Refactor Gate Checklist
+1. Gate G1: architecture freeze approved.
+2. Gate G2: data integrity and provenance checks approved.
+3. Gate G3: decision-summary UX + API contract parity approved.
+4. Gate G4: SEO title/H1 and link graph safety approved.
+5. Gate G5: release candidate + rollback rehearsal approved.
+
+## D) Ongoing Verification
+1. `./gradlew.bat test`
+2. `npx playwright test`
+3. Manual smoke for:
    - `/dumpster/size-weight-calculator`
-   - `/dumpster/estimate/{id}`
+   - `/dumpster/dumpster-vs-junk-removal-which-is-cheaper`
    - `/dumpster/heavy-debris-rules`
-   - `/robots.txt`
-   - `/sitemap.xml`
-   - `/sitemap-core.xml`
-   - `/sitemap-money.xml`
-   - `/sitemap-experiments.xml`
-3. Validate must-fail paths:
-   - concrete heavy load => `feasibility != OK`
-   - no allowance => assumed allowance badge
-   - high risk => junk CTA routing preference
-4. Validate selective intent indexing:
-   - allowlisted `/dumpster/answers/...` routes => `index, follow`
-   - non-allowlisted `/dumpster/answers/...` routes => `noindex, follow`
+   - `/dumpster/answers/...` (allowlist and non-allowlist samples)
+   - `/robots.txt`, `/sitemap.xml`, `/sitemap-core.xml`, `/sitemap-money.xml`, `/sitemap-experiments.xml`
 
-## Step 2. Data Tuning for Launch
-
-1. Adjust CSV values for your real market assumptions:
-   - `material_factors.csv`
-   - `dumpster_sizes.csv`
-   - `pricing_assumptions.csv`
-2. Re-run tests after each CSV revision.
-
-## Step 3. Release Gate
-
-1. Ensure `./gradlew.bat test` passes.
-2. Verify canonical/noindex/sitemap behaviors on deployed environment.
-3. Configure production `APP_BASE_URL` to `https://debrisdecision.com`.
-4. Confirm production `APP_SEO_MAX_WAVE` value (default `3`).
-5. Launch and monitor:
-   - `calc_completed`
-   - `feasibility_not_ok`
-   - `cta_click_dumpster_call`
-   - `cta_click_junk_call`
+## E) Metrics Watchlist
+1. Existing: `calc_completed_client`, `feasibility_not_ok`, `cta_click_dumpster_call`, `cta_click_junk_call`, `lead_submitted`.
+2. Planned V2 additions: `decision_mode_selected`, `comparison_page_view`, `comparison_page_exit_to_calculator`, `vendor_questions_expand`, `pickup_converter_used`, `answer_page_group`, `content_gate_pass`, `content_gate_fail`.

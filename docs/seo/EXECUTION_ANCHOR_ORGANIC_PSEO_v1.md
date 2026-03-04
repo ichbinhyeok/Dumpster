@@ -1,5 +1,11 @@
 # Dumpster Organic Execution Anchor v1
 
+## Parent Anchor (2026-03-03)
+- SEO execution remains active under this document.
+- Program-level refactor governance is anchored at:
+  - `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v1_2026-03-03.md`
+- If a conflict appears between this file and the parent anchor, follow the parent anchor and update this file in the same change set.
+
 ## Scope Lock
 - This track covers only organic/SEO/pSEO execution.
 - UI/presentation rebuild tasks are explicitly out of scope.
@@ -21,7 +27,7 @@
   - `/sitemap-experiments.xml`
 - `/dumpster/answers/` is crawl-allowed in `robots.txt`.
 - Intent pages use selective indexing:
-  - curated allowlist paths: `index, follow`
+  - curated allowlist paths (`19` routes as of 2026-03-04): `index, follow`
   - all other intent combinations: `noindex, follow`
 - Hub pages (`/dumpster/material-guides`, `/dumpster/project-guides`) remain crawlable but currently `noindex, follow` and tracked in experiments sitemap.
 
@@ -58,3 +64,5 @@
 - 2026-03-03: Updated rollout default to `app.seo.max-wave=3` to include validated wave3 assets.
 - 2026-03-03: Switched to split sitemap strategy (`/sitemap.xml` index + `core/money/experiments` children).
 - 2026-03-03: Re-opened `/dumpster/answers/` crawling and introduced curated indexable intent allowlist while keeping remaining intent pages `noindex, follow`.
+- 2026-03-04: Expanded curated intent allowlist from `10` to `19` routes (homeowner cleanup/remodel + heavy-risk scenarios), while preserving selective noindex policy for non-curated combinations.
+- 2026-03-04: Rewired decision-stage internal links to prioritize indexable intent adjacency and added richer comparison-hub scenario/FAQ coverage.

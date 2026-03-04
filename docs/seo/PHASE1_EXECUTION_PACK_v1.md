@@ -136,14 +136,21 @@ Track at minimum:
 - Local policy variance can appear as note blocks only; no local landing-page expansion in Phase 1.
 
 ## 10) Curated Indexable Intent Set (Current)
-Current intent allowlist is intentionally small and quality-screened (10 routes), including:
-- roof tear-off + asphalt shingles: `weight-estimate`, `overage-risk`
-- concrete removal + concrete: `size-guide`, `overage-risk`
+Current intent allowlist is intentionally quality-screened and expanded in controlled waves (`19` routes as of 2026-03-04), including:
+- roof tear-off + asphalt shingles: `size-guide`, `weight-estimate`, `overage-risk`
+- concrete removal + concrete: `size-guide`, `weight-estimate`, `overage-risk`
 - dirt grading + dirt/soil: `size-guide`, `overage-risk`
+- dirt grading + gravel/rock: `weight-estimate`
 - concrete removal + brick/block: `size-guide`
 - kitchen remodel + drywall: `size-guide`
+- kitchen remodel + mixed C&D: `overage-risk`
 - bathroom remodel + drywall: `size-guide`
+- bathroom remodel + tile/ceramic: `overage-risk`
 - light commercial fit-out + drywall: `size-guide`
+- deck demolition + decking wood: `size-guide`
+- garage cleanout + household junk: `size-guide`
+- estate cleanout + household junk: `size-guide`
+- yard cleanup + yard waste: `size-guide`
 
 ## 11) Implementation Status (2026-03-03)
 - Canonical slug normalization added for key material/project routes.

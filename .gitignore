@@ -51,3 +51,7 @@ jte-classes/
 build-local.bat
 test-local.bat
 
+# Local upstream design kit clones (snapshots are versioned under docs/design/kits/snapshots)
+docs/design/kits/flowbite-admin-upstream/
+docs/design/kits/hyperui-upstream/
+
