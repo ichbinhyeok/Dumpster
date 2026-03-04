@@ -71,7 +71,7 @@
         {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "Dumpster Decision OS",
+          "name": "Debris Decision",
           "url": "${model.siteBaseUrl()}"
         }
     </script>
@@ -79,7 +79,7 @@
         {
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "Dumpster Decision OS",
+          "name": "Debris Decision",
           "url": "${model.siteBaseUrl()}",
           "logo": "${model.siteBaseUrl()}/favicon.png"
         }
@@ -96,21 +96,21 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Range-based, heavy-debris aware", primaryHref = "#estimate-form", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Homeowner-first guidance", primaryHref = "#estimate-form", primaryLabel = "Run live estimate")
 
 <main class="app-container app-main calc-page">
     <section class="calc-hero">
         <div class="calc-hero__head">
-            <p class="eyebrow">Debris disposal decision engine</p>
+            <p class="eyebrow">Find your best disposal option</p>
             <h1 class="font-display">${model.pageTitle()}</h1>
             <p>Choose the safer route in about 60 seconds: dumpster, junk removal, or staged multi-haul.</p>
             <p>Answer three homeowner-first questions: which route wins, how to avoid overage, and what size is safe on the first try.</p>
         </div>
         <nav class="decision-strip" aria-label="Quick decision routes">
             <a class="decision-pill" data-decision-mode="cheapest_route" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=4&timing=research&priority=cost">I want the cheapest route</a>
-            <a class="decision-pill" data-decision-mode="easiest_option" href="/dumpster/size-weight-calculator?project=estate_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=this_week&priority=labor">I want the easiest route</a>
+            <a class="decision-pill" data-decision-mode="easiest_option" href="/dumpster/size-weight-calculator?project=moving_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=this_week&priority=labor">I want the easiest route</a>
             <a class="decision-pill" data-decision-mode="heavy_material" href="/dumpster/size-weight-calculator?project=concrete_removal&material=concrete&unit=sqft_4in&qty=180&timing=research&priority=heavy">I have heavy material</a>
-            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=kitchen_remodel&material=mixed_cd&unit=pickup_load&qty=4&timing=48h&priority=speed">I need it gone fast</a>
+            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=general_junk_removal&material=household_junk&unit=pickup_load&qty=4&timing=48h&priority=speed">I need it gone fast</a>
         </nav>
         <div class="calc-benefits">
             <article class="calc-benefit">
@@ -152,6 +152,9 @@
                         <button type="button" class="choice-chip" data-choice-value="deck_demolition">Deck demo</button>
                         <button type="button" class="choice-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
                         <button type="button" class="choice-chip" data-choice-value="estate_cleanout">Estate cleanout</button>
+                        <button type="button" class="choice-chip" data-choice-value="moving_cleanout">Moving / apartment cleanout</button>
+                        <button type="button" class="choice-chip" data-choice-value="furniture_appliance_disposal">Furniture or appliance disposal</button>
+                        <button type="button" class="choice-chip" data-choice-value="general_junk_removal">General junk removal</button>
                         <button type="button" class="choice-chip" data-choice-value="yard_cleanup">Yard cleanup</button>
                         <button type="button" class="choice-chip" data-choice-value="dirt_grading">Dirt grading</button>
                         <button type="button" class="choice-chip" data-choice-value="concrete_removal">Concrete removal</button>
@@ -176,7 +179,7 @@
                         <button type="button" class="choice-chip" data-choice-value="asphalt_pavement">Asphalt pavement</button>
                         <button type="button" class="choice-chip" data-choice-value="plaster">Plaster</button>
                         <button type="button" class="choice-chip" data-choice-value="drywall">Drywall</button>
-                        <button type="button" class="choice-chip" data-choice-value="mixed_cd">Mixed C&amp;D</button>
+                        <button type="button" class="choice-chip" data-choice-value="mixed_cd">Mixed construction debris (C&amp;D)</button>
                         <button type="button" class="choice-chip" data-choice-value="household_junk">Household junk</button>
                         <button type="button" class="choice-chip" data-choice-value="furniture">Furniture</button>
                         <button type="button" class="choice-chip" data-choice-value="carpet_pad">Carpet and pad</button>
@@ -225,7 +228,7 @@
                     <details class="ui-accordion">
                         <summary>
                             <span>Persona and timing</span>
-                            <small>Optional routing signal</small>
+                            <small>Choose your role</small>
                         </summary>
                         <div class="ui-accordion__body">
                             <div class="choice-grid choice-grid--compact" data-choice-target="persona">
@@ -241,9 +244,9 @@
                                 <button type="button" class="choice-chip" data-choice-value="48h">48 hours</button>
                             </div>
                             <div class="ui-field">
-                                <label class="ui-field__label" for="market-zip">ZIP code for market-rate routing (optional)</label>
+                                <label class="ui-field__label" for="market-zip">ZIP code (optional)</label>
                                 <input id="market-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339">
-                                <p class="calc-step__hint">Used to refine junk pricing profile tier before quote-matching.</p>
+                                <p class="calc-step__hint">Enter your ZIP for local pricing.</p>
                             </div>
                         </div>
                     </details>
@@ -324,7 +327,7 @@
 
             <section class="result-panel" id="result-panel" hidden>
                 <div class="result-header">
-                    <h3 class="font-display">Decision output</h3>
+                    <h3 class="font-display">Decision summary</h3>
                     <a id="share-link" href="#" rel="nofollow">Open share page</a>
                 </div>
                 <div id="result-state-banner" class="result-state-banner" hidden></div>
@@ -417,4 +420,5 @@
 <script src="/js/calculator.js?v=stripeapple4"></script>
 </body>
 </html>
+
 

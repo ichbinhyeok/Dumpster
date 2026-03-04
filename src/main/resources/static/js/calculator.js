@@ -324,6 +324,7 @@
         const verdictText = decisionHeadline(primaryCtaKey, topRecommendation, result);
         const bestMoveDetail = decisionDetail(primaryCtaKey, topRecommendation, result);
         const junkSmartWhen = junkSmartWhenText(primaryCtaKey, result, inputPayload);
+        const localPriceRange = extractCostWindow(costOptions);
         const activePriorityMode = currentDecisionPriority();
         const decisionScores = buildDecisionScores(
             result,
@@ -442,6 +443,10 @@
             <article class="stat">
                 <h3>Why this route wins</h3>
                 <p>${bestMoveDetail}</p>
+            </article>
+            <article class="stat">
+                <h3>Local price range</h3>
+                <p>${localPriceRange}</p>
             </article>
             <article class="stat">
                 <h3>When junk is smarter</h3>

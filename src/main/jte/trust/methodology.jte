@@ -27,7 +27,7 @@
         {
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "Dumpster Decision OS",
+          "name": "Debris Decision",
           "url": "${model.siteBaseUrl()}",
           "logo": "${model.siteBaseUrl()}/favicon.png"
         }
@@ -71,6 +71,7 @@
 @template.components.appFooter()
 </body>
 </html>
+
 
 
 

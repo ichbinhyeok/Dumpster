@@ -88,7 +88,7 @@
           "dateModified": "${model.modifiedDateIso()}",
           "author": {
             "@type": "Organization",
-            "name": "Dumpster Decision OS"
+            "name": "Debris Decision"
           },
           "mainEntityOfPage": "${model.canonicalUrl()}"
         }
@@ -252,4 +252,5 @@
 @template.components.appFooter()
 </body>
 </html>
+
 

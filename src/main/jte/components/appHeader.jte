@@ -4,10 +4,10 @@
 <header class="site-header">
     <div class="app-container app-header-row">
         <a class="brand" href="/dumpster/size-weight-calculator" aria-label="Dumpster calculator home">
-            <span class="brand-mark" aria-hidden="true">DC</span>
+            <span class="brand-mark" aria-hidden="true">DD</span>
             <span class="brand-copy">
-                <strong>Dumpster Decision OS</strong>
-                <small>Range-based size and weight intelligence</small>
+                <strong>Debris Decision</strong>
+                <small>Dumpster vs junk, made simple</small>
             </span>
         </a>
         <nav class="site-nav" aria-label="Primary">
