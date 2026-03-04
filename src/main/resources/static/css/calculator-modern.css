@@ -418,6 +418,30 @@
     font-size: 0.84rem;
 }
 
+.result-precalc {
+    border: 1px solid rgba(20, 40, 82, 0.1);
+    border-radius: var(--radius-card);
+    background: linear-gradient(170deg, #ffffff 10%, #f7fbff 100%);
+    padding: var(--space-4);
+    display: grid;
+    gap: 10px;
+}
+
+.result-precalc__lead {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.result-precalc ul {
+    margin: 0;
+    padding-left: 1rem;
+    display: grid;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
 .gauge-dashboard {
     display: flex;
     justify-content: space-between;

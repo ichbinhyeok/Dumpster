@@ -18,6 +18,7 @@
     const resultAssumptions = document.getElementById("result-assumptions");
     const trustDrawer = document.getElementById("trust-drawer");
     const resultActions = document.getElementById("result-actions");
+    const resultPrecalc = document.getElementById("result-precalc");
     const shareLink = document.getElementById("share-link");
     const submitButton = document.getElementById("submit-button");
     const floatingCta = document.getElementById("floating-cta");
@@ -35,6 +36,7 @@
     const quantityDec = document.getElementById("quantity-dec");
     const liveNote = document.getElementById("live-note");
     const liveStatus = document.getElementById("live-status");
+    const gaugeDashboard = document.getElementById("gauge-dashboard");
     const gaugeWeight = document.getElementById("gauge-weight");
     const gaugeVolume = document.getElementById("gauge-volume");
     const gaugeRisk = document.getElementById("gauge-risk");
@@ -108,6 +110,7 @@
     let liveDebounceId = null;
     let activeRequestController = null;
     let requestSequence = 0;
+    let hasRenderedResult = false;
     const leadFormState = {
         zip: "",
         contactMethod: "",
@@ -123,6 +126,7 @@
     bindStepperControls();
     bindFormControls();
     bindAdditionalMaterialControls();
+    setResultRailState(false);
     queueLiveEstimate();
 
     form.addEventListener("submit", (event) => {
@@ -447,6 +451,22 @@
         });
     }
 
+    function setResultRailState(hasResult) {
+        hasRenderedResult = hasResult;
+        if (resultPrecalc) {
+            resultPrecalc.hidden = hasResult;
+        }
+        if (gaugeDashboard) {
+            gaugeDashboard.hidden = !hasResult;
+        }
+        if (resultPanel) {
+            resultPanel.hidden = !hasResult;
+        }
+        if (mobileResultDock) {
+            mobileResultDock.hidden = !hasResult;
+        }
+    }
+
     function renderResult(apiData, inputPayload) {
         const result = apiData.result;
         const recommendations = Array.isArray(result.recommendations) ? result.recommendations : [];
@@ -477,7 +497,7 @@
             activePriorityMode
         );
 
-        resultPanel.hidden = false;
+        setResultRailState(true);
         shareLink.href = "/dumpster/estimate/" + apiData.estimateId;
         if (liveNote) {
             liveNote.classList.remove("is-error");
@@ -488,9 +508,6 @@
         }
         if (mobileResultVerdict) {
             mobileResultVerdict.textContent = verdictText;
-        }
-        if (mobileResultDock) {
-            mobileResultDock.hidden = false;
         }
 
         trackEvent("result_viewed", apiData.estimateId, {
@@ -967,9 +984,19 @@
     }
 
     function showCalculationError() {
-        if (resultPanel) {
-            resultPanel.hidden = false;
+        if (!hasRenderedResult) {
+            if (liveStatus) {
+                liveStatus.textContent = "Live update failed. Adjust inputs and retry.";
+            }
+            if (liveNote) {
+                liveNote.classList.remove("is-loading");
+                liveNote.classList.add("is-error");
+                liveNote.textContent = "Live update failed. Verify inputs and retry.";
+            }
+            return;
         }
+
+        setResultRailState(true);
         if (resultStateBanner) {
             resultStateBanner.hidden = true;
             resultStateBanner.innerHTML = "";
@@ -998,9 +1025,6 @@
         }
         if (mobileResultVerdict) {
             mobileResultVerdict.textContent = "Live update failed. Verify inputs and retry.";
-        }
-        if (mobileResultDock) {
-            mobileResultDock.hidden = false;
         }
     }
 

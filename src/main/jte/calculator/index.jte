@@ -406,7 +406,16 @@
                 <p id="live-status" class="result-status">Start with your project and material to see the safest next move.</p>
             </div>
 
-            <div class="gauge-dashboard">
+            <section id="result-precalc" class="result-precalc">
+                <p class="result-precalc__lead"><strong>Direct answer:</strong> this tool decides the safest next move before you call anyone.</p>
+                <ul>
+                    <li><strong>Route:</strong> dumpster, junk removal, or staged multi-haul.</li>
+                    <li><strong>Risk:</strong> where overage or feasibility can break the plan.</li>
+                    <li><strong>Action:</strong> exact next CTA based on your timing and material profile.</li>
+                </ul>
+            </section>
+
+            <div id="gauge-dashboard" class="gauge-dashboard" hidden>
                 <article class="radial-card">
                     <h3>Volume</h3>
                     <div class="radial-wrap">
