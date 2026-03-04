@@ -2,6 +2,7 @@ package com.dumpster.calculator;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,5 +34,12 @@ class CalculatorPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"WebApplication\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Data updated:"))));
+    }
+
+    @Test
+    void rootPathRedirectsToCalculatorCanonicalUrl() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isMovedPermanently())
+                .andExpect(redirectedUrl("/dumpster/size-weight-calculator"));
     }
 }

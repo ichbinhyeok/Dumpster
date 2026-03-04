@@ -5,10 +5,10 @@ const pagePaths = [
   "/dumpster/size-weight-calculator",
   "/dumpster/material-guides",
   "/dumpster/project-guides",
-  "/dumpster/weight/asphalt_shingles",
-  "/dumpster/size/roof_tearoff",
+  "/dumpster/weight/shingles",
+  "/dumpster/size/roof-tear-off",
   "/dumpster/heavy-debris-rules",
-  "/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide",
+  "/dumpster/answers/roof-tear-off/shingles/size-guide",
 ];
 
 const viewports: Array<{ name: string; use: BrowserContextOptions }> = [

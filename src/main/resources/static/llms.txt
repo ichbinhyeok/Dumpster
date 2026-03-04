@@ -1,0 +1,23 @@
+Debris Decision
+==============
+
+Canonical site: https://debrisdecision.com
+Primary product: Homeowner-first dumpster vs junk removal decision engine
+
+Core entry points
+- /dumpster/size-weight-calculator
+- /dumpster/dumpster-vs-junk-removal-which-is-cheaper
+- /dumpster/heavy-debris-rules
+- /dumpster/material-guides
+- /dumpster/project-guides
+
+Trust and methodology
+- /about/methodology
+- /about/editorial-policy
+- /about/contact
+
+Data and limits
+- Outputs are planning estimates, not binding vendor contracts.
+- Included tons and max-haul limits are modeled separately.
+- Heavy debris recommendations prioritize feasibility and safety first.
+

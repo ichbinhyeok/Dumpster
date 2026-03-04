@@ -5,9 +5,9 @@ const auditPaths = [
   "/dumpster/size-weight-calculator",
   "/dumpster/material-guides",
   "/dumpster/project-guides",
-  "/dumpster/weight/asphalt_shingles",
-  "/dumpster/size/roof_tearoff",
-  "/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide",
+  "/dumpster/weight/shingles",
+  "/dumpster/size/roof-tear-off",
+  "/dumpster/answers/roof-tear-off/shingles/size-guide",
 ];
 
 test.describe("Accessibility (WCAG / keyboard / ARIA) checks", () => {

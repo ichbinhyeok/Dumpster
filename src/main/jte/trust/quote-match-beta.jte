@@ -39,7 +39,7 @@
     <section class="panel">
         <p class="eyebrow">Quote Match Beta</p>
         <h1>${model.pageTitle()}</h1>
-        <p>This intake is for beta coverage only. We use your calculator inputs to queue local follow-up when partner coverage is available.</p>
+        <p>This intake is for beta coverage only. We use your calculator inputs to queue local follow-up when partner coverage is available for your ZIP.</p>
     </section>
 
     <section class="panel">
@@ -54,16 +54,30 @@
     <section class="panel">
         <h2>What to expect</h2>
         <ul>
-            <li>This is not instant booking and not guaranteed same-day dispatch.</li>
-            <li>Coverage and response time depend on local partner availability.</li>
+            <li>This is not instant booking and does not guarantee same-day dispatch.</li>
+            <li>Coverage depends on active partner markets and material policy fit.</li>
+            <li>If your ZIP is covered, typical first response is within one business day.</li>
+            <li>If your ZIP is not covered, we provide fallback guidance to run direct vendor outreach.</li>
             <li>For corrections or source updates, use the <a href="/about/contact">contact page</a>.</li>
+        </ul>
+    </section>
+
+    <section class="panel">
+        <h2>Data and consent</h2>
+        <ul>
+            <li>We store contact info, ZIP, project scope, material profile, and timing to route your request.</li>
+            <li>Submitted details are used only for quote-match operations and quality review.</li>
+            <li>You can request deletion or correction from the <a href="/about/contact">contact page</a>.</li>
         </ul>
     </section>
 
     <section class="panel">
         <h2>Next step</h2>
         <p>Return to the calculator, confirm your safer route, then submit ZIP and contact details from the result board.</p>
-        <p><a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Back to calculator</a></p>
+        <p>
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Back to calculator</a>
+            <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper">Fallback: compare dumpster vs junk</a>
+        </p>
     </section>
 
     <section class="panel">

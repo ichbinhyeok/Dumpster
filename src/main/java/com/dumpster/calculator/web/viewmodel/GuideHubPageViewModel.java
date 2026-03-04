@@ -8,6 +8,8 @@ public record GuideHubPageViewModel(
         String calculatorUrl,
         String ogImageUrl,
         String description,
+        String lastUpdatedIso,
+        String reviewedBy,
         String eyebrow,
         List<LinkItemViewModel> links,
         List<MaterialGroupViewModel> materialGroups,

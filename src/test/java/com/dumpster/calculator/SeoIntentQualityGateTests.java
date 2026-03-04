@@ -28,8 +28,8 @@ class SeoIntentQualityGateTests {
         for (String path : paths) {
             String[] parts = path.split("/");
             assertThat(parts).hasSizeGreaterThanOrEqualTo(6);
-            String projectId = parts[3];
-            String materialId = parts[4];
+            String projectId = seoContentService.resolveProjectId(parts[3]);
+            String materialId = seoContentService.resolveMaterialId(parts[4]);
             String intentSlug = parts[5];
             IntentPageViewModel page = seoContentService.intentPage(
                     projectId,

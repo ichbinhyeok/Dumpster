@@ -21,10 +21,10 @@ class SeoIntentIndexModeTests {
         var paths = seoContentService.indexableIntentPaths();
 
         assertThat(paths).hasSize(19);
-        assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
-        assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/overage-risk");
-        assertThat(paths).contains("/dumpster/answers/garage_cleanout/household_junk/size-guide");
-        assertThat(paths).doesNotContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
+        assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/size-guide");
+        assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/overage-risk");
+        assertThat(paths).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
+        assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
     }
 }
 

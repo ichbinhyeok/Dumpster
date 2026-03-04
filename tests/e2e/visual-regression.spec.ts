@@ -30,7 +30,7 @@ test.describe("Visual regression and responsive rendering", () => {
     });
 
     test("material guide baseline", async ({ page }) => {
-      await page.goto("/dumpster/weight/asphalt_shingles");
+      await page.goto("/dumpster/weight/shingles");
       await assertNoHorizontalOverflow(page);
       await expect(page).toHaveScreenshot("material-asphalt-desktop-1080.png", {
         fullPage: true,

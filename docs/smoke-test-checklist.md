@@ -31,13 +31,13 @@
 
 ## Intent Indexing Policy Checks
 1. Open a canonical indexable intent route (example):
-   - `/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk`
+   - `/dumpster/answers/roof-tear-off/shingles/overage-risk`
 2. Confirm robots behavior is indexable (`index, follow` via meta/header).
 3. Open a canonical noindex intent route (example):
-   - `/dumpster/answers/roof_tearoff/tile_ceramic/size-guide`
+   - `/dumpster/answers/roof-tear-off/tile-ceramic/size-guide`
 4. Confirm robots behavior is `noindex, follow`.
 5. Open alias path and confirm canonical redirect:
-   - `/dumpster/answers/roof-tear-off/shingles/size-guide` -> `/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide`
+   - `/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide` -> `/dumpster/answers/roof-tear-off/shingles/size-guide`
 
 ## pSEO Conversion Flow
 1. Open a material page (`/dumpster/weight/shingles`).

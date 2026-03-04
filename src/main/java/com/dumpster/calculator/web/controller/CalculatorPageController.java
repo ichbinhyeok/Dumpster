@@ -6,6 +6,7 @@ import com.dumpster.calculator.infra.persistence.EstimateStorageService;
 import com.dumpster.calculator.web.content.SeoContentService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,14 @@ public class CalculatorPageController {
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
     }
 
-    @GetMapping({"/", "/dumpster/size-weight-calculator"})
+    @GetMapping("/")
+    public ModelAndView rootToCalculatorRedirect() {
+        ModelAndView redirect = new ModelAndView("redirect:/dumpster/size-weight-calculator");
+        redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
+        return redirect;
+    }
+
+    @GetMapping("/dumpster/size-weight-calculator")
     public ModelAndView calculatorPage() {
         ModelAndView modelAndView = new ModelAndView("calculator/index");
         modelAndView.addObject("model", new CalculatorPageViewModel(

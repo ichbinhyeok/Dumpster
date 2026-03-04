@@ -102,7 +102,7 @@ class SeoPageRenderingTests {
 
     @Test
     void intentPageRendersDirectAnswerAndComparisonTable() throws Exception {
-        mockMvc.perform(get("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide"))
+        mockMvc.perform(get("/dumpster/answers/roof-tear-off/shingles/size-guide"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Size-by-size load comparison")))
@@ -114,25 +114,25 @@ class SeoPageRenderingTests {
 
     @Test
     void intentPageRendersForRoofSecondaryMaterials() throws Exception {
-        mockMvc.perform(get("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide"))
+        mockMvc.perform(get("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")));
 
-        mockMvc.perform(get("/dumpster/answers/roof_tearoff/metal_scrap_light/size-guide"))
+        mockMvc.perform(get("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")));
     }
 
     @Test
     void intentAliasRouteRedirectsToCanonicalPath() throws Exception {
-        mockMvc.perform(get("/dumpster/answers/roof-tear-off/shingles/size-guide"))
+        mockMvc.perform(get("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide"))
                 .andExpect(status().isMovedPermanently())
-                .andExpect(redirectedUrl("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide"));
+                .andExpect(redirectedUrl("/dumpster/answers/roof-tear-off/shingles/size-guide"));
     }
 
     @Test
     void whitelistedIntentPageIsIndexable() throws Exception {
-        mockMvc.perform(get("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk"))
+        mockMvc.perform(get("/dumpster/answers/roof-tear-off/shingles/overage-risk"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
@@ -140,7 +140,7 @@ class SeoPageRenderingTests {
 
     @Test
     void nonWhitelistedIntentPageRemainsNoindex() throws Exception {
-        mockMvc.perform(get("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide"))
+        mockMvc.perform(get("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"noindex,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));

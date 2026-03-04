@@ -29,7 +29,12 @@
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           "name": "${model.pageTitle()}",
-          "url": "${model.canonicalUrl()}"
+          "url": "${model.canonicalUrl()}",
+          "dateModified": "${model.lastUpdatedIso()}",
+          "author": {
+            "@type": "Organization",
+            "name": "${model.reviewedBy()}"
+          }
         }
     </script>
     <script type="application/ld+json">
@@ -76,6 +81,7 @@
                 <h1 class="font-display">${model.pageTitle()}</h1>
                 <p class="answer-first"><strong>Direct answer:</strong> use material density first, then confirm overage risk by size.</p>
                 <p>${model.description()}</p>
+                <p class="meta-note">Reviewed by ${model.reviewedBy()} · Updated ${model.lastUpdatedIso()}</p>
                 <div class="quick-facts">
                     <div class="fact-chip">
                         <strong>Navigation model</strong>

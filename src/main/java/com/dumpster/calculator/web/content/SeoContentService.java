@@ -563,11 +563,27 @@ public class SeoContentService {
     }
 
     public String resolveMaterialId(String materialPathToken) {
-        return MATERIAL_SLUG_TO_ID.getOrDefault(materialPathToken, materialPathToken);
+        String direct = MATERIAL_SLUG_TO_ID.get(materialPathToken);
+        if (direct != null) {
+            return direct;
+        }
+        String normalized = materialPathToken.replace('-', '_');
+        if (materialFactorRepository.findById(normalized).isPresent()) {
+            return normalized;
+        }
+        return materialPathToken;
     }
 
     public String resolveProjectId(String projectPathToken) {
-        return PROJECT_SLUG_TO_ID.getOrDefault(projectPathToken, projectPathToken);
+        String direct = PROJECT_SLUG_TO_ID.get(projectPathToken);
+        if (direct != null) {
+            return direct;
+        }
+        String normalized = projectPathToken.replace('-', '_');
+        if (projectSeeds.containsKey(normalized)) {
+            return normalized;
+        }
+        return projectPathToken;
     }
 
     public boolean isIntentSlugSupported(String intentSlug) {
@@ -843,8 +859,8 @@ public class SeoContentService {
                             link(PICKUP_CONVERTER_PATH, "Pickup Load Converter", "Estimate whether job size favors dumpster flow."),
                             link(HEAVY_RULES_PATH, "Heavy Rules", "Check feasibility constraints before comparing cost."),
                             link("/dumpster/one-20-yard-vs-two-10-yard", "One 20-Yard vs Two 10-Yard", "See when staged smaller hauls are safer."),
-                            link("/dumpster/answers/garage_cleanout/household_junk/size-guide", "Garage cleanout size guide", "See homeowner-focused size guidance for uncertain mixed-junk cleanup."),
-                            link("/dumpster/answers/concrete_removal/concrete/overage-risk", "Concrete overage-risk answer", "If heavy material appears, route by feasibility first.")
+                            link("/dumpster/answers/garage-cleanout/household-junk/size-guide", "Garage cleanout size guide", "See homeowner-focused size guidance for uncertain mixed-junk cleanup."),
+                            link("/dumpster/answers/concrete-removal/concrete/overage-risk", "Concrete overage-risk answer", "If heavy material appears, route by feasibility first.")
                     )
             ));
             case "bagster-vs-dumpster" -> Optional.of(new SpecialSeoPageViewModel(
@@ -1397,11 +1413,37 @@ public class SeoContentService {
     }
 
     private String intentPath(String projectId, String materialId, IntentType intentType) {
-        return INTENT_BASE_PATH + "/" + projectId + "/" + materialId + "/" + intentType.slug();
+        return INTENT_BASE_PATH
+                + "/" + projectPublicSlug(projectId)
+                + "/" + materialPublicSlug(materialId)
+                + "/" + intentType.slug();
     }
 
     private String intentPath(String projectId, String materialId, String intentSlug) {
-        return INTENT_BASE_PATH + "/" + projectId + "/" + materialId + "/" + intentSlug;
+        return INTENT_BASE_PATH
+                + "/" + projectPublicSlug(projectId)
+                + "/" + materialPublicSlug(materialId)
+                + "/" + intentSlug;
+    }
+
+    private String materialPublicSlug(String materialId) {
+        String canonicalPath = materialCanonicalPath(materialId);
+        String prefix = "/dumpster/weight/";
+        if (canonicalPath.startsWith(prefix)) {
+            String token = canonicalPath.substring(prefix.length());
+            return token.contains("_") ? token.replace('_', '-') : token;
+        }
+        return materialId.replace('_', '-');
+    }
+
+    private String projectPublicSlug(String projectId) {
+        String canonicalPath = projectCanonicalPath(projectId);
+        String prefix = "/dumpster/size/";
+        if (canonicalPath.startsWith(prefix)) {
+            String token = canonicalPath.substring(prefix.length());
+            return token.contains("_") ? token.replace('_', '-') : token;
+        }
+        return projectId.replace('_', '-');
     }
 
     private List<IndexableIntentSeed> activeIndexableIntentSeeds() {

@@ -12,10 +12,10 @@ const highIntentPaths = [
   "/dumpster/size/kitchen-remodel",
   "/dumpster/size/bathroom-remodel",
   "/dumpster/drywall-disposal-dumpster-rules",
-  "/dumpster/answers/garage_cleanout/household_junk/size-guide",
-  "/dumpster/answers/concrete_removal/concrete/weight-estimate",
-  "/dumpster/answers/deck_demolition/decking_wood/size-guide",
-  "/dumpster/answers/kitchen_remodel/mixed_cd/overage-risk",
+  "/dumpster/answers/garage-cleanout/household-junk/size-guide",
+  "/dumpster/answers/concrete-removal/concrete/weight-estimate",
+  "/dumpster/answers/deck-removal/decking-wood/size-guide",
+  "/dumpster/answers/kitchen-remodel/mixed-cd/overage-risk",
 ];
 
 test.describe("High-intent page pack", () => {

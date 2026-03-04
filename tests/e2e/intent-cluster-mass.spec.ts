@@ -14,9 +14,9 @@ test.describe("Mass intent-cluster coverage", () => {
     const locs = sitemapLocs(xml);
     const intentLocs = locs.filter((loc) => loc.includes("/dumpster/answers/"));
     expect(intentLocs.length).toBe(89);
-    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
-    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/garage_cleanout/household_junk/size-guide");
-    expect(intentLocs).not.toContain("http://127.0.0.1:4173/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
+    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/roof-tear-off/shingles/overage-risk");
+    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/garage-cleanout/household-junk/size-guide");
+    expect(intentLocs).not.toContain("http://127.0.0.1:4173/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
   });
 
   test("phase-one decision pages return 200 with direct-answer structure", async ({ request }) => {

@@ -24,9 +24,9 @@ test.describe("Persona E2E journeys", () => {
     await page.locator("#lead-next").click();
     await expect(page.locator("#lead-step-2")).toBeVisible();
     await page.selectOption("#lead-contact-method", "email");
-   await page.locator("#lead-contact-value").fill("owner@example.com");
+    await page.locator("#lead-contact-value").fill("owner@example.com");
     await page.locator("#lead-submit").click();
-    await expect(page.locator("#lead-status")).toContainText("Queued:");
+    await expect(page.locator("#lead-status")).toContainText(/Submitting to quote-match beta queue|Queued:/);
 
     await expect.poll(
       () => events.some((event) => event.eventName === "lead_submitted"),

@@ -87,6 +87,19 @@
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "${model.pageTitle()}",
+          "url": "${model.canonicalUrl()}",
+          "dateModified": "${model.lastUpdatedIso()}",
+          "reviewedBy": {
+            "@type": "Organization",
+            "name": "Debris Decision Editorial Team"
+          }
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.canonicalUrl()}"}
@@ -105,6 +118,7 @@
             <h1 class="font-display">${model.pageTitle()}</h1>
             <p>Choose the safer route in about 60 seconds: dumpster, junk removal, or staged multi-haul.</p>
             <p>Answer three homeowner-first questions: which route wins, how to avoid overage, and what size is safe on the first try.</p>
+            <p class="meta-note">Reviewed by Debris Decision editorial team · Updated ${model.lastUpdatedIso()}</p>
         </div>
         <nav class="decision-strip" aria-label="Quick decision routes">
             <a class="decision-pill" data-decision-mode="cheapest_route" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=4&timing=research&priority=cost">I want the cheapest route</a>
@@ -389,7 +403,7 @@
             <div class="result-rail__header">
                 <p class="eyebrow">Result summary</p>
                 <h2 class="font-display">Decision board</h2>
-                <p id="live-status" class="result-status">Change any input to refresh your estimate.</p>
+                <p id="live-status" class="result-status">Start with your project and material to see the safest next move.</p>
             </div>
 
             <div class="gauge-dashboard">
@@ -432,7 +446,7 @@
                 </div>
                 <div id="result-state-banner" class="result-state-banner" hidden></div>
                 <div id="result-hard-stops" class="result-hard-stops" hidden></div>
-                <p id="result-verdict" class="result-verdict">Run calculation to get your verdict.</p>
+                <p id="result-verdict" class="result-verdict">Your recommendation appears here after the first live estimate.</p>
                 <div id="result-badges" class="badges"></div>
                 <div id="result-input-impact" class="input-impact-list"></div>
                 <div id="result-summary" class="summary-grid"></div>
@@ -507,7 +521,7 @@
 
 <div id="mobile-result-dock" class="mobile-result-dock" hidden>
     <div class="mobile-result-dock__row">
-        <p id="mobile-result-verdict">Run calculation to get your recommendation.</p>
+        <p id="mobile-result-verdict">Your recommendation appears after the first live estimate.</p>
         <a id="mobile-primary-cta" class="ui-button ui-button--primary" href="#estimate-form">View result</a>
     </div>
 </div>

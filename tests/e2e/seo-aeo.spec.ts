@@ -39,7 +39,7 @@ const pages: SeoExpectation[] = [
     expectedType: "FAQPage",
   },
   {
-    path: "/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide",
+    path: "/dumpster/answers/roof-tear-off/shingles/size-guide",
     expectedTitlePart: "Best dumpster size",
     expectedType: "FAQPage",
   },
@@ -88,7 +88,7 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     const targets = [
       "/dumpster/material-guides",
       "/dumpster/project-guides",
-      "/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide",
+      "/dumpster/answers/roof-tear-off/shingles/size-guide",
     ];
 
     for (const path of targets) {
@@ -132,9 +132,9 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     const moneyXml = await moneySitemap.text();
     expect(moneyXml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
     expect(moneyXml).toContain("/dumpster/weight/concrete");
-    expect(moneyXml).toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
-    expect(moneyXml).toContain("/dumpster/answers/concrete_removal/concrete/size-guide");
-    expect(moneyXml).not.toContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
+    expect(moneyXml).toContain("/dumpster/answers/roof-tear-off/shingles/overage-risk");
+    expect(moneyXml).toContain("/dumpster/answers/concrete-removal/concrete/size-guide");
+    expect(moneyXml).not.toContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
 
     const experimentsSitemap = await request.get("/sitemap-experiments.xml");
     expect(experimentsSitemap.ok()).toBeTruthy();
@@ -144,7 +144,7 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
   });
 
   test("intent page includes decision blocks, table/checklist skeleton and next-step links", async ({ page }) => {
-    await page.goto("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
+    await page.goto("/dumpster/answers/roof-tear-off/shingles/size-guide");
     await expect(page.locator(".answer-first")).toContainText("Direct answer:");
     await expect(page.getByRole("heading", { name: "Size-by-size load comparison" })).toBeVisible();
     await expect(page.locator("table.data-table tbody tr")).toHaveCount(5);
@@ -184,7 +184,7 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
 
     await page.goto("/dumpster/weight/shingles");
     await page.getByRole("link", { name: "Check overage-risk answer" }).click();
-    await expect(page).toHaveURL(/\/dumpster\/answers\/roof_tearoff\/asphalt_shingles\/overage-risk/);
+    await expect(page).toHaveURL(/\/dumpster\/answers\/roof-tear-off\/shingles\/overage-risk/);
 
     await page.goto("/dumpster/project-guides");
     await page.getByRole("link", { name: /Compare dumpster vs junk/i }).first().click();

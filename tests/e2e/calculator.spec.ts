@@ -64,6 +64,6 @@ test.describe("Dumpster calculator local e2e", () => {
     expect(moneyXml).toContain("/dumpster/weight/shingles");
     expect(moneyXml).toContain("/dumpster/10-yard-dumpster-weight-limit-overage");
     expect(moneyXml).toContain("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
-    expect(moneyXml).toContain("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+    expect(moneyXml).toContain("/dumpster/answers/roof-tear-off/shingles/overage-risk");
   });
 });

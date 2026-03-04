@@ -85,16 +85,16 @@ class SeoContentServiceTests {
         var paths = seoContentService.indexableIntentPaths();
 
         assertThat(paths).hasSize(89);
-        assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
-        assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
-        assertThat(paths).contains("/dumpster/answers/roof_tearoff/metal_scrap_light/size-guide");
-        assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/size-guide");
-        assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/weight-estimate");
-        assertThat(paths).contains("/dumpster/answers/dirt_grading/dirt_soil/size-guide");
-        assertThat(paths).contains("/dumpster/answers/light_commercial_fitout/drywall/size-guide");
-        assertThat(paths).contains("/dumpster/answers/garage_cleanout/household_junk/size-guide");
-        assertThat(paths).contains("/dumpster/answers/yard_cleanup/yard_waste/size-guide");
-        assertThat(paths).doesNotContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
+        assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/overage-risk");
+        assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/size-guide");
+        assertThat(paths).contains("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
+        assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/size-guide");
+        assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/weight-estimate");
+        assertThat(paths).contains("/dumpster/answers/dirt-grading/dirt/size-guide");
+        assertThat(paths).contains("/dumpster/answers/light-commercial-fitout/drywall/size-guide");
+        assertThat(paths).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
+        assertThat(paths).contains("/dumpster/answers/yard-cleanup/yard-waste/size-guide");
+        assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
     }
 
     @Test

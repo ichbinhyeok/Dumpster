@@ -20,7 +20,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Local Playwright checks for dumpster calculator",
+  "description": "Homeowner-first debris disposal decision engine (dumpster vs junk) with Spring Boot backend and Playwright quality gates",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@playwright/test": "^1.58.2",
