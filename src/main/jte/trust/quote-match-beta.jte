@@ -65,8 +65,21 @@
         <p>Return to the calculator, confirm your safer route, then submit ZIP and contact details from the result board.</p>
         <p><a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Back to calculator</a></p>
     </section>
+
+    <section class="panel">
+        <h2>Check beta queue status</h2>
+        <p>If you already submitted, enter your intake ID (example: <code>qmb_xxxxxxxxxxxxxxxxxxxx</code>).</p>
+        <div class="ui-field" style="max-width:28rem;">
+            <label class="ui-field__label" for="intake-id">Intake ID</label>
+            <input id="intake-id" type="text" maxlength="64" placeholder="qmb_...">
+        </div>
+        <p style="margin-top:0.75rem;">
+            <button type="button" class="ui-button ui-button--primary" id="intake-status-check">Check status</button>
+        </p>
+        <p id="intake-status-output" class="calc-step__hint" aria-live="polite"></p>
+    </section>
 </main>
 @template.components.appFooter()
+<script src="/js/quote-match-beta.js?v=stripeapple4"></script>
 </body>
 </html>
-

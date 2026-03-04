@@ -35,7 +35,7 @@ test.describe("iPhone SE scenario coverage", () => {
     await page.locator("#lead-contact-value").fill("owner@example.com");
     await expect(page.locator("#lead-contact-value")).toHaveValue("owner@example.com");
     await page.locator("#lead-submit").click();
-    await expect(page.locator("#lead-status")).toContainText("Lead submitted");
+    await expect(page.locator("#lead-status")).toContainText("Queued:");
     await expect
       .poll(() => events.some((event) => event.eventName === "lead_submitted"), { timeout: 10_000 })
       .toBeTruthy();

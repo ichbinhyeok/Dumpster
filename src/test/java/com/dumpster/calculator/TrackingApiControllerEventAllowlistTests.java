@@ -41,7 +41,11 @@ class TrackingApiControllerEventAllowlistTests {
                 "market_zip_entered",
                 "pickup_converter_used",
                 "answer_page_group",
-                "vendor_questions_expand"
+                "vendor_questions_expand",
+                "multi_material_line_added",
+                "multi_material_line_removed",
+                "quote_match_intake_submitted",
+                "quote_match_intake_status_viewed"
         );
 
         for (String eventName : allowedEvents) {
@@ -68,4 +72,3 @@ class TrackingApiControllerEventAllowlistTests {
                 .andExpect(status().isBadRequest());
     }
 }
-

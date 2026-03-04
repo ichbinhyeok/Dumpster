@@ -1,5 +1,6 @@
 (function () {
     const QUOTE_MATCH_BETA_PATH = "/about/quote-match-beta";
+    const QUOTE_MATCH_INTAKE_ENDPOINT = "/api/quote-match/intakes";
     const form = document.getElementById("estimate-form");
     if (!form) {
         return;
@@ -50,6 +51,18 @@
     const unitInput = document.getElementById("unit-id");
     const needTimingInput = document.getElementById("need-timing");
     const decisionPriorityInput = document.getElementById("decision-priority");
+    const addMaterialLine2Button = document.getElementById("add-material-line-2");
+    const addMaterialLine3Button = document.getElementById("add-material-line-3");
+    const removeMaterialLine2Button = document.getElementById("remove-material-line-2");
+    const removeMaterialLine3Button = document.getElementById("remove-material-line-3");
+    const materialLine2 = document.getElementById("material-line-2");
+    const materialLine3 = document.getElementById("material-line-3");
+    const materialInput2 = document.getElementById("material-id-2");
+    const materialInput3 = document.getElementById("material-id-3");
+    const unitInput2 = document.getElementById("unit-id-2");
+    const unitInput3 = document.getElementById("unit-id-3");
+    const quantityInput2 = document.getElementById("quantity-2");
+    const quantityInput3 = document.getElementById("quantity-3");
     const choiceGroups = Array.from(form.querySelectorAll("[data-choice-target]"));
     const decisionModeLinks = Array.from(document.querySelectorAll("[data-decision-mode]"));
     const roofSquareChip = form.querySelector("[data-choice-target='unit-id'] [data-choice-value='roof_square']");
@@ -109,6 +122,7 @@
     syncUnitOptions();
     bindStepperControls();
     bindFormControls();
+    bindAdditionalMaterialControls();
     queueLiveEstimate();
 
     form.addEventListener("submit", (event) => {
@@ -183,6 +197,103 @@
                     trackEvent("market_zip_entered", null, { zipPrefix3: zip.slice(0, 3) });
                 }
             });
+        }
+    }
+
+    function bindAdditionalMaterialControls() {
+        const extraInputs = [materialInput2, unitInput2, quantityInput2, materialInput3, unitInput3, quantityInput3];
+        extraInputs.forEach((input) => {
+            if (!input) {
+                return;
+            }
+            input.addEventListener("input", () => queueLiveEstimate());
+            input.addEventListener("change", () => {
+                syncAdditionalUnitOptions();
+                queueLiveEstimate();
+            });
+        });
+        if (addMaterialLine2Button && materialLine2) {
+            addMaterialLine2Button.addEventListener("click", () => {
+                materialLine2.hidden = false;
+                addMaterialLine2Button.hidden = true;
+                trackEvent("multi_material_line_added", null, { line: 2 });
+                queueLiveEstimate();
+            });
+        }
+        if (addMaterialLine3Button && materialLine3) {
+            addMaterialLine3Button.addEventListener("click", () => {
+                materialLine3.hidden = false;
+                addMaterialLine3Button.hidden = true;
+                trackEvent("multi_material_line_added", null, { line: 3 });
+                queueLiveEstimate();
+            });
+        }
+        if (removeMaterialLine2Button && materialLine2) {
+            removeMaterialLine2Button.addEventListener("click", () => {
+                materialLine2.hidden = true;
+                if (materialLine3) {
+                    materialLine3.hidden = true;
+                }
+                if (addMaterialLine2Button) {
+                    addMaterialLine2Button.hidden = false;
+                }
+                if (addMaterialLine3Button) {
+                    addMaterialLine3Button.hidden = false;
+                }
+                if (materialInput2) {
+                    materialInput2.value = "";
+                }
+                if (quantityInput2) {
+                    quantityInput2.value = "2";
+                }
+                if (materialInput3) {
+                    materialInput3.value = "";
+                }
+                if (quantityInput3) {
+                    quantityInput3.value = "1";
+                }
+                trackEvent("multi_material_line_removed", null, { line: 2 });
+                syncAdditionalUnitOptions();
+                queueLiveEstimate();
+            });
+        }
+        if (removeMaterialLine3Button && materialLine3) {
+            removeMaterialLine3Button.addEventListener("click", () => {
+                materialLine3.hidden = true;
+                if (addMaterialLine3Button) {
+                    addMaterialLine3Button.hidden = false;
+                }
+                if (materialInput3) {
+                    materialInput3.value = "";
+                }
+                if (quantityInput3) {
+                    quantityInput3.value = "1";
+                }
+                trackEvent("multi_material_line_removed", null, { line: 3 });
+                syncAdditionalUnitOptions();
+                queueLiveEstimate();
+            });
+        }
+        syncAdditionalUnitOptions();
+    }
+
+    function syncAdditionalUnitOptions() {
+        syncRoofSquareCompatibility(materialInput2, unitInput2);
+        syncRoofSquareCompatibility(materialInput3, unitInput3);
+    }
+
+    function syncRoofSquareCompatibility(materialField, unitField) {
+        if (!materialField || !unitField) {
+            return;
+        }
+        const roofSquareOption = Array.from(unitField.options || []).find((option) => option.value === "roof_square");
+        if (!roofSquareOption) {
+            return;
+        }
+        const shingles = materialField.value === "asphalt_shingles";
+        roofSquareOption.disabled = !shingles;
+        if (!shingles && unitField.value === "roof_square") {
+            unitField.value = "pickup_load";
         }
     }
 
@@ -279,23 +390,26 @@
         const marketZip = sanitizeZip(marketZipInput ? marketZipInput.value : "");
         const mixed = mixedInput.checked;
         const wet = wetInput.checked;
+        const items = [
+            {
+                materialId: materialInput.value,
+                quantity,
+                unitId: unitInput.value,
+                conditions: {
+                    wet,
+                    mixedLoad: mixed,
+                    compaction: "MEDIUM"
+                }
+            }
+        ];
+        appendAdditionalItem(items, materialLine2, materialInput2, quantityInput2, unitInput2, wet, mixed);
+        appendAdditionalItem(items, materialLine3, materialInput3, quantityInput3, unitInput3, wet, mixed);
 
         return {
             projectId: projectInput.value,
             persona: personaInput.value,
             needTiming: needTimingInput.value,
-            items: [
-                {
-                    materialId: materialInput.value,
-                    quantity,
-                    unitId: unitInput.value,
-                    conditions: {
-                        wet,
-                        mixedLoad: mixed,
-                        compaction: "MEDIUM"
-                    }
-                }
-            ],
+            items,
             options: {
                 mixedLoad: mixed,
                 allowanceTons: allowanceRaw === "" ? null : parseFloat(allowanceRaw),
@@ -303,6 +417,34 @@
                 zipCode: isValidZip(marketZip) ? marketZip : null
             }
         };
+    }
+
+    function appendAdditionalItem(items, lineElement, materialField, qtyField, unitField, wet, mixed) {
+        if (!lineElement || lineElement.hidden) {
+            return;
+        }
+        if (!materialField || !qtyField || !unitField) {
+            return;
+        }
+        const materialId = (materialField.value || "").trim();
+        const unitId = (unitField.value || "").trim();
+        const quantity = parseFloat(qtyField.value || "0");
+        if (!materialId || !unitId || Number.isNaN(quantity) || quantity <= 0) {
+            return;
+        }
+        if (items.length >= 3) {
+            return;
+        }
+        items.push({
+            materialId,
+            quantity,
+            unitId,
+            conditions: {
+                wet,
+                mixedLoad: mixed,
+                compaction: "MEDIUM"
+            }
+        });
     }
 
     function renderResult(apiData, inputPayload) {
@@ -640,7 +782,7 @@
         }
 
         if (leadSubmit && leadZip && leadContactMethod && leadContactValue && leadStatus) {
-            leadSubmit.addEventListener("click", () => {
+            leadSubmit.addEventListener("click", async () => {
                 const zip = sanitizeZip(leadZip.value);
                 const contact = (leadContactValue.value || "").trim();
                 if (!isValidZip(zip)) {
@@ -660,7 +802,23 @@
                 leadFormState.contactValue = contact;
                 emitContentGateEvent("pass", { step: "submit", reason: "lead_ready" });
                 emitLeadSubmitted("lead_form_submit");
-                leadStatus.textContent = "Lead submitted. We will follow up when quote-match beta coverage is available.";
+                leadSubmit.disabled = true;
+                leadStatus.textContent = "Submitting to quote-match beta queue...";
+                leadFormState.statusText = leadStatus.textContent;
+                const intake = await createQuoteMatchIntake(apiData, inputPayload, result, {
+                    zipCode: zip,
+                    contactMethod: leadContactMethod.value,
+                    contactValue: contact
+                });
+                leadSubmit.disabled = false;
+                if (!intake) {
+                    leadStatus.textContent = "Submitted locally. Queue write failed, please retry once.";
+                    leadFormState.statusText = leadStatus.textContent;
+                    emitContentGateEvent("fail", { step: "submit", reason: "intake_write_failed" });
+                    return;
+                }
+                leadStatus.textContent = "Queued: " + intake.statusLabel + " (" + intake.intakeId
+                        + "). " + intake.expectedResponseWindow + ".";
                 leadFormState.statusText = leadStatus.textContent;
             });
         }
@@ -1374,5 +1532,45 @@
             .replace(/>/g, "&gt;")
             .replace(/\"/g, "&quot;")
             .replace(/'/g, "&#39;");
+    }
+
+    async function createQuoteMatchIntake(apiData, inputPayload, result, lead) {
+        const safeItems = Array.isArray(inputPayload.items) ? inputPayload.items : [];
+        const materialIds = safeItems
+            .map((item) => item && item.materialId)
+            .filter((materialId) => typeof materialId === "string" && materialId.length > 0)
+            .slice(0, 3);
+        const primaryCta = normalizeCtaKey(result && result.ctaRouting ? result.ctaRouting.primaryCta : "");
+        const decisionMode = primaryCta === "junk_call"
+            ? "junk"
+            : String(result && result.feasibility || "").toUpperCase() === "OK"
+                ? "dumpster"
+                : "unsure";
+        try {
+            const response = await fetch(QUOTE_MATCH_INTAKE_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    estimateId: apiData.estimateId,
+                    zipCode: lead.zipCode,
+                    contactMethod: lead.contactMethod,
+                    contactValue: lead.contactValue,
+                    persona: inputPayload.persona,
+                    needTiming: inputPayload.needTiming,
+                    decisionMode,
+                    recommendedRoute: primaryCta,
+                    projectId: inputPayload.projectId,
+                    materialIds
+                })
+            });
+            if (!response.ok) {
+                return null;
+            }
+            return await response.json();
+        } catch (_) {
+            return null;
+        }
     }
 })();

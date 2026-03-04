@@ -42,6 +42,7 @@ public class CsvBootstrapService {
         seedPricingAssumptions();
         seedJunkPricingProfiles();
         seedJunkPricingProfileRules();
+        seedJunkQuoteBenchmarks();
         seedMarketTierZipOverrides();
     }
 
@@ -212,6 +213,47 @@ public class CsvBootstrapService {
                     row.getOrDefault("notes", ""));
         }
         log.info("Upserted junk_pricing_profile_rules: {}", rows.size());
+    }
+
+    private void seedJunkQuoteBenchmarks() {
+        List<Map<String, String>> rows = readCsv("classpath:data/junk_quote_benchmarks.csv");
+        for (Map<String, String> row : rows) {
+            jdbcTemplate.update("""
+                    merge into junk_quote_benchmarks (
+                        benchmark_id,
+                        market_tier,
+                        need_timing,
+                        scenario_tag,
+                        sample_count,
+                        volume_cy_low,
+                        volume_cy_high,
+                        quoted_total_low,
+                        quoted_total_typ,
+                        quoted_total_high,
+                        min_fee_typ,
+                        source,
+                        source_url,
+                        source_version_date,
+                        notes
+                    ) key(benchmark_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    row.get("benchmark_id"),
+                    row.get("market_tier"),
+                    row.get("need_timing"),
+                    row.get("scenario_tag"),
+                    parseInteger(row.get("sample_count")),
+                    parseDouble(row.get("volume_cy_low")),
+                    parseDouble(row.get("volume_cy_high")),
+                    parseDouble(row.get("quoted_total_low")),
+                    parseDouble(row.get("quoted_total_typ")),
+                    parseDouble(row.get("quoted_total_high")),
+                    parseDouble(row.get("min_fee_typ")),
+                    row.get("source"),
+                    row.get("source_url"),
+                    row.getOrDefault("source_version_date", null),
+                    row.getOrDefault("notes", ""));
+        }
+        log.info("Upserted junk_quote_benchmarks: {}", rows.size());
     }
 
     private void seedMarketTierZipOverrides() {

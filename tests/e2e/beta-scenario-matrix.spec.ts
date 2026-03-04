@@ -438,7 +438,7 @@ test.describe("Beta matrix: UI decision board integrity", () => {
 
     await page.locator("#lead-contact-value").fill("beta@example.com");
     await page.locator("#lead-submit").click();
-    await expect(page.locator("#lead-status")).toContainText("Lead submitted.");
+    await expect(page.locator("#lead-status")).toContainText("Queued:");
 
     await expect
       .poll(

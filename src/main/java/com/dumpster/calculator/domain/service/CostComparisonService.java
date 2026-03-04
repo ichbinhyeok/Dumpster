@@ -2,8 +2,10 @@ package com.dumpster.calculator.domain.service;
 
 import com.dumpster.calculator.domain.model.CostComparisonOption;
 import com.dumpster.calculator.domain.model.RangeValue;
+import com.dumpster.calculator.domain.reference.JunkQuoteBenchmark;
 import com.dumpster.calculator.domain.reference.JunkPricingProfile;
 import com.dumpster.calculator.domain.reference.PricingAssumption;
+import com.dumpster.calculator.infra.persistence.JunkQuoteBenchmarkRepository;
 import com.dumpster.calculator.infra.persistence.JunkPricingProfileRepository;
 import com.dumpster.calculator.infra.persistence.JunkPricingProfileRuleRepository;
 import com.dumpster.calculator.infra.persistence.MarketTierZipRuleRepository;
@@ -20,6 +22,7 @@ public class CostComparisonService {
     private final PricingAssumptionRepository pricingAssumptionRepository;
     private final JunkPricingProfileRepository junkPricingProfileRepository;
     private final JunkPricingProfileRuleRepository junkPricingProfileRuleRepository;
+    private final JunkQuoteBenchmarkRepository junkQuoteBenchmarkRepository;
     private final MarketTierZipRuleRepository marketTierZipRuleRepository;
     private final String defaultMarketTier;
 
@@ -27,12 +30,14 @@ public class CostComparisonService {
             PricingAssumptionRepository pricingAssumptionRepository,
             JunkPricingProfileRepository junkPricingProfileRepository,
             JunkPricingProfileRuleRepository junkPricingProfileRuleRepository,
+            JunkQuoteBenchmarkRepository junkQuoteBenchmarkRepository,
             MarketTierZipRuleRepository marketTierZipRuleRepository,
             @Value("${app.pricing.market-tier:national}") String marketTier
     ) {
         this.pricingAssumptionRepository = pricingAssumptionRepository;
         this.junkPricingProfileRepository = junkPricingProfileRepository;
         this.junkPricingProfileRuleRepository = junkPricingProfileRuleRepository;
+        this.junkQuoteBenchmarkRepository = junkQuoteBenchmarkRepository;
         this.marketTierZipRuleRepository = marketTierZipRuleRepository;
         this.defaultMarketTier = normalizeMarketTier(marketTier);
     }
@@ -115,6 +120,14 @@ public class CostComparisonService {
                 (profile.minServiceFeeHigh() + (billedVolumeHigh * profile.perCyFeeHigh()))
                         * (denseLoad ? profile.denseMaterialMultiplierHigh() : 1.0d)
         );
+        Optional<JunkQuoteBenchmark> benchmark = selectBenchmark(
+                resolvedMarketTier.marketTier(),
+                needTiming,
+                volumeYd3.typ()
+        );
+        RangeValue blendedCost = benchmark
+                .map(data -> blendWithBenchmark(cost, data))
+                .orElse(cost);
 
         List<String> notes = new ArrayList<>();
         notes.add("model: " + profile.displayName());
@@ -123,6 +136,10 @@ public class CostComparisonService {
                 + " (" + resolvedMarketTier.resolutionSource() + ")");
         notes.add("source pack: " + profile.source());
         notes.add("billed in " + billingIncrementLabel(profile) + " truck increments");
+        benchmark.ifPresent(data -> notes.add("benchmark (" + data.sampleCount() + " samples): "
+                + data.scenarioTag() + ", $" + round2(data.quotedTotalLow())
+                + "-$" + round2(data.quotedTotalHigh()) + " for "
+                + round2(data.volumeCyLow()) + "-" + round2(data.volumeCyHigh()) + " yd3"));
         if (denseLoad) {
             notes.add("dense-load surcharge likely due to tons-per-yard profile");
         } else {
@@ -132,7 +149,7 @@ public class CostComparisonService {
         return new CostComparisonOption(
                 "junk_removal",
                 "Junk removal service",
-                cost.round2(),
+                blendedCost.round2(),
                 true,
                 "often faster for mixed/bulky loads or access-heavy cleanup",
                 notes
@@ -193,6 +210,48 @@ public class CostComparisonService {
         return junkPricingProfileRuleRepository.resolveProfileId(normalizeMarketTier(marketTier), normalizedTiming)
                 .flatMap(junkPricingProfileRepository::findById)
                 .or(junkPricingProfileRepository::findDefaultProfile);
+    }
+
+    private Optional<JunkQuoteBenchmark> selectBenchmark(String marketTier, String needTiming, double volumeTyp) {
+        List<JunkQuoteBenchmark> candidates = junkQuoteBenchmarkRepository.findCandidates(
+                normalizeMarketTier(marketTier),
+                normalizeNeedTiming(needTiming)
+        );
+        if (candidates.isEmpty()) {
+            return Optional.empty();
+        }
+        return candidates.stream()
+                .filter(candidate -> volumeTyp >= candidate.volumeCyLow() && volumeTyp <= candidate.volumeCyHigh())
+                .findFirst()
+                .or(() -> candidates.stream()
+                        .min((a, b) -> Double.compare(
+                                distanceToBand(volumeTyp, a.volumeCyLow(), a.volumeCyHigh()),
+                                distanceToBand(volumeTyp, b.volumeCyLow(), b.volumeCyHigh())
+                        )));
+    }
+
+    private static double distanceToBand(double value, double low, double high) {
+        if (value < low) {
+            return low - value;
+        }
+        if (value > high) {
+            return value - high;
+        }
+        return 0.0d;
+    }
+
+    private static RangeValue blendWithBenchmark(RangeValue modeledCost, JunkQuoteBenchmark benchmark) {
+        double modeledWeight = 0.75d;
+        double benchmarkWeight = 0.25d;
+        return RangeValue.of(
+                (modeledCost.low() * modeledWeight) + (benchmark.quotedTotalLow() * benchmarkWeight),
+                (modeledCost.typ() * modeledWeight) + (benchmark.quotedTotalTyp() * benchmarkWeight),
+                (modeledCost.high() * modeledWeight) + (benchmark.quotedTotalHigh() * benchmarkWeight)
+        );
+    }
+
+    private static String round2(double value) {
+        return String.format(java.util.Locale.US, "%.2f", value);
     }
 
     private ResolvedMarketTier resolveMarketTier(String zipCode) {

@@ -170,6 +170,36 @@ class CsvDataIntegrityTests {
         assertThat(ruleIds).isNotEmpty();
     }
 
+    @Test
+    void junkQuoteBenchmarksHaveOrderedRangesAndSampleDepth() throws Exception {
+        int rowCount = 0;
+        try (CSVParser parser = parse("data/junk_quote_benchmarks.csv")) {
+            for (CSVRecord record : parser) {
+                rowCount++;
+                String marketTier = record.get("market_tier");
+                String needTiming = record.get("need_timing");
+                int sampleCount = Integer.parseInt(record.get("sample_count"));
+                double volumeLow = Double.parseDouble(record.get("volume_cy_low"));
+                double volumeHigh = Double.parseDouble(record.get("volume_cy_high"));
+                double quoteLow = Double.parseDouble(record.get("quoted_total_low"));
+                double quoteTyp = Double.parseDouble(record.get("quoted_total_typ"));
+                double quoteHigh = Double.parseDouble(record.get("quoted_total_high"));
+                double minFeeTyp = Double.parseDouble(record.get("min_fee_typ"));
+
+                assertThat(marketTier).isIn("urban", "value", "national", "coastal", "mountain", "heartland");
+                assertThat(needTiming).isIn("research", "this_week", "48h");
+                assertThat(sampleCount).isGreaterThanOrEqualTo(20);
+                assertThat(volumeLow).isGreaterThan(0.0d);
+                assertThat(volumeLow).isLessThanOrEqualTo(volumeHigh);
+                assertThat(quoteLow).isLessThanOrEqualTo(quoteTyp);
+                assertThat(quoteTyp).isLessThanOrEqualTo(quoteHigh);
+                assertThat(minFeeTyp).isGreaterThan(0.0d);
+                assertSourceMetadata(record, true);
+            }
+        }
+        assertThat(rowCount).isGreaterThanOrEqualTo(18);
+    }
+
     private static void assertSourceMetadata(CSVRecord record, boolean requireSourceUrl) {
         String source = record.get("source");
         String sourceVersionDateRaw = record.get("source_version_date");
