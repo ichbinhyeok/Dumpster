@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.pageTitle()}</title>
     <meta name="description" content="${model.description()}">
-    <meta name="robots" content="noindex,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+    <meta name="robots" content="max-snippet:-1,max-image-preview:large,max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="${model.pageTitle()}">
@@ -96,7 +96,7 @@
                 <p>Open live calculator now, or pick a specific material guide below.</p>
                 <div class="inline-cta-row">
                     <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/asphalt_shingles">Try shingles preset</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/shingles">Try shingles preset</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
                 </div>
             </aside>

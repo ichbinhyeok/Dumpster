@@ -2,9 +2,8 @@ package com.dumpster.calculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.dumpster.calculator.web.content.SeoContentService;
 import com.dumpster.calculator.web.controller.SeoInfrastructureController;
-import java.time.Clock;
-import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +14,9 @@ class SeoInfrastructureTests {
 
     @Autowired
     private SeoInfrastructureController seoInfrastructureController;
+
+    @Autowired
+    private SeoContentService seoContentService;
 
     @Test
     void sitemapIndexReferencesSplitSitemaps() {
@@ -33,9 +35,9 @@ class SeoInfrastructureTests {
     void sitemapCoreUsesStableLastmodForDefaultPages() {
         ResponseEntity<String> response = seoInfrastructureController.sitemapCore();
         String body = response.getBody();
-        String today = LocalDate.now(Clock.systemUTC()).toString();
-        assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>" + today + "</lastmod>");
-        assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>" + today + "</lastmod>");
+        String stableLastMod = seoContentService.defaultLastModifiedDate().toString();
+        assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>" + stableLastMod + "</lastmod>");
+        assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>" + stableLastMod + "</lastmod>");
     }
 
     @Test

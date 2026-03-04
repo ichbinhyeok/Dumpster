@@ -2,7 +2,9 @@ package com.dumpster.calculator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.dumpster.calculator.infra.persistence.MaterialFactorRepository;
 import com.dumpster.calculator.web.content.SeoContentService;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,9 @@ class SeoContentServiceTests {
 
     @Autowired
     private SeoContentService seoContentService;
+
+    @Autowired
+    private MaterialFactorRepository materialFactorRepository;
 
     @Test
     void materialPageIncludesAnswerFirstQuickRulesAndFaq() {
@@ -90,5 +95,19 @@ class SeoContentServiceTests {
         assertThat(paths).contains("/dumpster/answers/garage_cleanout/household_junk/size-guide");
         assertThat(paths).contains("/dumpster/answers/yard_cleanup/yard_waste/size-guide");
         assertThat(paths).doesNotContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");
+    }
+
+    @Test
+    void defaultLastModifiedDateTracksLatestMaterialSourceDate() {
+        LocalDate latestSourceDate = materialFactorRepository.findAll().stream()
+                .map(material -> material.sourceVersionDate())
+                .filter(date -> date != null)
+                .max(LocalDate::compareTo)
+                .orElse(LocalDate.of(2026, 3, 4));
+        LocalDate expected = latestSourceDate.isAfter(LocalDate.of(2026, 3, 4))
+                ? latestSourceDate
+                : LocalDate.of(2026, 3, 4);
+
+        assertThat(seoContentService.defaultLastModifiedDate()).isEqualTo(expected);
     }
 }

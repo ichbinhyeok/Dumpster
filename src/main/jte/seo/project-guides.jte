@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${model.pageTitle()}</title>
     <meta name="description" content="${model.description()}">
-    <meta name="robots" content="noindex,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+    <meta name="robots" content="max-snippet:-1,max-image-preview:large,max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta property="og:title" content="${model.pageTitle()}">
@@ -96,7 +96,7 @@
                 <p>Use one of the presets below or open the base calculator.</p>
                 <div class="inline-cta-row">
                     <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/size/roof_tearoff">Try roof tear-off</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/size/roof-tear-off">Try roof tear-off</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
                 </div>
             </aside>

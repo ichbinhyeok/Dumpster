@@ -81,6 +81,17 @@ class SeoPageRenderingTests {
     }
 
     @Test
+    void guideHubsExposeIndexableRobotsMeta() throws Exception {
+        mockMvc.perform(get("/dumpster/material-guides"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
+
+        mockMvc.perform(get("/dumpster/project-guides"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
+    }
+
+    @Test
     void heavyRulesPageRendersLimitTable() throws Exception {
         mockMvc.perform(get("/dumpster/heavy-debris-rules"))
                 .andExpect(status().isOk())
@@ -110,6 +121,13 @@ class SeoPageRenderingTests {
         mockMvc.perform(get("/dumpster/answers/roof_tearoff/metal_scrap_light/size-guide"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Direct answer:")));
+    }
+
+    @Test
+    void intentAliasRouteRedirectsToCanonicalPath() throws Exception {
+        mockMvc.perform(get("/dumpster/answers/roof-tear-off/shingles/size-guide"))
+                .andExpect(status().isMovedPermanently())
+                .andExpect(redirectedUrl("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide"));
     }
 
     @Test

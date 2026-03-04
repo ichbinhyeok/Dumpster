@@ -21,15 +21,17 @@
 
 ## Current Operating Policy (2026-03-03)
 - `app.seo.max-wave` default is `3`.
+- `app.seo.intent-index-mode` default is `expanded` (`curated` is available for rollback/safety).
 - `/sitemap.xml` is a sitemap index that points to:
   - `/sitemap-core.xml`
   - `/sitemap-money.xml`
   - `/sitemap-experiments.xml`
 - `/dumpster/answers/` is crawl-allowed in `robots.txt`.
 - Intent pages use selective indexing:
-  - curated allowlist paths (`19` routes as of 2026-03-04): `index, follow`
-  - all other intent combinations: `noindex, follow`
-- Hub pages (`/dumpster/material-guides`, `/dumpster/project-guides`) remain crawlable but currently `noindex, follow` and tracked in experiments sitemap.
+  - `expanded` mode + wave 3: full decision-intent matrix (`89` routes as of 2026-03-04): `index, follow`
+  - `curated` mode: quality-screened seed set (`19` routes): `index, follow`
+  - any non-indexable combination outside active mode remains `noindex, follow`
+- Hub pages (`/dumpster/material-guides`, `/dumpster/project-guides`) are indexable and still listed in the experiments sitemap bucket for controlled monitoring.
 
 ## Execution Order (A->G)
 1. URL inventory classification (`KEEP`, `MERGE`, `REWRITE`, `NOINDEX`, `DO NOT BUILD`).
@@ -66,3 +68,6 @@
 - 2026-03-03: Re-opened `/dumpster/answers/` crawling and introduced curated indexable intent allowlist while keeping remaining intent pages `noindex, follow`.
 - 2026-03-04: Expanded curated intent allowlist from `10` to `19` routes (homeowner cleanup/remodel + heavy-risk scenarios), while preserving selective noindex policy for non-curated combinations.
 - 2026-03-04: Rewired decision-stage internal links to prioritize indexable intent adjacency and added richer comparison-hub scenario/FAQ coverage.
+- 2026-03-04: Added explicit intent index mode switch (`expanded`/`curated`) and fixed answer-route canonical redirects to prevent alias URL duplication.
+- 2026-03-04: Stabilized sitemap/page `lastmod` signals to data-backed source dates instead of runtime date.
+- 2026-03-04: Promoted material/project guide hubs to indexable state and aligned hub presets to canonical slugs.

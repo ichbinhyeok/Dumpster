@@ -13,7 +13,6 @@ import com.dumpster.calculator.web.viewmodel.LinkItemViewModel;
 import com.dumpster.calculator.web.viewmodel.MaterialPageViewModel;
 import com.dumpster.calculator.web.viewmodel.ProjectPageViewModel;
 import com.dumpster.calculator.web.viewmodel.SpecialSeoPageViewModel;
-import java.time.Clock;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -31,11 +30,13 @@ import org.springframework.stereotype.Service;
 public class SeoContentService {
 
     private static final int MAX_WAVE = 3;
+    private static final LocalDate FALLBACK_CONTENT_LASTMOD = LocalDate.of(2026, 3, 4);
     private final MaterialFactorRepository materialFactorRepository;
     private final DumpsterSizeRepository dumpsterSizeRepository;
     private final Map<String, ProjectSeed> projectSeeds = new LinkedHashMap<>();
     private final int seoMaxWave;
-    private final Clock clock;
+    private final LocalDate resolvedDefaultLastModifiedDate;
+    private final String intentIndexMode;
     private static final DateTimeFormatter SOURCE_MONTH_YEAR = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US);
     private static final List<String> MATERIAL_PRIORITY = List.of(
             "asphalt_shingles",
@@ -190,13 +191,18 @@ public class SeoContentService {
     public SeoContentService(
             MaterialFactorRepository materialFactorRepository,
             DumpsterSizeRepository dumpsterSizeRepository,
-            Clock clock,
-            @Value("${app.seo.max-wave:3}") int seoMaxWave
+            @Value("${app.seo.max-wave:3}") int seoMaxWave,
+            @Value("${app.seo.intent-index-mode:expanded}") String intentIndexMode
     ) {
         this.materialFactorRepository = materialFactorRepository;
         this.dumpsterSizeRepository = dumpsterSizeRepository;
-        this.clock = clock;
         this.seoMaxWave = Math.max(1, Math.min(seoMaxWave, MAX_WAVE));
+        this.intentIndexMode = intentIndexMode == null ? "expanded" : intentIndexMode.trim().toLowerCase(Locale.US);
+        this.resolvedDefaultLastModifiedDate = materialFactorRepository.findAll().stream()
+                .map(MaterialFactor::sourceVersionDate)
+                .filter(Objects::nonNull)
+                .max(LocalDate::compareTo)
+                .orElse(FALLBACK_CONTENT_LASTMOD);
         addProject(
                 "roof_tearoff",
                 "Roof tear-off dumpster size guide",
@@ -562,6 +568,14 @@ public class SeoContentService {
 
     public String resolveProjectId(String projectPathToken) {
         return PROJECT_SLUG_TO_ID.getOrDefault(projectPathToken, projectPathToken);
+    }
+
+    public boolean isIntentSlugSupported(String intentSlug) {
+        return IntentType.fromSlug(intentSlug).isPresent();
+    }
+
+    public String intentCanonicalPath(String projectId, String materialId, String intentSlug) {
+        return intentPath(projectId, materialId, intentSlug);
     }
 
     public String materialCanonicalPath(String materialId) {
@@ -1262,11 +1276,14 @@ public class SeoContentService {
     }
 
     public LocalDate materialLastModifiedDate(String materialId) {
-        return defaultLastModifiedDate();
+        return materialFactorRepository.findById(materialId)
+                .map(MaterialFactor::sourceVersionDate)
+                .filter(Objects::nonNull)
+                .orElse(defaultLastModifiedDate());
     }
 
     public LocalDate defaultLastModifiedDate() {
-        return LocalDate.now(clock);
+        return resolvedDefaultLastModifiedDate;
     }
 
     private void addProject(
@@ -1388,7 +1405,7 @@ public class SeoContentService {
     }
 
     private List<IndexableIntentSeed> activeIndexableIntentSeeds() {
-        if (seoMaxWave >= 3) {
+        if (seoMaxWave >= 3 && "expanded".equals(intentIndexMode)) {
             LinkedHashMap<String, IndexableIntentSeed> expanded = new LinkedHashMap<>();
             for (String projectId : projectSeeds.keySet()) {
                 if (!isProjectEnabled(projectId)) {

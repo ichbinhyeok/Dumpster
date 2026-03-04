@@ -22,7 +22,7 @@
 - `/dumpster/pickup-truck-loads-to-dumpster-size`
 - `/dumpster/roofing-squares-to-dumpster-size`
 - project family `/dumpster/size/{project-slug}` for enabled wave set
-- curated intent family `/dumpster/answers/{project}/{material}/{intent}` allowlist only
+- intent family `/dumpster/answers/{project}/{material}/{intent}` with mode-gated indexing (`curated` or `expanded`)
 
 ### MERGE
 - Query variants of 10-yard tonnage intent into one canonical limit page.
@@ -34,10 +34,9 @@
 - `/dumpster/material-guides` and `/dumpster/project-guides`: remain decision-routing hubs with stronger internal routing.
 
 ### NOINDEX
-- Non-curated `/dumpster/answers/{projectId}/{materialId}/{intent}` combinations.
+- Intent combinations outside active `app.seo.intent-index-mode` policy.
 - `/dumpster/estimate/{estimateId}` share/session pages.
 - Query/preset parameter permutations.
-- Hub pages currently remain `noindex, follow` for experiment-mode routing.
 
 ### DO NOT BUILD
 - City/state/county doorway pages.
@@ -63,7 +62,7 @@
 
 ### Wave 3 (Current default enabled)
 - `garage_cleanout`, `estate_cleanout`, `yard_cleanup`, `dirt_grading`, `concrete_removal`, `light_commercial_fitout`.
-- experimental hubs remain noindex but crawlable.
+- guide hubs remain indexable; experiments sitemap is used as monitoring bucket, not a noindex bucket.
 
 ## 3) C. Template Spec Lock
 
@@ -127,7 +126,7 @@ Track at minimum:
 ## 8) Indexing and Sitemap Layers
 - `/sitemap.xml` -> sitemap index file only.
 - `/sitemap-core.xml` -> core trust + calculator pages.
-- `/sitemap-money.xml` -> indexable special/material/project + curated intent allowlist.
+- `/sitemap-money.xml` -> indexable special/material/project + active intent index set (`expanded` or `curated` mode).
 - `/sitemap-experiments.xml` -> crawlable test pages (currently guide hubs).
 
 ## 9) Conflict Resolution Notes
@@ -135,22 +134,10 @@ Track at minimum:
 - Where provider rules conflict, publish range + caveat, not a single fixed statement.
 - Local policy variance can appear as note blocks only; no local landing-page expansion in Phase 1.
 
-## 10) Curated Indexable Intent Set (Current)
-Current intent allowlist is intentionally quality-screened and expanded in controlled waves (`19` routes as of 2026-03-04), including:
-- roof tear-off + asphalt shingles: `size-guide`, `weight-estimate`, `overage-risk`
-- concrete removal + concrete: `size-guide`, `weight-estimate`, `overage-risk`
-- dirt grading + dirt/soil: `size-guide`, `overage-risk`
-- dirt grading + gravel/rock: `weight-estimate`
-- concrete removal + brick/block: `size-guide`
-- kitchen remodel + drywall: `size-guide`
-- kitchen remodel + mixed C&D: `overage-risk`
-- bathroom remodel + drywall: `size-guide`
-- bathroom remodel + tile/ceramic: `overage-risk`
-- light commercial fit-out + drywall: `size-guide`
-- deck demolition + decking wood: `size-guide`
-- garage cleanout + household junk: `size-guide`
-- estate cleanout + household junk: `size-guide`
-- yard cleanup + yard waste: `size-guide`
+## 10) Intent Index Modes (Current)
+- `expanded` (default): wave 3 decision-intent matrix (`89` routes as of 2026-03-04) is indexable.
+- `curated`: quality-screened seed set (`19` routes) remains indexable.
+- both modes keep non-active combinations as `noindex, follow`.
 
 ## 11) Implementation Status (2026-03-03)
 - Canonical slug normalization added for key material/project routes.
@@ -159,3 +146,4 @@ Current intent allowlist is intentionally quality-screened and expanded in contr
 - Intent pages now use route-level selective robots (`index, follow` vs `noindex, follow`).
 - Sitemap is split into `core`, `money`, and `experiments` layers with sitemap index entrypoint.
 - Default rollout uses `app.seo.max-wave=3`.
+- Default intent indexing mode uses `app.seo.intent-index-mode=expanded` with `curated` fallback available.

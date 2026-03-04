@@ -59,8 +59,7 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/material-guides")
-    public ModelAndView materialGuidesHub(HttpServletResponse response) {
-        response.setHeader("X-Robots-Tag", "noindex, follow");
+    public ModelAndView materialGuidesHub() {
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Material Weight Guides: Density Chart + Live Calculator",
                 seoContentService.materialGuidesUrl(baseUrl),
@@ -80,8 +79,7 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/project-guides")
-    public ModelAndView projectGuidesHub(HttpServletResponse response) {
-        response.setHeader("X-Robots-Tag", "noindex, follow");
+    public ModelAndView projectGuidesHub() {
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Project Guides: Size Strategy by Job Type",
                 seoContentService.projectGuidesUrl(baseUrl),
@@ -151,6 +149,15 @@ public class SeoPageController {
     ) {
         String resolvedProjectId = seoContentService.resolveProjectId(projectId);
         String resolvedMaterialId = seoContentService.resolveMaterialId(materialId);
+        if (seoContentService.isIntentSlugSupported(intent)) {
+            String requestedPath = "/dumpster/answers/" + projectId + "/" + materialId + "/" + intent;
+            String canonicalPath = seoContentService.intentCanonicalPath(resolvedProjectId, resolvedMaterialId, intent);
+            if (!requestedPath.equals(canonicalPath)) {
+                ModelAndView redirect = new ModelAndView("redirect:" + canonicalPath);
+                redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
+                return redirect;
+            }
+        }
         boolean indexableIntent = seoContentService.isIndexableIntentPath(resolvedProjectId, resolvedMaterialId, intent);
         response.setHeader("X-Robots-Tag", indexableIntent ? "index, follow" : "noindex, follow");
         IntentPageViewModel model = seoContentService.intentPage(resolvedProjectId, resolvedMaterialId, intent, baseUrl)
