@@ -6,9 +6,6 @@
 
     const toggles = Array.from(document.querySelectorAll("[data-priority-toggle]"));
     const explainer = document.getElementById("priority-explainer");
-    const planGrid = document.getElementById("comparison-plan-grid");
-    const planCards = planGrid ? Array.from(planGrid.querySelectorAll("[data-priority-cost]")) : [];
-    const scoredCards = Array.from(document.querySelectorAll("[data-priority-cost]"));
     const modeDescriptions = {
         cost: "Current mode: Lowest cost. Focus on staged dumpster economics first, then fallback to junk convenience.",
         speed: "Current mode: Fastest completion. Junk-first paths rise when timing pressure is high.",
@@ -32,12 +29,6 @@
             return;
         }
         analytics.track(eventName, payload || {});
-    }
-
-    function scoreFor(card, mode) {
-        const attr = card.getAttribute("data-priority-" + mode);
-        const value = Number(attr || "0");
-        return Number.isFinite(value) ? value : 0;
     }
 
     function normalizePriorityMode(mode) {
@@ -82,22 +73,6 @@
 
         if (explainer) {
             explainer.textContent = modeDescriptions[normalizedMode] || modeDescriptions.cost;
-        }
-
-        scoredCards.forEach((card) => {
-            const score = scoreFor(card, normalizedMode);
-            card.classList.toggle("is-priority-strong", score >= 4);
-            card.classList.toggle("is-priority-weak", score <= 2);
-        });
-
-        if (planCards.length > 1) {
-            planCards
-                .slice()
-                .sort((a, b) => scoreFor(b, normalizedMode) - scoreFor(a, normalizedMode))
-                .forEach((card, index) => {
-                    card.style.order = String(index + 1);
-                    card.classList.toggle("is-priority-top", index === 0);
-                });
         }
 
         syncCalculatorLinks(normalizedMode);

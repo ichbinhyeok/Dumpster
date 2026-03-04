@@ -57,16 +57,22 @@ test.describe("Post-deploy critical smoke suite", () => {
     }
   });
 
-  test("comparison hub priority toggles update scenario ordering", async ({ page }) => {
+  test("comparison hub priority toggles update explainer without reordering plans", async ({ page }) => {
     await page.goto("/dumpster/dumpster-vs-junk-removal-which-is-cheaper");
-    const topPlanTitle = page.locator("#comparison-plan-grid .comparison-plan-card.is-priority-top h3");
+    const firstPlanTitle = page.locator("#comparison-plan-grid .comparison-plan-card h3").first();
+    const explainer = page.locator("#priority-explainer");
 
-    await expect(topPlanTitle).toContainText("Remodel Standard");
+    await expect(firstPlanTitle).toContainText("Starter Cleanout");
+    await expect(explainer).toContainText("Current mode: Lowest cost");
 
     await page.getByRole("button", { name: "Fastest completion" }).click();
-    await expect(topPlanTitle).toContainText("Starter Cleanout");
+    await expect(page.getByRole("button", { name: "Fastest completion" })).toHaveClass(/is-active/);
+    await expect(explainer).toContainText("Current mode: Fastest completion");
+    await expect(firstPlanTitle).toContainText("Starter Cleanout");
 
     await page.getByRole("button", { name: "Heavy-load safety" }).click();
-    await expect(topPlanTitle).toContainText("Heavy High-Risk");
+    await expect(page.getByRole("button", { name: "Heavy-load safety" })).toHaveClass(/is-active/);
+    await expect(explainer).toContainText("Current mode: Heavy-load safety");
+    await expect(firstPlanTitle).toContainText("Starter Cleanout");
   });
 });

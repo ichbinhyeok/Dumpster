@@ -48,11 +48,11 @@ test.describe("iPhone SE beta expansion", () => {
 
     await page.getByRole("button", { name: "Fastest completion" }).click();
     await page.getByRole("button", { name: "Heavy-load safety" }).click();
-    await expect(page.locator("#comparison-plan-grid .comparison-plan-card.is-priority-top h3")).toContainText(
-      "Heavy High-Risk"
-    );
+    await expect(page.locator("#priority-explainer")).toContainText("Current mode: Heavy-load safety");
 
-    await page.locator("a[href*='/dumpster/size-weight-calculator']").first().click();
+    const firstCalculatorLink = page.locator("a[href*='/dumpster/size-weight-calculator']").first();
+    await expect(firstCalculatorLink).toHaveAttribute("href", /priority=heavy/);
+    await firstCalculatorLink.click();
     await expect(page).toHaveURL(/\/dumpster\/size-weight-calculator/);
     await waitForLiveEstimate(page);
     await expect(page.locator("#mobile-primary-cta")).toBeVisible();

@@ -1196,31 +1196,6 @@
             safety += 8;
         }
 
-        if (normalizedPriority === "cost") {
-            cost += 10;
-            speed -= 4;
-            effort -= 2;
-            safety -= 1;
-        } else if (normalizedPriority === "speed") {
-            speed += 10;
-            cost -= 3;
-            effort += 2;
-            safety -= 3;
-        } else if (normalizedPriority === "labor") {
-            effort += 10;
-            speed += 3;
-            cost -= 4;
-            safety -= 2;
-        } else if (normalizedPriority === "heavy") {
-            safety += 12;
-            cost -= 6;
-            speed -= 4;
-            effort -= 3;
-            if (feasibility !== "OK") {
-                safety += 4;
-            }
-        }
-
         return {
             cost: clampScore(cost),
             speed: clampScore(speed),

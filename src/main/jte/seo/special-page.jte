@@ -106,7 +106,7 @@
         <section class="table-card comparison-hub">
             <h2 class="font-display">Dumpster Wins vs Junk Wins</h2>
             <div class="comparison-win-grid">
-                <article class="comparison-win-card is-dumpster" data-priority-cost="5" data-priority-speed="2" data-priority-labor="2" data-priority-heavy="3">
+                <article class="comparison-win-card is-dumpster">
                     <h3>Dumpster usually wins when</h3>
                     <ul>
                         <li>You can load over multiple days on your own schedule.</li>
@@ -115,7 +115,7 @@
                         <li>You want lower unit cost and can manage labor.</li>
                     </ul>
                 </article>
-                <article class="comparison-win-card is-junk" data-priority-cost="2" data-priority-speed="5" data-priority-labor="5" data-priority-heavy="2">
+                <article class="comparison-win-card is-junk">
                     <h3>Junk removal usually wins when</h3>
                     <ul>
                         <li>You need fast removal and cannot wait for staged hauling.</li>
@@ -126,19 +126,19 @@
                 </article>
             </div>
             <div class="decision-snapshot-grid comparison-metrics">
-                <article class="decision-tile" data-priority-cost="4" data-priority-speed="2" data-priority-labor="2" data-priority-heavy="3">
+                <article class="decision-tile">
                     <h3>Labor</h3>
                     <p>Dumpster lowers disposal unit cost but increases self-loading burden.</p>
                 </article>
-                <article class="decision-tile" data-priority-cost="5" data-priority-speed="2" data-priority-labor="2" data-priority-heavy="2">
+                <article class="decision-tile">
                     <h3>Cost</h3>
                     <p>Dumpster often wins on larger staged jobs; junk can win for small urgent jobs.</p>
                 </article>
-                <article class="decision-tile" data-priority-cost="2" data-priority-speed="5" data-priority-labor="4" data-priority-heavy="1">
+                <article class="decision-tile">
                     <h3>Speed</h3>
                     <p>Junk removal usually wins when same-day completion is the priority.</p>
                 </article>
-                <article class="decision-tile" data-priority-cost="1" data-priority-speed="1" data-priority-labor="2" data-priority-heavy="5">
+                <article class="decision-tile">
                     <h3>Heavy-Risk</h3>
                     <p>If dense debris threatens pickup feasibility, route by safety first, then price.</p>
                 </article>
@@ -146,7 +146,7 @@
         </section>
 
         <section class="table-card comparison-priority-card" id="comparison-priority-tool">
-            <h2 class="font-display">Pick your priority and let the plan order adapt</h2>
+            <h2 class="font-display">Pick your priority and compare routes instantly</h2>
             <p>Use this like a homeowner decision shortcut before you request quotes.</p>
             <div class="priority-toggle-group" role="group" aria-label="Comparison priority">
                 <button type="button" class="priority-toggle is-active" data-priority-toggle data-priority-mode="cost">Lowest cost</button>
@@ -160,7 +160,7 @@
         <section class="table-card">
             <h2 class="font-display">Scenario Plans (Kit-Inspired)</h2>
             <div class="comparison-plan-grid" id="comparison-plan-grid">
-                <article class="comparison-plan-card" data-priority-cost="2" data-priority-speed="5" data-priority-labor="4" data-priority-heavy="1">
+                <article class="comparison-plan-card">
                     <h3>Starter Cleanout</h3>
                     <p class="plan-subtitle">Small, urgent, labor-limited</p>
                     <p class="plan-price">$280 to $640</p>
@@ -170,7 +170,7 @@
                         <li>Best fit: junk removal branch</li>
                     </ul>
                 </article>
-                <article class="comparison-plan-card is-emphasis" data-priority-cost="5" data-priority-speed="3" data-priority-labor="2" data-priority-heavy="3">
+                <article class="comparison-plan-card is-emphasis">
                     <h3>Remodel Standard</h3>
                     <p class="plan-subtitle">Medium to large staged volume</p>
                     <p class="plan-price">$520 to $1,050</p>
@@ -180,7 +180,7 @@
                         <li>Best fit: dumpster with risk checks</li>
                     </ul>
                 </article>
-                <article class="comparison-plan-card" data-priority-cost="1" data-priority-speed="1" data-priority-labor="2" data-priority-heavy="5">
+                <article class="comparison-plan-card">
                     <h3>Heavy High-Risk</h3>
                     <p class="plan-subtitle">Dense debris, strict constraints</p>
                     <p class="plan-price">Route by feasibility first</p>

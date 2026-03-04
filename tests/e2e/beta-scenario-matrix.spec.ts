@@ -383,7 +383,7 @@ test.describe("Beta matrix: UI decision board integrity", () => {
       .toBeGreaterThanOrEqual(4);
   });
 
-  test("calculator respects priority query and reports it in scorecard analytics", async ({ page }) => {
+  test("calculator keeps scorecard stable across priority query while preserving analytics labels", async ({ page }) => {
     const events = await captureEvents(page);
     const baseUrl =
       "/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=this_week";
@@ -400,7 +400,7 @@ test.describe("Beta matrix: UI decision board integrity", () => {
     await expect(page.locator("#result-summary")).toContainText("Priority mode: Heavy-load safety");
     const heavySafety = await readDecisionScore(page, "Safety margin");
 
-    expect(heavySafety).toBeGreaterThanOrEqual(balancedSafety);
+    expect(heavySafety).toBe(balancedSafety);
 
     await expect
       .poll(

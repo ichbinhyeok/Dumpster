@@ -920,23 +920,6 @@ textarea:focus,
     background: linear-gradient(162deg, rgba(232, 244, 255, 0.95), rgba(255, 255, 255, 1));
 }
 
-.comparison-plan-card.is-priority-top {
-    border-color: rgba(8, 66, 196, 0.58);
-    box-shadow: 0 28px 48px -26px rgba(8, 66, 196, 0.55);
-}
-
-.comparison-win-card.is-priority-strong,
-.comparison-plan-card.is-priority-strong,
-.decision-tile.is-priority-strong {
-    border-color: rgba(16, 185, 129, 0.34);
-}
-
-.comparison-win-card.is-priority-weak,
-.comparison-plan-card.is-priority-weak,
-.decision-tile.is-priority-weak {
-    opacity: 0.78;
-}
-
 .comparison-stat-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
