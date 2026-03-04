@@ -181,6 +181,9 @@ public class SeoContentService {
             new IndexableIntentSeed("estate_cleanout", "household_junk", "size-guide"),
             new IndexableIntentSeed("yard_cleanup", "yard_waste", "size-guide")
     );
+    private static final Set<IndexableIntentSeed> WAVE_THREE_INTENT_EXCLUSIONS = Set.of(
+            new IndexableIntentSeed("roof_tearoff", "tile_ceramic", "size-guide")
+    );
     private static final Map<String, CopyBlock> MATERIAL_COPY = buildMaterialCopy();
     private static final Map<String, CopyBlock> PROJECT_COPY = buildProjectCopy();
 
@@ -1385,6 +1388,26 @@ public class SeoContentService {
     }
 
     private List<IndexableIntentSeed> activeIndexableIntentSeeds() {
+        if (seoMaxWave >= 3) {
+            LinkedHashMap<String, IndexableIntentSeed> expanded = new LinkedHashMap<>();
+            for (String projectId : projectSeeds.keySet()) {
+                if (!isProjectEnabled(projectId)) {
+                    continue;
+                }
+                for (String materialId : projectIntentMaterialsForProject(projectId)) {
+                    for (IntentType intentType : INTENT_TYPES) {
+                        IndexableIntentSeed seed = new IndexableIntentSeed(projectId, materialId, intentType.slug());
+                        if (WAVE_THREE_INTENT_EXCLUSIONS.contains(seed)) {
+                            continue;
+                        }
+                        String key = projectId + "|" + materialId + "|" + intentType.slug();
+                        expanded.putIfAbsent(key, seed);
+                    }
+                }
+            }
+            return List.copyOf(expanded.values());
+        }
+
         return INDEXABLE_INTENT_SEEDS.stream()
                 .filter(seed -> isProjectEnabled(seed.projectId()))
                 .filter(seed -> projectIntentMaterialsForProject(seed.projectId()).contains(seed.materialId()))

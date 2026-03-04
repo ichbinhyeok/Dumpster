@@ -47,13 +47,14 @@ class SeoInfrastructureTests {
         String body = response.getBody();
         int urlCount = body.split("<url>").length - 1;
 
-        assertThat(urlCount).isGreaterThanOrEqualTo(44);
+        assertThat(urlCount).isGreaterThanOrEqualTo(100);
         assertThat(body).contains("/dumpster/what-size-dumpster-do-i-need");
         assertThat(body).contains("/dumpster/weight/shingles");
         assertThat(body).contains("/dumpster/size/roof-tear-off");
         assertThat(body).contains("/dumpster/size/concrete-removal");
         assertThat(body).contains("/dumpster/size/light-commercial-fitout");
         assertThat(body).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
+        assertThat(body).contains("/dumpster/answers/roof_tearoff/metal_scrap_light/size-guide");
         assertThat(body).contains("/dumpster/answers/concrete_removal/concrete/size-guide");
         assertThat(body).contains("/dumpster/answers/garage_cleanout/household_junk/size-guide");
         assertThat(body).doesNotContain("/dumpster/answers/roof_tearoff/tile_ceramic/size-guide");

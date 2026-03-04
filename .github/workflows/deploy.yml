@@ -83,7 +83,7 @@ jobs:
             echo '    mem_limit: "512m"' >> docker-compose.yml
             echo '    environment:' >> docker-compose.yml
             echo '      APP_BASE_URL: "https://debrisdecision.com"' >> docker-compose.yml
-            echo '      APP_SEO_MAX_WAVE: "2"' >> docker-compose.yml
+            echo '      APP_SEO_MAX_WAVE: "3"' >> docker-compose.yml
             echo '      APP_BUILD_SHA: "${{ github.sha }}"' >> docker-compose.yml
             echo '      JTE_DEVELOPMENT_MODE: "false"' >> docker-compose.yml
             echo '      JTE_USE_PRECOMPILED_TEMPLATES: "true"' >> docker-compose.yml

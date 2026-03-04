@@ -79,9 +79,10 @@ class SeoContentServiceTests {
     void indexableIntentPathsContainOnlyWhitelistedMoneyRoutes() {
         var paths = seoContentService.indexableIntentPaths();
 
-        assertThat(paths).hasSize(19);
+        assertThat(paths).hasSize(89);
         assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/overage-risk");
         assertThat(paths).contains("/dumpster/answers/roof_tearoff/asphalt_shingles/size-guide");
+        assertThat(paths).contains("/dumpster/answers/roof_tearoff/metal_scrap_light/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete_removal/concrete/weight-estimate");
         assertThat(paths).contains("/dumpster/answers/dirt_grading/dirt_soil/size-guide");
