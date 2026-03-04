@@ -309,6 +309,32 @@ All must be true:
   - `tests/e2e/beta-scenario-matrix.spec.ts` (priority + content-gate + heavy/urgent/uncertain scenario)
   - `tests/e2e/visual-regression.spec.ts-snapshots/*`
   - `tests/e2e/visual-regression-extended.spec.ts-snapshots/*`
+  - `NEXT_STEPS_QA_LAUNCH.md` (active anchor + metrics watchlist refresh)
+
+### 2026-03-04 Extension (post-refactor hardening)
+
+- Added:
+  - `src/main/java/com/dumpster/calculator/api/controller/QuoteMatchIntakeApiController.java`
+  - `src/main/java/com/dumpster/calculator/api/dto/QuoteMatchIntakeRequest.java`
+  - `src/main/java/com/dumpster/calculator/api/dto/QuoteMatchIntakeResponse.java`
+  - `src/main/java/com/dumpster/calculator/infra/persistence/QuoteMatchIntake.java`
+  - `src/main/java/com/dumpster/calculator/infra/persistence/QuoteMatchIntakeRepository.java`
+  - `src/main/resources/static/js/quote-match-beta.js`
+  - `src/main/resources/data/junk_quote_benchmarks.csv`
+  - `src/main/java/com/dumpster/calculator/domain/reference/JunkQuoteBenchmark.java`
+  - `src/main/java/com/dumpster/calculator/infra/persistence/JunkQuoteBenchmarkRepository.java`
+  - `src/test/java/com/dumpster/calculator/QuoteMatchIntakeApiControllerTests.java`
+  - `src/test/java/com/dumpster/calculator/SeoIntentQualityGateTests.java`
+  - `docs/ACTIVE_DOCSET_AND_BRAND_GUARDRAILS_2026-03-04.md`
+- Updated:
+  - `schema.sql` (quote-match intake queue + junk quote benchmark tables)
+  - `CsvBootstrapService` (junk quote benchmark ingest)
+  - `CostComparisonService` (benchmark-blended junk comparison + richer source notes)
+  - `calculator.js` (queue-backed lead submit + optional multi-material payload up to 3 items)
+  - `calculator/index.jte` (optional additional-material lines)
+  - `trust/quote-match-beta.jte` (intake status lookup UX)
+  - `TrackingApiController` + allowlist tests (new intake/multi-material event names)
+  - `CsvDataIntegrityTests` (junk quote benchmark integrity/freshness guard)
 
 ## 8) Validation Snapshot (2026-03-04, latest rerun)
 

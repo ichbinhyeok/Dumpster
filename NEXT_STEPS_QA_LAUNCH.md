@@ -1,7 +1,7 @@
-# Next Steps (Refactor-Era, 2026-03-03)
+# Next Steps (Decision-Engine Era, 2026-03-04)
 
 This checklist is now subordinate to the master refactor anchor:
-- `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v1_2026-03-03.md`
+- `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v2_2026-03-04.md`
 
 Use this file as an operational quick list only.
 
@@ -34,4 +34,6 @@ Use this file as an operational quick list only.
 
 ## E) Metrics Watchlist
 1. Existing: `calc_completed_client`, `feasibility_not_ok`, `cta_click_dumpster_call`, `cta_click_junk_call`, `lead_submitted`.
-2. Planned V2 additions: `decision_mode_selected`, `comparison_page_view`, `comparison_page_exit_to_calculator`, `vendor_questions_expand`, `pickup_converter_used`, `answer_page_group`, `content_gate_pass`, `content_gate_fail`.
+2. Decision-stage active additions: `decision_mode_selected`, `comparison_page_view`, `comparison_page_exit_to_calculator`, `vendor_questions_expand`, `pickup_converter_used`, `answer_page_group`, `content_gate_pass`, `content_gate_fail`.
+3. Quote-match beta lifecycle: `quote_match_intake_submitted`, `quote_match_intake_status_viewed`.
+4. Multi-material behavior: `multi_material_line_added`, `multi_material_line_removed`.

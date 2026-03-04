@@ -146,3 +146,29 @@ Regeneration pipeline:
 - Generator script:
   - [build-market-tier-zip-overrides.mjs](C:/Development/Owner/dumpster-calculator/scripts/build-market-tier-zip-overrides.mjs)
   - [build_market_tier_zip_overrides.py](C:/Development/Owner/dumpster-calculator/scripts/build_market_tier_zip_overrides.py)
+
+## 8) Junk quote benchmark dataset (v2 extension)
+
+Runtime file:
+
+- `src/main/resources/data/junk_quote_benchmarks.csv`
+
+Purpose:
+
+- Add scenario-tagged, sample-count-backed range evidence by market tier and urgency.
+- Blend profile-based modeled cost with benchmark ranges for more stable homeowner-facing guidance.
+
+Core fields:
+
+- `market_tier`
+- `need_timing`
+- `scenario_tag`
+- `sample_count`
+- `volume_cy_low/high`
+- `quoted_total_low/typ/high`
+- `min_fee_typ`
+- `source`, `source_url`, `source_version_date`
+
+Guardrail:
+
+- Benchmark rows are still decision-support ranges, not guaranteed contracted pricing.
