@@ -413,7 +413,7 @@
 </div>
 
 <div id="floating-cta" class="floating-cta" hidden>
-    <a id="floating-call" href="/about/contact">Get dumpster quotes</a>
+    <a id="floating-call" href="/about/quote-match-beta">Join quote-match beta</a>
     <a id="floating-quote" href="#estimate-form">Run live estimate</a>
 </div>
 

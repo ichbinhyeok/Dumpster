@@ -1,4 +1,5 @@
 (function () {
+    const QUOTE_MATCH_BETA_PATH = "/about/quote-match-beta";
     const form = document.getElementById("estimate-form");
     if (!form) {
         return;
@@ -507,7 +508,7 @@
         resultActions.innerHTML = `
             <section class="lead-capture">
                 <h3>Get matched after you confirm the safer route</h3>
-                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">Direct connect only. No spam.</p>
+                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">Beta queue for local matching. No spam.</p>
                 <div class="lead-step" id="lead-step-1" ${leadFormState.step === 2 ? "hidden" : ""}>
                     <label for="lead-zip">ZIP code</label>
                     <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339" value="${escapeHtml(leadFormState.zip)}">
@@ -659,7 +660,7 @@
                 leadFormState.contactValue = contact;
                 emitContentGateEvent("pass", { step: "submit", reason: "lead_ready" });
                 emitLeadSubmitted("lead_form_submit");
-                leadStatus.textContent = "Lead submitted. A quote partner can contact you next.";
+                leadStatus.textContent = "Lead submitted. We will follow up when quote-match beta coverage is available.";
                 leadFormState.statusText = leadStatus.textContent;
             });
         }
@@ -1087,7 +1088,7 @@
         if (key === "junk_call") {
             return { id: "cta-junk", href: "/dumpster/dumpster-vs-junk-removal-which-is-cheaper", label: "Compare junk removal" };
         }
-        return { id: "cta-dumpster-call", href: "/about/contact", label: "Get dumpster quotes" };
+        return { id: "cta-dumpster-call", href: QUOTE_MATCH_BETA_PATH, label: "Join quote-match beta" };
     }
 
     function deriveDecisionMode(primaryCtaKey, topRecommendation, result) {
@@ -1115,7 +1116,7 @@
             return `Best next move: ${topRecommendation.sizeYd}yd staged multi-haul plan.`;
         }
         if (topRecommendation) {
-            return `Best next move: get quotes for a ${topRecommendation.sizeYd}-yard dumpster.`;
+            return `Best next move: join quote-match beta for a ${topRecommendation.sizeYd}-yard dumpster.`;
         }
         return "Best next move unavailable: review inputs and rerun.";
     }

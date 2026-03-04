@@ -51,4 +51,13 @@ class TrustPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Correction requests")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")));
     }
+
+    @Test
+    void quoteMatchBetaPageRenders() throws Exception {
+        mockMvc.perform(get("/about/quote-match-beta"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Quote Match Beta")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("not instant booking")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")));
+    }
 }

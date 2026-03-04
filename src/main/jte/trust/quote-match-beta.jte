@@ -1,0 +1,72 @@
+@param com.dumpster.calculator.web.viewmodel.TrustPageViewModel model
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${model.seoTitle()}</title>
+    <meta name="description" content="${model.seoDescription()}">
+    <meta name="robots" content="noindex,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+    <link rel="canonical" href="${model.canonicalUrl()}">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta property="og:title" content="${model.seoTitle()}">
+    <meta property="og:description" content="${model.seoDescription()}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="${model.canonicalUrl()}">
+    <meta property="og:image" content="${model.ogImageUrl()}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${model.seoTitle()}">
+    <meta name="twitter:description" content="${model.seoDescription()}">
+    <meta name="twitter:image" content="${model.ogImageUrl()}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="/css/app.css?v=stripeapple4">
+    <link rel="stylesheet" href="/css/calculator-modern.css?v=stripeapple4">
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Quote Match Beta",
+          "url": "${model.canonicalUrl()}"
+        }
+    </script>
+    @template.components.analyticsTag()
+</head>
+<body class="neo-body neo-content">
+@template.components.appHeader(trustLabel = "Quote Match Beta", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
+<main class="app-container app-main">
+    <section class="panel">
+        <p class="eyebrow">Quote Match Beta</p>
+        <h1>${model.pageTitle()}</h1>
+        <p>This intake is for beta coverage only. We use your calculator inputs to queue local follow-up when partner coverage is available.</p>
+    </section>
+
+    <section class="panel">
+        <h2>What this beta does</h2>
+        <ul>
+            <li>Captures your project intent, material profile, timing, and ZIP details.</li>
+            <li>Queues your request for local dumpster or junk-removal partner follow-up.</li>
+            <li>Helps us validate coverage gaps before full marketplace launch.</li>
+        </ul>
+    </section>
+
+    <section class="panel">
+        <h2>What to expect</h2>
+        <ul>
+            <li>This is not instant booking and not guaranteed same-day dispatch.</li>
+            <li>Coverage and response time depend on local partner availability.</li>
+            <li>For corrections or source updates, use the <a href="/about/contact">contact page</a>.</li>
+        </ul>
+    </section>
+
+    <section class="panel">
+        <h2>Next step</h2>
+        <p>Return to the calculator, confirm your safer route, then submit ZIP and contact details from the result board.</p>
+        <p><a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Back to calculator</a></p>
+    </section>
+</main>
+@template.components.appFooter()
+</body>
+</html>
+

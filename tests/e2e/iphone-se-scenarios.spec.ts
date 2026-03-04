@@ -65,7 +65,7 @@ test.describe("iPhone SE scenario coverage", () => {
     await page.locator("#lead-contact-method").selectOption("phone");
     await page.locator("#lead-contact-value").fill("(212) 555-1111");
     await page.locator("#cta-dumpster-call").click();
-    await expect(page).toHaveURL(/\/about\/contact/);
+    await expect(page).toHaveURL(/\/about\/quote-match-beta/);
 
     await expect
       .poll(() => events.some((event) => event.eventName === "call_qualified"), { timeout: 10_000 })

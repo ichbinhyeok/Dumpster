@@ -56,4 +56,18 @@ public class TrustPageController {
         ));
         return modelAndView;
     }
+
+    @GetMapping("/about/quote-match-beta")
+    public ModelAndView quoteMatchBeta() {
+        ModelAndView modelAndView = new ModelAndView("trust/quote-match-beta");
+        modelAndView.addObject("model", new TrustPageViewModel(
+                "Quote Match Beta",
+                "Quote Match Beta: Local Dumpster and Junk Removal Intake",
+                "Join the quote-match beta to request local dumpster or junk removal partner follow-up based on your project details.",
+                baseUrl,
+                baseUrl + "/about/quote-match-beta",
+                baseUrl + "/og-image.png"
+        ));
+        return modelAndView;
+    }
 }

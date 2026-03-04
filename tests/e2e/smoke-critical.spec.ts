@@ -34,7 +34,7 @@ test.describe("Post-deploy critical smoke suite", () => {
     await page.getByRole("button", { name: "Calculate" }).click();
     await waitForLiveEstimate(page);
 
-    await expect(page.locator("#result-actions")).toContainText("Get dumpster quotes");
+    await expect(page.locator("#result-actions")).toContainText("Join quote-match beta");
     await expect(page.locator("#result-actions")).toContainText("Run the live estimate");
     await expect(page.locator("#result-actions")).toContainText("Compare junk removal");
     await expect(page.locator("#result-actions")).toContainText("Check heavy-load rules first");
