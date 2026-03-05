@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel model
 @param String confidenceTier
 @param String varianceNote
@@ -56,13 +57,13 @@
           "@context": "https://schema.org",
           "@type": "Article",
           "headline": "Heavy Debris Dumpster Rules: Limits Fill Line and Clean Loads",
-          "datePublished": "${model.modifiedDateIso()}",
-          "dateModified": "${model.modifiedDateIso()}",
+          "datePublished": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
           "author": {
             "@type": "Organization",
             "name": "Debris Decision"
           },
-          "mainEntityOfPage": "${model.canonicalUrl()}"
+          "mainEntityOfPage": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     <script type="application/ld+json">
@@ -70,8 +71,8 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorUrl()}"},
-            {"@type": "ListItem", "position": 2, "name": "Heavy Debris Rules", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.calculatorUrl()))}"},
+            {"@type": "ListItem", "position": 2, "name": "Heavy Debris Rules", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>

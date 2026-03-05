@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.MaterialPageViewModel model
 <!doctype html>
 <html lang="en">
@@ -29,9 +30,9 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorAbsoluteUrl()}"},
-            {"@type": "ListItem", "position": 2, "name": "Material Guides", "item": "${model.materialGuidesUrl()}"},
-            {"@type": "ListItem", "position": 3, "name": "Material Weight", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.calculatorAbsoluteUrl()))}"},
+            {"@type": "ListItem", "position": 2, "name": "Material Guides", "item": "${JsonLd.content(String.valueOf(model.materialGuidesUrl()))}"},
+            {"@type": "ListItem", "position": 3, "name": "Material Weight", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>
@@ -43,10 +44,10 @@
             @for(int i = 0; i < model.faqItems().size(); i++)
                 {
                   "@type": "Question",
-                  "name": "${model.faqItems().get(i).question()}",
+                  "name": "${JsonLd.content(String.valueOf(model.faqItems().get(i).question()))}",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "${model.faqItems().get(i).answer()}"
+                    "text": "${JsonLd.content(String.valueOf(model.faqItems().get(i).answer()))}"
                   }
                 }
                 @if(i < model.faqItems().size() - 1),@endif
@@ -58,13 +59,13 @@
         {
           "@context": "https://schema.org",
           "@type": "HowTo",
-          "name": "How to estimate dumpster weight for ${model.materialName()}",
+          "name": "How to estimate dumpster weight for ${JsonLd.content(String.valueOf(model.materialName()))}",
           "description": "Use density range and size-level overage risk to choose a safer dumpster strategy.",
           "step": [
             {
               "@type": "HowToStep",
               "name": "Set material and quantity",
-              "text": "Start with ${model.materialName()} and enter a measured quantity in the simulator."
+              "text": "Start with ${JsonLd.content(String.valueOf(model.materialName()))} and enter a measured quantity in the simulator."
             },
             {
               "@type": "HowToStep",
@@ -83,14 +84,14 @@
         {
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": "${model.title()}",
-          "datePublished": "${model.publishedDateIso()}",
-          "dateModified": "${model.modifiedDateIso()}",
+          "headline": "${JsonLd.content(String.valueOf(model.title()))}",
+          "datePublished": "${JsonLd.content(String.valueOf(model.publishedDateIso()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
           "author": {
             "@type": "Organization",
             "name": "Debris Decision"
           },
-          "mainEntityOfPage": "${model.canonicalUrl()}"
+          "mainEntityOfPage": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     @template.components.analyticsTag()

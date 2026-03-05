@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.TrustPageViewModel model
 <!doctype html>
 <html lang="en">
@@ -28,7 +29,7 @@
           "@context": "https://schema.org",
           "@type": "WebPage",
           "name": "Quote Match Beta",
-          "url": "${model.canonicalUrl()}"
+          "url": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     @template.components.analyticsTag()

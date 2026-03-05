@@ -15,6 +15,13 @@ async function currentSharePath(page: Page): Promise<string> {
 }
 
 test.describe("Launch smoke - infrastructure and calculator", () => {
+  test("GA4 is disabled in automated local tests to avoid data pollution", async ({ page }) => {
+    await page.goto("/dumpster/size-weight-calculator");
+    await expect(page.locator("script[src*='googletagmanager.com/gtag/js']")).toHaveCount(0);
+    const ga4Enabled = await page.evaluate(() => Boolean((window as any).__GA4_ENABLED__));
+    expect(ga4Enabled).toBeFalsy();
+  });
+
   test("health, robots, and sitemap endpoints are production-safe", async ({ request }) => {
     const healthResponse = await request.get("/api/health");
     expect(healthResponse.ok()).toBeTruthy();

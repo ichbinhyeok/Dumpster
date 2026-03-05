@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.SpecialSeoPageViewModel model
 @param String confidenceTier
 @param String varianceNote
@@ -32,8 +33,8 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorUrl()}"},
-            {"@type": "ListItem", "position": 2, "name": "${model.pageTitle()}", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.calculatorUrl()))}"},
+            {"@type": "ListItem", "position": 2, "name": "${JsonLd.content(String.valueOf(model.pageTitle()))}", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>
@@ -45,10 +46,10 @@
             @for(int i = 0; i < model.faqItems().size(); i++)
                 {
                   "@type": "Question",
-                  "name": "${model.faqItems().get(i).question()}",
+                  "name": "${JsonLd.content(String.valueOf(model.faqItems().get(i).question()))}",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "${model.faqItems().get(i).answer()}"
+                    "text": "${JsonLd.content(String.valueOf(model.faqItems().get(i).answer()))}"
                   }
                 }
                 @if(i < model.faqItems().size() - 1),@endif
@@ -60,14 +61,14 @@
         {
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": "${model.pageTitle()}",
-          "datePublished": "${model.modifiedDateIso()}",
-          "dateModified": "${model.modifiedDateIso()}",
+          "headline": "${JsonLd.content(String.valueOf(model.pageTitle()))}",
+          "datePublished": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
           "author": {
             "@type": "Organization",
             "name": "Debris Decision"
           },
-          "mainEntityOfPage": "${model.canonicalUrl()}"
+          "mainEntityOfPage": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     @template.components.analyticsTag()

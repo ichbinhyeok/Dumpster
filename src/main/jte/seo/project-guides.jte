@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.GuideHubPageViewModel model
 <!doctype html>
 <html lang="en">
@@ -28,12 +29,12 @@
         {
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          "name": "${model.pageTitle()}",
-          "url": "${model.canonicalUrl()}",
-          "dateModified": "${model.lastUpdatedIso()}",
+          "name": "${JsonLd.content(String.valueOf(model.pageTitle()))}",
+          "url": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.lastUpdatedIso()))}",
           "author": {
             "@type": "Organization",
-            "name": "${model.reviewedBy()}"
+            "name": "${JsonLd.content(String.valueOf(model.reviewedBy()))}"
           }
         }
     </script>
@@ -42,8 +43,8 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorUrl()}"},
-            {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.calculatorUrl()))}"},
+            {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>
@@ -56,10 +57,10 @@
             @for(int i = 0; i < model.hubFaqItems().size(); i++)
                 {
                   "@type": "Question",
-                  "name": "${model.hubFaqItems().get(i).question()}",
+                  "name": "${JsonLd.content(String.valueOf(model.hubFaqItems().get(i).question()))}",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "${model.hubFaqItems().get(i).answer()}"
+                    "text": "${JsonLd.content(String.valueOf(model.hubFaqItems().get(i).answer()))}"
                   }
                 }
                 @if(i < model.hubFaqItems().size() - 1),@endif

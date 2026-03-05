@@ -8,8 +8,12 @@
         /daum\.net$/i
     ];
 
+    function isGa4Enabled() {
+        return window.__GA4_ENABLED__ !== false;
+    }
+
     function hasGtag() {
-        return typeof window.gtag === "function";
+        return isGa4Enabled() && typeof window.gtag === "function";
     }
 
     function track(eventName, params) {

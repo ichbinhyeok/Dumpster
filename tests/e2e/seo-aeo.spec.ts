@@ -84,6 +84,17 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     }
   });
 
+  test("JSON-LD blocks are parseable JSON on core SEO pages", async ({ page }) => {
+    for (const entry of pages) {
+      await page.goto(entry.path);
+      const jsonLdBlocks = await page.locator("script[type='application/ld+json']").allTextContents();
+      expect(jsonLdBlocks.length).toBeGreaterThan(0);
+      for (const block of jsonLdBlocks) {
+        expect(() => JSON.parse(block)).not.toThrow();
+      }
+    }
+  });
+
   test("breadcrumb and FAQ schema are present on hub and intent pages", async ({ page }) => {
     const targets = [
       "/dumpster/material-guides",

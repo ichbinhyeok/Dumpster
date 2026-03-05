@@ -21,6 +21,7 @@ export default defineConfig({
     env: {
       SPRING_DATASOURCE_URL:
         "jdbc:h2:file:./data/dumpster_playwright;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH",
+      APP_ANALYTICS_GA4_ENABLED: "false",
     },
   },
   projects: [

@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.ProjectPageViewModel model
 <!doctype html>
 <html lang="en">
@@ -29,9 +30,9 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorAbsoluteUrl()}"},
-            {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${model.projectGuidesUrl()}"},
-            {"@type": "ListItem", "position": 3, "name": "Project Guide", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.calculatorAbsoluteUrl()))}"},
+            {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${JsonLd.content(String.valueOf(model.projectGuidesUrl()))}"},
+            {"@type": "ListItem", "position": 3, "name": "Project Guide", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>
@@ -43,10 +44,10 @@
             @for(int i = 0; i < model.faqItems().size(); i++)
                 {
                   "@type": "Question",
-                  "name": "${model.faqItems().get(i).question()}",
+                  "name": "${JsonLd.content(String.valueOf(model.faqItems().get(i).question()))}",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "${model.faqItems().get(i).answer()}"
+                    "text": "${JsonLd.content(String.valueOf(model.faqItems().get(i).answer()))}"
                   }
                 }
                 @if(i < model.faqItems().size() - 1),@endif
@@ -58,18 +59,18 @@
         {
           "@context": "https://schema.org",
           "@type": "HowTo",
-          "name": "How to choose dumpster size for ${model.title()}",
+          "name": "How to choose dumpster size for ${JsonLd.content(String.valueOf(model.title()))}",
           "description": "Follow the project preset, compare strategy, and confirm booking constraints before committing.",
           "step": [
             {
               "@type": "HowToStep",
               "name": "Start from project preset",
-              "text": "Use ${model.title()} preset with ${model.defaultMaterialName()} as baseline material."
+              "text": "Use ${JsonLd.content(String.valueOf(model.title()))} preset with ${JsonLd.content(String.valueOf(model.defaultMaterialName()))} as baseline material."
             },
             {
               "@type": "HowToStep",
               "name": "Use the recommended input unit",
-              "text": "Enter quantity in ${model.recommendedUnit()} and review safe versus budget outcomes."
+              "text": "Enter quantity in ${JsonLd.content(String.valueOf(model.recommendedUnit()))} and review safe versus budget outcomes."
             },
             {
               "@type": "HowToStep",
@@ -83,14 +84,14 @@
         {
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": "${model.title()}",
-          "datePublished": "${model.modifiedDateIso()}",
-          "dateModified": "${model.modifiedDateIso()}",
+          "headline": "${JsonLd.content(String.valueOf(model.title()))}",
+          "datePublished": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
           "author": {
             "@type": "Organization",
             "name": "Debris Decision"
           },
-          "mainEntityOfPage": "${model.canonicalUrl()}"
+          "mainEntityOfPage": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     @template.components.analyticsTag()

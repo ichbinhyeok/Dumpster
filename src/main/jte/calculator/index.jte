@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.CalculatorPageViewModel model
 <!doctype html>
 <html lang="en">
@@ -32,7 +33,7 @@
           "applicationCategory": "UtilitiesApplication",
           "operatingSystem": "Web",
           "description": "Homeowner-first decision tool for choosing between dumpster rental and junk removal while reducing overage risk.",
-          "url": "${model.canonicalUrl()}"
+          "url": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     <script type="application/ld+json">
@@ -72,7 +73,7 @@
           "@context": "https://schema.org",
           "@type": "WebSite",
           "name": "Debris Decision",
-          "url": "${model.siteBaseUrl()}"
+          "url": "${JsonLd.content(String.valueOf(model.siteBaseUrl()))}"
         }
     </script>
     <script type="application/ld+json">
@@ -80,17 +81,17 @@
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "Debris Decision",
-          "url": "${model.siteBaseUrl()}",
-          "logo": "${model.siteBaseUrl()}/favicon.png"
+          "url": "${JsonLd.content(String.valueOf(model.siteBaseUrl()))}",
+          "logo": "${JsonLd.content(String.valueOf(model.siteBaseUrl()))}/favicon.png"
         }
     </script>
     <script type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "${model.pageTitle()}",
-          "url": "${model.canonicalUrl()}",
-          "dateModified": "${model.lastUpdatedIso()}",
+          "name": "${JsonLd.content(String.valueOf(model.pageTitle()))}",
+          "url": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.lastUpdatedIso()))}",
           "reviewedBy": {
             "@type": "Organization",
             "name": "Debris Decision Editorial Team"
@@ -102,7 +103,7 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>

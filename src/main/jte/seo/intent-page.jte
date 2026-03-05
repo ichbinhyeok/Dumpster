@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.IntentPageViewModel model
 @param boolean indexableIntent
 <!doctype html>
@@ -34,10 +35,10 @@
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${model.calculatorUrl()}"},
-            {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${model.projectGuidesUrl()}"},
-            {"@type": "ListItem", "position": 3, "name": "Material Guides", "item": "${model.materialGuidesUrl()}"},
-            {"@type": "ListItem", "position": 4, "name": "${model.intentLabel()}", "item": "${model.canonicalUrl()}"}
+            {"@type": "ListItem", "position": 1, "name": "Calculator", "item": "${JsonLd.content(String.valueOf(model.calculatorUrl()))}"},
+            {"@type": "ListItem", "position": 2, "name": "Project Guides", "item": "${JsonLd.content(String.valueOf(model.projectGuidesUrl()))}"},
+            {"@type": "ListItem", "position": 3, "name": "Material Guides", "item": "${JsonLd.content(String.valueOf(model.materialGuidesUrl()))}"},
+            {"@type": "ListItem", "position": 4, "name": "${JsonLd.content(String.valueOf(model.intentLabel()))}", "item": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"}
           ]
         }
     </script>
@@ -49,10 +50,10 @@
             @for(int i = 0; i < model.faqItems().size(); i++)
                 {
                   "@type": "Question",
-                  "name": "${model.faqItems().get(i).question()}",
+                  "name": "${JsonLd.content(String.valueOf(model.faqItems().get(i).question()))}",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "${model.faqItems().get(i).answer()}"
+                    "text": "${JsonLd.content(String.valueOf(model.faqItems().get(i).answer()))}"
                   }
                 }
                 @if(i < model.faqItems().size() - 1),@endif
@@ -64,14 +65,14 @@
         {
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": "${model.pageTitle()}",
-          "datePublished": "${model.modifiedDateIso()}",
-          "dateModified": "${model.modifiedDateIso()}",
+          "headline": "${JsonLd.content(String.valueOf(model.pageTitle()))}",
+          "datePublished": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
+          "dateModified": "${JsonLd.content(String.valueOf(model.modifiedDateIso()))}",
           "author": {
             "@type": "Organization",
             "name": "Debris Decision"
           },
-          "mainEntityOfPage": "${model.canonicalUrl()}"
+          "mainEntityOfPage": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     @template.components.analyticsTag()

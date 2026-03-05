@@ -1,3 +1,4 @@
+@import com.dumpster.calculator.web.support.JsonLd
 @param com.dumpster.calculator.web.viewmodel.TrustPageViewModel model
 <!doctype html>
 <html lang="en">
@@ -28,8 +29,8 @@
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "Debris Decision",
-          "url": "${model.siteBaseUrl()}",
-          "logo": "${model.siteBaseUrl()}/favicon.png"
+          "url": "${JsonLd.content(String.valueOf(model.siteBaseUrl()))}",
+          "logo": "${JsonLd.content(String.valueOf(model.siteBaseUrl()))}/favicon.png"
         }
     </script>
     @template.components.analyticsTag()
