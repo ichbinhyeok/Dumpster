@@ -1,0 +1,21 @@
+url_or_pattern,page_type,intent,target_query,unique_value,confidence,action,canonical_target,notes
+/dumpster/size-weight-calculator,calculator,decision hub,dumpster size weight calculator,live decision engine with route comparison,High,index,/dumpster/size-weight-calculator,keep as primary entry
+/dumpster/heavy-debris-rules,rule hub,heavy risk rules,heavy debris dumpster rules,rule-first friction removal page,High,index,/dumpster/heavy-debris-rules,keep as cluster hub
+/dumpster/weight/concrete,material,heavy material sizing,concrete dumpster calculator,weight-first concrete estimator,High,index,/dumpster/weight/concrete,top20 seed
+/dumpster/weight/shingles,material,roofing sizing,shingles dumpster size,roofing square to ton risk bridge,High,index,/dumpster/weight/shingles,top20 seed
+/dumpster/weight/drywall,material,sheet to size intent,drywall dumpster weight,sheet-count conversion + risk,High,index,/dumpster/weight/drywall,top20 seed
+/dumpster/weight/dirt,material,dense soil limits,dirt dumpster weight limit,dense-load feasibility guidance,High,index,/dumpster/weight/dirt,top20 seed
+/dumpster/weight/brick-block,material,masonry sizing,brick dumpster weight,masonry heavy-load guidance,Medium,index,/dumpster/weight/brick-block,wave3 candidate
+/dumpster/size/roof-tear-off,project,project sizing,roof tear off dumpster size,project + unit conversion bridge,High,index,/dumpster/size/roof-tear-off,top20 seed
+/dumpster/size/bathroom-remodel,project,project sizing,bathroom remodel dumpster size,tile-heavy branch guidance,High,index,/dumpster/size/bathroom-remodel,top20 seed
+/dumpster/size/deck-removal,project,project sizing,deck removal dumpster size,moisture and bulk variation guidance,High,index,/dumpster/size/deck-removal,top20 seed
+/dumpster/size/kitchen-remodel,project,project sizing,kitchen remodel dumpster size,mixed dense material branching,Medium,index,/dumpster/size/kitchen-remodel,top20 seed
+/dumpster/size/garage-cleanout,project,project sizing,garage cleanout dumpster size,comparison crossover for labor vs cost,Medium,index,/dumpster/size/garage-cleanout,top20 seed
+/dumpster/material-guides,hub,browse materials,dumpster material weight guide,routing hub for strong child pages,Low,noindex,/dumpster/material-guides,keep crawlable but not ranking target
+/dumpster/project-guides,hub,browse projects,dumpster project guide,routing hub for strong child pages,Low,noindex,/dumpster/project-guides,keep crawlable but not ranking target
+/dumpster/answers/{project}/{material}/{intent},intent,long-tail decision variants,best dumpster size for [project] [material],scenario answer pages for exact decision stage,Medium,index only curated seed,curated canonical per seed,non-seed combinations noindex
+/dumpster/estimate/{estimateId},share,session result,shared dumpster estimate,share-only utility page,High,noindex,/dumpster/estimate/{estimateId},must stay non-index
+/dumpster/dumpster-vs-junk-removal,comparison,route comparison,dumpster vs junk removal,commercial decision matrix,High,canonical,/dumpster/dumpster-vs-junk-removal-which-is-cheaper,alias redirect required
+/dumpster/how-many-tons-can-a-10-yard-dumpster-hold,limit,10-yard tonnage question,10 yard dumpster weight limit,included tons vs haul limit clarification,High,canonical,/dumpster/10-yard-dumpster-weight-limit-overage,alias redirect required
+/city|/zip|/near-me patterns,doorway,broad local expansion,dumpster rental near me,mass-page expansion,Low,do not build,,policy lock
+/glossary|/encyclopedia patterns,info broad,non-decision informational,broad dumpster glossary,low conversion intent drift,Low,do not build,,policy lock

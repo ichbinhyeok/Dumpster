@@ -81,14 +81,14 @@ class SeoPageRenderingTests {
     }
 
     @Test
-    void guideHubsExposeIndexableRobotsMeta() throws Exception {
+    void guideHubsAreServedAsNoindexByPolicy() throws Exception {
         mockMvc.perform(get("/dumpster/material-guides"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
 
         mockMvc.perform(get("/dumpster/project-guides"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("content=\"max-snippet:-1,max-image-preview:large,max-video-preview:-1\"")));
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
     }
 
     @Test
@@ -147,6 +147,20 @@ class SeoPageRenderingTests {
     }
 
     @Test
+    void nonPriorityProjectPageRemainsAccessibleButNoindex() throws Exception {
+        mockMvc.perform(get("/dumpster/size/concrete-removal"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
+    }
+
+    @Test
+    void nonPrioritySpecialPageRemainsAccessibleButNoindex() throws Exception {
+        mockMvc.perform(get("/dumpster/what-size-dumpster-do-i-need"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
+    }
+
+    @Test
     void specialDecisionPageRendersDirectAnswerMatrixAndSchema() throws Exception {
         mockMvc.perform(get("/dumpster/dumpster-vs-junk-removal-which-is-cheaper"))
                 .andExpect(status().isOk())
@@ -174,12 +188,15 @@ class SeoPageRenderingTests {
     @Test
     void waveThreePagesRenderWithDefaultWaveThree() throws Exception {
         mockMvc.perform(get("/dumpster/weight/brick-block"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
 
         mockMvc.perform(get("/dumpster/size/garage-cleanout"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
 
         mockMvc.perform(get("/dumpster/fill-line-rules-for-heavy-debris"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
     }
 }

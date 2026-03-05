@@ -95,6 +95,110 @@ public class SeoContentService {
             Map.entry("fill-line-rules-for-heavy-debris", 3),
             Map.entry("one-20-yard-vs-two-10-yard", 3)
     );
+    private static final Set<String> PRIORITY_INDEXABLE_MATERIAL_IDS = Set.of(
+            "concrete",
+            "asphalt_shingles",
+            "drywall",
+            "dirt_soil",
+            "brick"
+    );
+    private static final Set<String> PRIORITY_INDEXABLE_PROJECT_IDS = Set.of(
+            "bathroom_remodel",
+            "roof_tearoff",
+            "deck_demolition",
+            "garage_cleanout",
+            "kitchen_remodel"
+    );
+    private static final Set<String> PRIORITY_INDEXABLE_SPECIAL_SLUGS = Set.of(
+            "10-yard-dumpster-weight-limit-overage",
+            "can-you-put-concrete-in-a-dumpster",
+            "can-you-mix-concrete-and-wood-in-a-dumpster",
+            "dumpster-vs-junk-removal-which-is-cheaper",
+            "bagster-vs-dumpster",
+            "fill-line-rules-for-heavy-debris",
+            "one-20-yard-vs-two-10-yard",
+            "pickup-truck-loads-to-dumpster-size"
+    );
+    private static final Set<String> MEDIUM_CONFIDENCE_MATERIAL_IDS = Set.of("brick");
+    private static final Set<String> MEDIUM_CONFIDENCE_PROJECT_IDS = Set.of("garage_cleanout", "kitchen_remodel");
+    private static final Set<String> MEDIUM_CONFIDENCE_SPECIAL_SLUGS = Set.of(
+            "fill-line-rules-for-heavy-debris",
+            "one-20-yard-vs-two-10-yard"
+    );
+    private static final Map<String, MaterialSeoOverride> MATERIAL_SEO_OVERRIDES = Map.of(
+            "concrete",
+            new MaterialSeoOverride(
+                    "Concrete Dumpster Calculator",
+                    "Concrete Dumpster Calculator: Size Tons and Overage Risk",
+                    "Estimate concrete disposal by size and ton range before you rent. See when clean loads or multi-haul plans are safer than one larger bin.",
+                    "Concrete dumpster size depends on ton limits first, not bin volume. Start with a weight-first estimate before booking."
+            ),
+            "asphalt_shingles",
+            new MaterialSeoOverride(
+                    "Shingles Dumpster Size Calculator",
+                    "Shingles Dumpster Size Calculator: Squares Tons and Risk",
+                    "Convert roofing squares into dumpster size and weight range with overage risk signals. Compare safer options before your tear-off starts.",
+                    "Asphalt shingles are weight-first debris. Convert roofing squares to a realistic ton range before choosing dumpster size."
+            ),
+            "drywall",
+            new MaterialSeoOverride(
+                    "Drywall Dumpster Calculator",
+                    "Drywall Dumpster Calculator: Sheets Size and Weight Risk",
+                    "Estimate drywall disposal by sheet count and size with weight-risk ranges. See when a small bin stops being practical for the job.",
+                    "Drywall sheet count can look light, but weight climbs quickly when moisture and mixed-load assumptions change."
+            ),
+            "dirt_soil",
+            new MaterialSeoOverride(
+                    "Dirt Dumpster Calculator",
+                    "Dirt Dumpster Calculator: Weight Limits Size and Overage",
+                    "See how fast dirt weight escalates by dumpster size. Check realistic limits and when heavy-debris rules become the main constraint.",
+                    "Dirt weight escalates faster than volume suggests, so haul limits usually decide the safest dumpster size."
+            ),
+            "brick",
+            new MaterialSeoOverride(
+                    "Brick and Block Dumpster Calculator",
+                    "Brick and Block Dumpster Calculator: Size Tons and Limits",
+                    "Estimate brick and block disposal by dumpster size and ton range. Identify when clean-load or staged-haul strategy is the safer choice.",
+                    "Brick and block loads are haul-limited heavy debris, so controlled fill and staged pulls are usually safer than one oversized load."
+            )
+    );
+    private static final Map<String, ProjectSeoOverride> PROJECT_SEO_OVERRIDES = Map.of(
+            "bathroom_remodel",
+            new ProjectSeoOverride(
+                    "Bathroom Remodel Dumpster Size Calculator",
+                    "Bathroom Remodel Dumpster Size: 10 vs 20 Yard Calculator",
+                    "Estimate bathroom remodel dumpster size from tile drywall and fixture scope. See when heavy tile shifts the safest option upward.",
+                    "What size dumpster for a bathroom remodel? Start at 10-yard, then size up when tile or mortar dominates the job."
+            ),
+            "roof_tearoff",
+            new ProjectSeoOverride(
+                    "Roof Tear-Off Dumpster Size Calculator",
+                    "Roof Tear-Off Dumpster Size Calculator: Squares to Size",
+                    "Convert roofing squares into dumpster size and ton range with overage risk cues. Plan safer hauling before your tear-off begins.",
+                    "Roof tear-off decisions should be weight-first. Convert squares to tonnage before picking container size."
+            ),
+            "deck_demolition",
+            new ProjectSeoOverride(
+                    "Deck Removal Dumpster Size Calculator",
+                    "Deck Removal Dumpster Size Calculator: Material and Weight Risk",
+                    "Estimate deck removal dumpster size by material mix and moisture conditions. See when safer sizing beats low-cost assumptions.",
+                    "Deck removal size depends on bulk and moisture. Wet lumber and hardware often push jobs toward safer sizing."
+            ),
+            "garage_cleanout",
+            new ProjectSeoOverride(
+                    "Garage Cleanout Dumpster Size Calculator",
+                    "Garage Cleanout Dumpster Size Calculator: What Size Fits Best?",
+                    "Estimate garage cleanout size by volume and bulky item mix. Compare dumpster rental versus junk removal for risk and convenience.",
+                    "Garage cleanout size depends more on bulky-item packing than it looks. Start with load count, then compare routes."
+            ),
+            "kitchen_remodel",
+            new ProjectSeoOverride(
+                    "Kitchen Remodel Dumpster Size Calculator",
+                    "Kitchen Remodel Dumpster Size Calculator: Cabinets Drywall Flooring",
+                    "Estimate kitchen remodel dumpster size by cabinet countertop drywall and flooring removal scope with risk-aware sizing guidance.",
+                    "Kitchen remodel debris mixes bulky and dense materials. Cabinet and countertop share can quickly change the safest size."
+            )
+    );
     private static final String CALCULATOR_PATH = "/dumpster/size-weight-calculator";
     private static final String MATERIAL_GUIDES_PATH = "/dumpster/material-guides";
     private static final String PROJECT_GUIDES_PATH = "/dumpster/project-guides";
@@ -297,16 +401,24 @@ public class SeoContentService {
                     };
                     MaterialScenario scenario = materialScenario(material);
                     CopyBlock copy = materialCopyFor(material);
+                    MaterialSeoOverride seoOverride = MATERIAL_SEO_OVERRIDES.get(material.materialId());
                     List<MaterialPageViewModel.SizeWeightRow> sizeWeightTable = sizeWeightRows(material);
                     String exampleRange = round2(lowWeight) + " to " + round2(highWeight) + " tons";
-                    String answerFirst = material.name() + " is typically " + (int) material.densityTyp() + " lbs/yd3."
+                    String defaultAnswerFirst = material.name() + " is typically " + (int) material.densityTyp() + " lbs/yd3."
                             + " A " + (int) exampleVolume + " yd3 load is about " + exampleRange
                             + " (typical " + round2(typWeight) + " tons). " + copy.answerFirst();
-                    String seoTitle = material.name() + " Dumpster Weight: " + (int) material.densityTyp()
+                    String defaultSeoTitle = material.name() + " Dumpster Weight: " + (int) material.densityTyp()
                             + " lbs/yd3 Typical | Size & Overage Chart";
-                    String metaDescription = material.name() + " weighs around " + (int) material.densityTyp()
+                    String defaultMetaDescription = material.name() + " weighs around " + (int) material.densityTyp()
                             + " lbs/yd3. A " + (int) exampleVolume + " yd3 load is "
                             + exampleRange + ". Compare dumpster-size weight ranges and overage risk.";
+                    String pageTitle = seoOverride != null
+                            ? seoOverride.pageTitle()
+                            : material.name() + " Dumpster Weight Guide";
+                    String answerFirst = seoOverride != null ? seoOverride.answerFirst() : defaultAnswerFirst;
+                    String seoTitle = seoOverride != null ? seoOverride.seoTitle() : defaultSeoTitle;
+                    String metaDescription = seoOverride != null ? seoOverride.metaDescription() : defaultMetaDescription;
+                    EvidenceProfile evidenceProfile = materialEvidenceProfile(material);
                     LocalDate materialUpdatedDate = defaultLastModifiedDate();
                     LocalDate sourceVersionDate = material.sourceVersionDate();
                     String sourceDateDisplay = (sourceVersionDate == null ? materialUpdatedDate : sourceVersionDate)
@@ -314,7 +426,7 @@ public class SeoContentService {
                     return new MaterialPageViewModel(
                             material.materialId(),
                             material.name(),
-                            material.name() + " Dumpster Weight Guide",
+                            pageTitle,
                             seoTitle,
                             metaDescription,
                             absoluteUrl(baseUrl, materialCanonicalPath(material.materialId())),
@@ -336,6 +448,9 @@ public class SeoContentService {
                             material.source(),
                             cautionNote,
                             operatorQuestion,
+                            evidenceProfile.confidenceTier(),
+                            evidenceProfile.varianceNote(),
+                            evidenceProfile.vendorChecklist(),
                             scenario.input(),
                             scenario.decision(),
                             answerFirst,
@@ -364,14 +479,20 @@ public class SeoContentService {
         String defaultMaterialName = materialFactorRepository.findById(seed.defaultMaterialId())
                 .map(MaterialFactor::name)
                 .orElse(seed.defaultMaterialId().replace('_', ' '));
+        ProjectSeoOverride seoOverride = PROJECT_SEO_OVERRIDES.get(seed.projectId());
         String projectTopic = IntentType.humanProjectTopic(seed.title()).toLowerCase(Locale.US);
-        String seoTitle = "Best dumpster size for " + projectTopic + " | homeowner decision guide";
-        String metaDescription = "Find the safer disposal route for " + projectTopic + ": dumpster size baseline, "
+        String defaultSeoTitle = "Best dumpster size for " + projectTopic + " | homeowner decision guide";
+        String defaultMetaDescription = "Find the safer disposal route for " + projectTopic + ": dumpster size baseline, "
                 + defaultMaterialName + " weight risk, and when junk removal is the better move.";
+        String pageTitle = seoOverride != null ? seoOverride.pageTitle() : seed.title();
+        String seoTitle = seoOverride != null ? seoOverride.seoTitle() : defaultSeoTitle;
+        String metaDescription = seoOverride != null ? seoOverride.metaDescription() : defaultMetaDescription;
+        String answerFirst = seoOverride != null ? seoOverride.answerFirst() : copy.answerFirst();
+        EvidenceProfile evidenceProfile = projectEvidenceProfile(seed, defaultMaterialName);
         String modifiedDateIso = defaultLastModifiedDate().toString();
         return Optional.of(new ProjectPageViewModel(
                 seed.projectId(),
-                seed.title(),
+                pageTitle,
                 seoTitle,
                 metaDescription,
                 absoluteUrl(baseUrl, canonicalPath),
@@ -387,7 +508,10 @@ public class SeoContentService {
                 seed.sampleInput(),
                 seed.sampleDecision(),
                 modifiedDateIso,
-                copy.answerFirst(),
+                evidenceProfile.confidenceTier(),
+                evidenceProfile.varianceNote(),
+                evidenceProfile.vendorChecklist(),
+                answerFirst,
                 copy.quickRules(),
                 copy.faqItems(),
                 absoluteUrl(baseUrl, PROJECT_GUIDES_PATH),
@@ -407,7 +531,7 @@ public class SeoContentService {
         return PROJECT_INDEX_WAVE.entrySet().stream()
                 .filter(entry -> entry.getValue() <= waveLimit)
                 .map(Map.Entry::getKey)
-                .filter(projectSeeds::containsKey)
+                .filter(this::isProjectIndexable)
                 .map(this::projectCanonicalPath)
                 .toList();
     }
@@ -468,6 +592,7 @@ public class SeoContentService {
         String directAnswer = intentDirectAnswer(intentType, materialPage, projectPage, anchorRow);
         String intentQuestion = intentQuestion(intentType, projectTitle, materialName);
         String intentSummary = intentSummary(intentType, materialPage, projectPage, anchorRow);
+        EvidenceProfile evidenceProfile = intentEvidenceProfile(projectId, materialId, intentType, materialName);
         String evidenceNote = "Evidence baseline: density "
                 + round2(materialPage.densityLow()) + " to "
                 + round2(materialPage.densityHigh()) + " lbs/yd3,"
@@ -493,6 +618,9 @@ public class SeoContentService {
                 directAnswer,
                 intentSummary,
                 evidenceNote,
+                evidenceProfile.confidenceTier(),
+                evidenceProfile.varianceNote(),
+                evidenceProfile.vendorChecklist(),
                 modifiedDateIso,
                 materialPage.sizeWeightTable(),
                 intentChecklist(intentType, materialPage, projectPage),
@@ -517,6 +645,7 @@ public class SeoContentService {
         return MATERIAL_INDEX_WAVE.entrySet().stream()
                 .filter(entry -> entry.getValue() <= waveLimit)
                 .map(Map.Entry::getKey)
+                .filter(PRIORITY_INDEXABLE_MATERIAL_IDS::contains)
                 .filter(available::contains)
                 .toList();
     }
@@ -566,7 +695,9 @@ public class SeoContentService {
         int waveLimit = Math.max(1, Math.min(maxWave, MAX_WAVE));
         return SPECIAL_PAGE_INDEX_WAVE.entrySet().stream()
                 .filter(entry -> entry.getValue() <= waveLimit)
-                .map(entry -> "/dumpster/" + entry.getKey())
+                .map(Map.Entry::getKey)
+                .filter(PRIORITY_INDEXABLE_SPECIAL_SLUGS::contains)
+                .map(entry -> "/dumpster/" + entry)
                 .toList();
     }
 
@@ -617,8 +748,8 @@ public class SeoContentService {
             ));
             case "10-yard-dumpster-weight-limit-overage" -> Optional.of(new SpecialSeoPageViewModel(
                     resolvedSlug,
-                    "10-Yard Dumpster Weight Limit and Overage Risk",
-                    "10-Yard Dumpster Weight Limit and Overage Risk",
+                    "How Many Tons Can a 10-Yard Dumpster Hold?",
+                    "How Many Tons Can a 10-Yard Dumpster Hold? Limits and Risk",
                     "See the difference between included tons and haul limits for a 10-yard dumpster before loading heavy debris.",
                     absoluteUrl(baseUrl, canonicalPath),
                     ogImageUrl(baseUrl),
@@ -762,7 +893,7 @@ public class SeoContentService {
             case "dumpster-vs-junk-removal-which-is-cheaper" -> Optional.of(new SpecialSeoPageViewModel(
                     resolvedSlug,
                     "Dumpster vs Junk Removal",
-                    "Dumpster vs Junk Removal: Best Route by Cost, Speed, and Risk",
+                    "Dumpster vs Junk Removal: Which Costs Less for Heavy Debris?",
                     "Compare dumpster rental and junk removal for homeowner jobs using labor, urgency, heavy-load risk, and worked cost examples.",
                     absoluteUrl(baseUrl, canonicalPath),
                     ogImageUrl(baseUrl),
@@ -1248,6 +1379,50 @@ public class SeoContentService {
         return resolvedDefaultLastModifiedDate;
     }
 
+    public String calculatorConfidenceTier() {
+        return "High";
+    }
+
+    public String calculatorVarianceNote() {
+        return "Calculator outputs are range-based estimates. Operator haul limits, clean-load policy, and local handling rules vary.";
+    }
+
+    public List<String> calculatorVendorChecklist() {
+        return List.of(
+                "What included tons are in this quote, and what is overage per ton?",
+                "What max haul limit and heavy fill-line rule apply to this material mix?",
+                "If this load is borderline, can you guarantee same-day swap or staged pulls?"
+        );
+    }
+
+    public String heavyRulesConfidenceTier() {
+        return "High";
+    }
+
+    public String heavyRulesVarianceNote() {
+        return "Heavy-debris rules are directionally consistent, but fill-line enforcement and clean-load requirements vary by operator.";
+    }
+
+    public List<String> heavyRulesVendorChecklist() {
+        return List.of(
+                "What max haul limit applies to this specific heavy material?",
+                "Is heavy-debris fill-line enforced below the top edge on pickup day?",
+                "Are clean-load separation and rejection triggers documented in the quote?"
+        );
+    }
+
+    public String specialPageConfidenceTier(String slug) {
+        return specialEvidenceProfile(slug).confidenceTier();
+    }
+
+    public String specialPageVarianceNote(String slug) {
+        return specialEvidenceProfile(slug).varianceNote();
+    }
+
+    public List<String> specialPageVendorChecklist(String slug) {
+        return specialEvidenceProfile(slug).vendorChecklist();
+    }
+
     private void addProject(
             String projectId,
             String title,
@@ -1292,9 +1467,30 @@ public class SeoContentService {
                 && materialFactorRepository.findById(materialId).isPresent();
     }
 
+    public boolean isMaterialIndexable(String materialId) {
+        return isMaterialEnabled(materialId) && PRIORITY_INDEXABLE_MATERIAL_IDS.contains(materialId);
+    }
+
     public boolean isProjectEnabled(String projectId) {
         return PROJECT_INDEX_WAVE.getOrDefault(projectId, MAX_WAVE) <= seoMaxWave
                 && projectSeeds.containsKey(projectId);
+    }
+
+    public boolean isProjectIndexable(String projectId) {
+        return isProjectEnabled(projectId) && PRIORITY_INDEXABLE_PROJECT_IDS.contains(projectId);
+    }
+
+    public boolean isSpecialPageIndexable(String slug) {
+        String resolvedSlug = resolveSpecialSlug(slug);
+        return isSpecialPageEnabled(resolvedSlug) && PRIORITY_INDEXABLE_SPECIAL_SLUGS.contains(resolvedSlug);
+    }
+
+    public boolean isMaterialGuidesIndexable() {
+        return false;
+    }
+
+    public boolean isProjectGuidesIndexable() {
+        return false;
     }
 
     private List<ProjectSeed> sortedIndexableProjects() {
@@ -2027,6 +2223,22 @@ public class SeoContentService {
         return new IntentDecisionBlockViewModel(title, body, ctaLabel, ctaHref);
     }
 
+    private record MaterialSeoOverride(
+            String pageTitle,
+            String seoTitle,
+            String metaDescription,
+            String answerFirst
+    ) {
+    }
+
+    private record ProjectSeoOverride(
+            String pageTitle,
+            String seoTitle,
+            String metaDescription,
+            String answerFirst
+    ) {
+    }
+
     private MaterialScenario materialScenario(MaterialFactor material) {
         return switch (material.materialId()) {
             case "asphalt_shingles" -> new MaterialScenario(
@@ -2054,6 +2266,89 @@ public class SeoContentService {
                     "Use safe recommendation when timeline or overage tolerance is tight."
             );
         };
+    }
+
+    private EvidenceProfile materialEvidenceProfile(MaterialFactor material) {
+        String confidence = MEDIUM_CONFIDENCE_MATERIAL_IDS.contains(material.materialId()) ? "Medium" : "High";
+        String varianceNote = switch (material.category()) {
+            case HEAVY -> "Heavy-debris outcomes vary with moisture, contamination, and operator haul constraints.";
+            case MIXED -> "Mixed-load estimates vary with packing efficiency and dense-material share.";
+            case LIGHT -> "Light debris estimates vary with compaction and occasional moisture effects.";
+        };
+        List<String> vendorChecklist = List.of(
+                "What included tons and overage fee apply to " + material.name().toLowerCase(Locale.US) + "?",
+                "Do you enforce clean-load separation or special handling for this material?",
+                "What fill-line or haul-limit rule would trigger rejection on pickup day?"
+        );
+        return new EvidenceProfile(confidence, varianceNote, vendorChecklist);
+    }
+
+    private EvidenceProfile projectEvidenceProfile(ProjectSeed seed, String defaultMaterialName) {
+        String confidence = MEDIUM_CONFIDENCE_PROJECT_IDS.contains(seed.projectId()) ? "Medium" : "High";
+        String varianceNote = "Project outcomes vary with material mix, load sequencing, and timeline pressure."
+                + " Recheck risk if debris composition changes mid-job.";
+        List<String> vendorChecklist = List.of(
+                "For this project scope, what included tons and overage rate should I expect?",
+                "If the mix shifts toward heavier debris, what container or hauling change do you require?",
+                "What swap or pickup timing is guaranteed if I need staged hauling?"
+        );
+        return new EvidenceProfile(confidence, varianceNote, vendorChecklist);
+    }
+
+    private EvidenceProfile intentEvidenceProfile(
+            String projectId,
+            String materialId,
+            IntentType intentType,
+            String materialName
+    ) {
+        boolean mediumConfidence = MEDIUM_CONFIDENCE_PROJECT_IDS.contains(projectId)
+                || MEDIUM_CONFIDENCE_MATERIAL_IDS.contains(materialId);
+        String confidence = mediumConfidence ? "Medium" : "High";
+        String varianceNote = switch (intentType) {
+            case SIZE_GUIDE -> "Size guidance can shift when heavy-material share or moisture differs from baseline assumptions.";
+            case WEIGHT_ESTIMATE -> "Weight ranges vary by packing, moisture, and contamination; treat outputs as bands, not fixed points.";
+            case OVERAGE_RISK -> "Overage and rejection risk varies by operator policy and included-ton contract terms.";
+        };
+        String materialToken = materialName.toLowerCase(Locale.US);
+        List<String> vendorChecklist = switch (intentType) {
+            case SIZE_GUIDE -> List.of(
+                    "For this scenario, what size do you recommend when " + materialToken + " is dominant?",
+                    "What rule would force a size-up or staged-haul change on pickup day?",
+                    "Can you confirm swap availability if the first load runs heavier than expected?"
+            );
+            case WEIGHT_ESTIMATE -> List.of(
+                    "What per-container haul limit applies to " + materialToken + "?",
+                    "Do wet or mixed loads change weight handling policy or pricing?",
+                    "Which estimate assumptions should be adjusted for my local service area?"
+            );
+            case OVERAGE_RISK -> List.of(
+                    "What is overage per ton above included allowance in this quote?",
+                    "At what point does load condition trigger rejection instead of overage?",
+                    "Can you provide written fill-line and heavy-load acceptance rules?"
+            );
+        };
+        return new EvidenceProfile(confidence, varianceNote, vendorChecklist);
+    }
+
+    private EvidenceProfile specialEvidenceProfile(String slug) {
+        String resolvedSlug = resolveSpecialSlug(slug);
+        String confidence = MEDIUM_CONFIDENCE_SPECIAL_SLUGS.contains(resolvedSlug) ? "Medium" : "High";
+        String varianceNote = switch (resolvedSlug) {
+            case "fill-line-rules-for-heavy-debris" ->
+                    "Fill-line details vary by hauler and route constraints, so confirm exact enforcement before loading.";
+            case "one-20-yard-vs-two-10-yard" ->
+                    "Cost inversion between one large and two smaller hauls depends on operator policy and dense-load feasibility.";
+            case "dumpster-vs-junk-removal-which-is-cheaper" ->
+                    "Route economics vary by labor availability, urgency, and local provider pricing.";
+            default ->
+                    "Final decisions should be validated against operator policy because handling rules vary by market.";
+        };
+        List<String> vendorChecklist = List.of(
+                "Can you confirm this rule or comparison assumption for my ZIP and material mix?",
+                "What policy detail most often changes the answer on pickup day?",
+                "If assumptions change, what fallback option avoids delay or refusal?"
+        );
+        return new EvidenceProfile(confidence, varianceNote, vendorChecklist);
     }
 
     private static String absoluteUrl(String baseUrl, String path) {
@@ -2147,6 +2442,8 @@ public class SeoContentService {
                     .replace("Dumpster Size for ", "")
                     .replace("Dumpster Strategy for ", "")
                     .replace("Dumpster Plan for ", "")
+                    .replaceAll("(?i)\\s+dumpster\\s+size\\s+calculator$", "")
+                    .replaceAll("(?i)\\s+calculator$", "")
                     .replaceAll("(?i)\\s+dumpster\\s+size\\s+guide$", "")
                     .replaceAll("(?i)\\s+dumpster\\s+strategy\\s+guide$", "")
                     .replaceAll("(?i)\\s+dumpster\\s+plan\\s+guide$", "")
@@ -2178,6 +2475,13 @@ public class SeoContentService {
     private record MaterialScenario(
             String input,
             String decision
+    ) {
+    }
+
+    private record EvidenceProfile(
+            String confidenceTier,
+            String varianceNote,
+            List<String> vendorChecklist
     ) {
     }
 }

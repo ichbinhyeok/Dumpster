@@ -32,7 +32,8 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/heavy-debris-rules")
-    public ModelAndView heavyRulesPage() {
+    public ModelAndView heavyRulesPage(HttpServletResponse response) {
+        response.setHeader("X-Robots-Tag", "index, follow");
         HeavyRulesViewModel model = new HeavyRulesViewModel(
                 seoContentService.heavyRulesUrl(baseUrl),
                 seoContentService.calculatorUrl(baseUrl),
@@ -55,11 +56,18 @@ public class SeoPageController {
         );
         ModelAndView modelAndView = new ModelAndView("seo/heavy-rules");
         modelAndView.addObject("model", model);
+        modelAndView.addObject("confidenceTier", seoContentService.heavyRulesConfidenceTier());
+        modelAndView.addObject("varianceNote", seoContentService.heavyRulesVarianceNote());
+        modelAndView.addObject("vendorChecklist", seoContentService.heavyRulesVendorChecklist());
         return modelAndView;
     }
 
     @GetMapping("/dumpster/material-guides")
-    public ModelAndView materialGuidesHub() {
+    public ModelAndView materialGuidesHub(HttpServletResponse response) {
+        response.setHeader(
+                "X-Robots-Tag",
+                seoContentService.isMaterialGuidesIndexable() ? "index, follow" : "noindex, follow"
+        );
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Material Weight Guides: Density Chart + Live Calculator",
                 seoContentService.materialGuidesUrl(baseUrl),
@@ -81,7 +89,11 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/project-guides")
-    public ModelAndView projectGuidesHub() {
+    public ModelAndView projectGuidesHub(HttpServletResponse response) {
+        response.setHeader(
+                "X-Robots-Tag",
+                seoContentService.isProjectGuidesIndexable() ? "index, follow" : "noindex, follow"
+        );
         GuideHubPageViewModel model = new GuideHubPageViewModel(
                 "Dumpster Project Guides: Size Strategy by Job Type",
                 seoContentService.projectGuidesUrl(baseUrl),
@@ -103,7 +115,7 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/weight/{materialId}")
-    public ModelAndView materialPage(@PathVariable("materialId") String materialId) {
+    public ModelAndView materialPage(@PathVariable("materialId") String materialId, HttpServletResponse response) {
         String resolvedMaterialId = seoContentService.resolveMaterialId(materialId);
         if (!seoContentService.isMaterialEnabled(resolvedMaterialId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -115,6 +127,10 @@ public class SeoPageController {
             redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
             return redirect;
         }
+        response.setHeader(
+                "X-Robots-Tag",
+                seoContentService.isMaterialIndexable(resolvedMaterialId) ? "index, follow" : "noindex, follow"
+        );
 
         MaterialPageViewModel model = seoContentService.materialPage(resolvedMaterialId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -124,7 +140,7 @@ public class SeoPageController {
     }
 
     @GetMapping("/dumpster/size/{projectId}")
-    public ModelAndView projectPage(@PathVariable("projectId") String projectId) {
+    public ModelAndView projectPage(@PathVariable("projectId") String projectId, HttpServletResponse response) {
         String resolvedProjectId = seoContentService.resolveProjectId(projectId);
         if (!seoContentService.isProjectEnabled(resolvedProjectId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -136,6 +152,10 @@ public class SeoPageController {
             redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
             return redirect;
         }
+        response.setHeader(
+                "X-Robots-Tag",
+                seoContentService.isProjectIndexable(resolvedProjectId) ? "index, follow" : "noindex, follow"
+        );
 
         ProjectPageViewModel model = seoContentService.projectPage(resolvedProjectId, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -173,7 +193,7 @@ public class SeoPageController {
     }
 
     @GetMapping({"/dumpster/{slug}", "/dumpster/{slug}/"})
-    public ModelAndView specialPage(@PathVariable("slug") String slug) {
+    public ModelAndView specialPage(@PathVariable("slug") String slug, HttpServletResponse response) {
         String resolvedSlug = seoContentService.resolveSpecialSlug(slug);
         if (!seoContentService.isSpecialPageEnabled(resolvedSlug)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -183,10 +203,17 @@ public class SeoPageController {
             redirect.setStatus(HttpStatus.MOVED_PERMANENTLY);
             return redirect;
         }
+        response.setHeader(
+                "X-Robots-Tag",
+                seoContentService.isSpecialPageIndexable(resolvedSlug) ? "index, follow" : "noindex, follow"
+        );
         SpecialSeoPageViewModel model = seoContentService.specialPage(resolvedSlug, baseUrl)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ModelAndView modelAndView = new ModelAndView("seo/special-page");
         modelAndView.addObject("model", model);
+        modelAndView.addObject("confidenceTier", seoContentService.specialPageConfidenceTier(resolvedSlug));
+        modelAndView.addObject("varianceNote", seoContentService.specialPageVarianceNote(resolvedSlug));
+        modelAndView.addObject("vendorChecklist", seoContentService.specialPageVendorChecklist(resolvedSlug));
         return modelAndView;
     }
 }

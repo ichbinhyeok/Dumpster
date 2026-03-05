@@ -121,6 +121,18 @@
                         <span>${model.recommendedStrategy()}</span>
                     </div>
                 </div>
+                <div class="scenario-chip-group">
+                    @if("High".equals(model.confidenceTier()))
+                        <span class="ui-badge ui-badge--ok">Confidence: ${model.confidenceTier()}</span>
+                    @elseif("Medium".equals(model.confidenceTier()))
+                        <span class="ui-badge ui-badge--warn">Confidence: ${model.confidenceTier()}</span>
+                    @else
+                        <span class="ui-badge ui-badge--danger">Confidence: ${model.confidenceTier()}</span>
+                    @endif
+                    <span class="scenario-chip">Project preset guidance</span>
+                    <span class="scenario-chip">Operator policy check</span>
+                </div>
+                <p class="meta-note"><strong>Variance note:</strong> ${model.varianceNote()}</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </article>
 
@@ -146,6 +158,11 @@
                     <strong style="color: #DC2626; display: flex; align-items: center; gap: 6px;">Warning: Mistake prevention</strong>
                     <p style="color: #991B1B; font-weight: 500;">${model.commonMistake()}</p>
                     <p style="color: #991B1B; font-size: 0.8rem;"><strong>Ask before booking:</strong> ${model.operatorQuestion()}</p>
+                    <ul>
+                        @for(var item : model.vendorChecklist())
+                            <li>${item}</li>
+                        @endfor
+                    </ul>
                 </div>
             </aside>
         </aside>

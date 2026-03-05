@@ -101,11 +101,7 @@ public class SeoInfrastructureController {
 
     @GetMapping(value = "/sitemap-experiments.xml", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> sitemapExperiments() {
-        String defaultLastMod = seoContentService.defaultLastModifiedDate().toString();
-        List<SitemapEntry> urls = List.of(
-                new SitemapEntry("/dumpster/material-guides", defaultLastMod),
-                new SitemapEntry("/dumpster/project-guides", defaultLastMod)
-        );
+        List<SitemapEntry> urls = List.of();
         return toUrlSet(urls);
     }
 

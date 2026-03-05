@@ -89,10 +89,18 @@
                 <p>${model.intentSummary()}</p>
                 <p>${model.evidenceNote()}</p>
                 <div class="scenario-chip-group">
+                    @if("High".equals(model.confidenceTier()))
+                        <span class="ui-badge ui-badge--ok">Confidence: ${model.confidenceTier()}</span>
+                    @elseif("Medium".equals(model.confidenceTier()))
+                        <span class="ui-badge ui-badge--warn">Confidence: ${model.confidenceTier()}</span>
+                    @else
+                        <span class="ui-badge ui-badge--danger">Confidence: ${model.confidenceTier()}</span>
+                    @endif
                     <span class="scenario-chip">${model.projectTitle()}</span>
                     <span class="scenario-chip">${model.materialName()}</span>
                     <span class="scenario-chip">${model.intentLabel()}</span>
                 </div>
+                <p class="meta-note"><strong>Variance note:</strong> ${model.varianceNote()}</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </article>
             <aside class="launch-card">
@@ -110,6 +118,14 @@
                     </select>
                     <button type="submit">Run live estimate</button>
                 </form>
+                <div class="mistake-strip">
+                    <strong>Vendor checks before booking</strong>
+                    <ul>
+                        @for(var item : model.vendorChecklist())
+                            <li>${item}</li>
+                        @endfor
+                    </ul>
+                </div>
             </aside>
         </div>
     </section>

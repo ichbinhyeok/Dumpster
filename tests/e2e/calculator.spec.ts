@@ -27,6 +27,18 @@ test.describe("Dumpster calculator local e2e", () => {
     await expect(shareLink).toHaveAttribute("href", /\/dumpster\/estimate\/[a-zA-Z0-9-]+/);
   });
 
+  test("quick mode hides advanced controls until user opts in", async ({ page }) => {
+    await page.goto("/dumpster/size-weight-calculator");
+
+    await expect(page.locator("#advanced-material-controls")).toBeHidden();
+    await expect(page.locator("#advanced-context-step")).toBeHidden();
+
+    await page.getByRole("button", { name: "Advanced mode" }).click();
+
+    await expect(page.locator("#advanced-material-controls")).toBeVisible();
+    await expect(page.locator("#advanced-context-step")).toBeVisible();
+  });
+
   test("share estimate page is noindex with canonical to calculator", async ({ page }) => {
     await page.goto("/dumpster/size-weight-calculator");
     await page.getByRole("button", { name: "Calculate" }).click();

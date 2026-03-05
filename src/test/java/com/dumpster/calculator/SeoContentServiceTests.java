@@ -53,8 +53,9 @@ class SeoContentServiceTests {
         assertThat(material.sizeWeightTable()).hasSize(5);
         assertThat(material.sizeWeightTable().getFirst().sizeYd()).isEqualTo(10);
         assertThat(material.sizeWeightTable().getFirst().weightTypTons()).isGreaterThan(0.0d);
-        assertThat(material.seoTitle()).contains("lbs/yd3");
-        assertThat(material.metaDescription()).contains("tons");
+        assertThat(material.title()).isEqualTo("Shingles Dumpster Size Calculator");
+        assertThat(material.seoTitle()).contains("Shingles Dumpster Size Calculator");
+        assertThat(material.metaDescription()).contains("overage risk");
         assertThat(material.calculatorAbsoluteUrl()).startsWith("http");
     }
 
@@ -81,20 +82,17 @@ class SeoContentServiceTests {
     }
 
     @Test
-    void indexableIntentPathsContainOnlyWhitelistedMoneyRoutes() {
+    void defaultConfigUsesCuratedIntentIndexPaths() {
         var paths = seoContentService.indexableIntentPaths();
 
-        assertThat(paths).hasSize(89);
+        assertThat(paths).hasSize(19);
         assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/overage-risk");
         assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/size-guide");
-        assertThat(paths).contains("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/size-guide");
-        assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/weight-estimate");
-        assertThat(paths).contains("/dumpster/answers/dirt-grading/dirt/size-guide");
-        assertThat(paths).contains("/dumpster/answers/light-commercial-fitout/drywall/size-guide");
         assertThat(paths).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
         assertThat(paths).contains("/dumpster/answers/yard-cleanup/yard-waste/size-guide");
         assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
+        assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
     }
 
     @Test

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dumpster.calculator.web.content.SeoContentService;
 import com.dumpster.calculator.web.controller.SeoInfrastructureController;
+import java.util.LinkedHashSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,37 +42,46 @@ class SeoInfrastructureTests {
     }
 
     @Test
-    void sitemapMoneyContainsExpandedMoneyUrlsAndWhitelistedAnswers() {
+    void sitemapMoneyContainsCuratedMoneyUrlsAndWhitelistedAnswers() {
         ResponseEntity<String> response = seoInfrastructureController.sitemapMoney();
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(response.getBody()).isNotBlank();
 
         String body = response.getBody();
         int urlCount = body.split("<url>").length - 1;
+        LinkedHashSet<String> expectedPaths = new LinkedHashSet<>();
+        expectedPaths.addAll(seoContentService.specialPageIndexPaths(3));
+        expectedPaths.addAll(seoContentService.projectIndexPaths(3));
+        seoContentService.indexableMaterialIds(3).stream()
+                .map(seoContentService::materialCanonicalPath)
+                .forEach(expectedPaths::add);
+        expectedPaths.addAll(seoContentService.indexableIntentPaths());
 
-        assertThat(urlCount).isGreaterThanOrEqualTo(100);
-        assertThat(body).contains("/dumpster/what-size-dumpster-do-i-need");
+        assertThat(urlCount).isEqualTo(expectedPaths.size());
         assertThat(body).contains("/dumpster/weight/shingles");
         assertThat(body).contains("/dumpster/size/roof-tear-off");
-        assertThat(body).contains("/dumpster/size/concrete-removal");
-        assertThat(body).contains("/dumpster/size/light-commercial-fitout");
+        assertThat(body).contains("/dumpster/size/garage-cleanout");
         assertThat(body).contains("/dumpster/answers/roof-tear-off/shingles/overage-risk");
-        assertThat(body).contains("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
         assertThat(body).contains("/dumpster/answers/concrete-removal/concrete/size-guide");
         assertThat(body).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
         assertThat(body).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
+        assertThat(body).doesNotContain("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
+        assertThat(body).doesNotContain("/dumpster/what-size-dumpster-do-i-need");
+        assertThat(body).doesNotContain("/dumpster/size/concrete-removal");
+        assertThat(body).doesNotContain("/dumpster/size/light-commercial-fitout");
         assertThat(body).doesNotContain("/dumpster/material-guides");
         assertThat(body).doesNotContain("/dumpster/project-guides");
     }
 
     @Test
-    void sitemapExperimentsContainsGuideHubs() {
+    void sitemapExperimentsRemainsEmptyWhenNoExperimentUrlsAreIndexable() {
         ResponseEntity<String> response = seoInfrastructureController.sitemapExperiments();
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(response.getBody()).isNotBlank();
         String body = response.getBody();
-        assertThat(body).contains("/dumpster/material-guides");
-        assertThat(body).contains("/dumpster/project-guides");
+        assertThat(body).doesNotContain("<url>");
+        assertThat(body).doesNotContain("/dumpster/material-guides");
+        assertThat(body).doesNotContain("/dumpster/project-guides");
     }
 
     @Test

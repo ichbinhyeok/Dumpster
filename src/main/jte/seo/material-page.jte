@@ -121,10 +121,18 @@
                     </div>
                 </div>
                 <div class="scenario-chip-group">
+                    @if("High".equals(model.confidenceTier()))
+                        <span class="ui-badge ui-badge--ok">Confidence: ${model.confidenceTier()}</span>
+                    @elseif("Medium".equals(model.confidenceTier()))
+                        <span class="ui-badge ui-badge--warn">Confidence: ${model.confidenceTier()}</span>
+                    @else
+                        <span class="ui-badge ui-badge--danger">Confidence: ${model.confidenceTier()}</span>
+                    @endif
                     <span class="scenario-chip">Weight-limited first</span>
                     <span class="scenario-chip">Range-based output</span>
                     <span class="scenario-chip">Overage risk visible</span>
                 </div>
+                <p class="meta-note"><strong>Variance note:</strong> ${model.varianceNote()}</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()} | Source snapshot: ${model.sourceDateDisplay()}</p>
             </article>
 
@@ -147,6 +155,11 @@
                     <strong>Common mistake</strong>
                     <p>Picking size by volume only can create heavy overage fees.</p>
                     <p><strong>Ask before booking:</strong> ${model.operatorQuestion()}</p>
+                    <ul>
+                        @for(var item : model.vendorChecklist())
+                            <li>${item}</li>
+                        @endfor
+                    </ul>
                 </div>
             </aside>
         </div>

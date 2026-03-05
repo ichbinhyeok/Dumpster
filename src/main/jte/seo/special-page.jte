@@ -1,4 +1,7 @@
 @param com.dumpster.calculator.web.viewmodel.SpecialSeoPageViewModel model
+@param String confidenceTier
+@param String varianceNote
+@param java.util.List<String> vendorChecklist
 <!doctype html>
 <html lang="en">
 <head>
@@ -80,6 +83,18 @@
                 <h1 class="font-display">${model.pageTitle()}</h1>
                 <p class="answer-first"><strong>Direct answer:</strong> ${model.directAnswer()}</p>
                 <p>${model.summary()}</p>
+                <div class="scenario-chip-group">
+                    @if("High".equals(confidenceTier))
+                        <span class="ui-badge ui-badge--ok">Confidence: ${confidenceTier}</span>
+                    @elseif("Medium".equals(confidenceTier))
+                        <span class="ui-badge ui-badge--warn">Confidence: ${confidenceTier}</span>
+                    @else
+                        <span class="ui-badge ui-badge--danger">Confidence: ${confidenceTier}</span>
+                    @endif
+                    <span class="scenario-chip">Decision page</span>
+                    <span class="scenario-chip">Operator policy varies</span>
+                </div>
+                <p class="meta-note"><strong>Variance note:</strong> ${varianceNote}</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </article>
 
@@ -94,6 +109,12 @@
                     <strong>Common mistakes to avoid</strong>
                     <ul>
                         @for(var item : model.quickChecks())
+                            <li>${item}</li>
+                        @endfor
+                    </ul>
+                    <strong>Vendor checklist</strong>
+                    <ul>
+                        @for(var item : vendorChecklist)
                             <li>${item}</li>
                         @endfor
                     </ul>

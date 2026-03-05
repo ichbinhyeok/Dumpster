@@ -1,22 +1,25 @@
 @param com.dumpster.calculator.web.viewmodel.HeavyRulesViewModel model
+@param String confidenceTier
+@param String varianceNote
+@param java.util.List<String> vendorChecklist
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Heavy Debris Dumpster Rules: Included Tons vs Max Haul Limits</title>
-    <meta name="description" content="Heavy debris dumpster rules with size-by-size haul limits, fill-ratio caps, clean-load requirements, and safer multi-haul strategy guidance.">
+    <title>Heavy Debris Dumpster Rules: Limits Fill Line and Clean Loads</title>
+    <meta name="description" content="Understand heavy-debris rules for concrete dirt shingles and brick. See fill-line constraints and why included tons differ from haul limits.">
     <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="${model.canonicalUrl()}">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <meta property="og:title" content="Heavy Debris Dumpster Rules: Included Tons vs Max Haul Limits">
+    <meta property="og:title" content="Heavy Debris Dumpster Rules: Limits Fill Line and Clean Loads">
     <meta property="og:description" content="Understand included tons vs haul limits, fill-ratio caps, and clean-load constraints before booking.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="${model.canonicalUrl()}">
     <meta property="og:image" content="${model.ogImageUrl()}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Heavy Debris Dumpster Rules">
-    <meta name="twitter:description" content="Avoid overweight and rejected hauls by comparing heavy-debris limits per dumpster size.">
+    <meta name="twitter:title" content="Heavy Debris Dumpster Rules: Limits Fill Line and Clean Loads">
+    <meta name="twitter:description" content="See fill-line constraints and why included tons differ from haul limits before you load heavy debris.">
     <meta name="twitter:image" content="${model.ogImageUrl()}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,7 +55,7 @@
         {
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": "Heavy Debris Dumpster Rules: Included Tons vs Max Haul Limits",
+          "headline": "Heavy Debris Dumpster Rules: Limits Fill Line and Clean Loads",
           "datePublished": "${model.modifiedDateIso()}",
           "dateModified": "${model.modifiedDateIso()}",
           "author": {
@@ -82,7 +85,7 @@
         <div class="entry-grid">
             <article class="quick-answer-card">
                 <p class="eyebrow">Heavy Debris Rules</p>
-                <h1 class="font-display">Heavy Debris Rules for Dumpster Decisions</h1>
+                <h1 class="font-display">Heavy Debris Dumpster Rules</h1>
                 <p class="answer-first"><strong>Direct answer:</strong> heavy debris jobs usually need smaller bins, reduced fill ratio, and staged pulls. Included tons control pricing, but max haul tons control pickup feasibility.</p>
                 <p>Use this page as a policy explainer with direct launch paths back into the calculator.</p>
                 <div class="quick-facts">
@@ -99,6 +102,18 @@
                         <span>Max haul + fill ratio can block pickup</span>
                     </div>
                 </div>
+                <div class="scenario-chip-group">
+                    @if("High".equals(confidenceTier))
+                        <span class="ui-badge ui-badge--ok">Confidence: ${confidenceTier}</span>
+                    @elseif("Medium".equals(confidenceTier))
+                        <span class="ui-badge ui-badge--warn">Confidence: ${confidenceTier}</span>
+                    @else
+                        <span class="ui-badge ui-badge--danger">Confidence: ${confidenceTier}</span>
+                    @endif
+                    <span class="scenario-chip">Heavy-load constraints</span>
+                    <span class="scenario-chip">Operator policy varies</span>
+                </div>
+                <p class="meta-note"><strong>Variance note:</strong> ${varianceNote}</p>
                 <p class="meta-note">Last updated: ${model.modifiedDateIso()}</p>
             </article>
 
@@ -184,6 +199,12 @@
         <h2 class="font-display">Questions to ask before booking</h2>
         <ol>
             @for(var q : model.operatorQuestions())
+                <li>${q}</li>
+            @endfor
+        </ol>
+        <h3>Vendor checklist</h3>
+        <ol>
+            @for(var q : vendorChecklist)
                 <li>${q}</li>
             @endfor
         </ol>

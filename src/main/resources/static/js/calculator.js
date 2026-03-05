@@ -53,6 +53,12 @@
     const unitInput = document.getElementById("unit-id");
     const needTimingInput = document.getElementById("need-timing");
     const decisionPriorityInput = document.getElementById("decision-priority");
+    const quickModeButton = document.getElementById("quick-mode-button");
+    const advancedModeButton = document.getElementById("advanced-mode-button");
+    const advancedMaterialControls = document.getElementById("advanced-material-controls");
+    const advancedContextStep = document.getElementById("advanced-context-step");
+    const estimateModeNote = document.getElementById("estimate-mode-note");
+    const openAdvancedModeButton = document.getElementById("open-advanced-mode");
     const addMaterialLine2Button = document.getElementById("add-material-line-2");
     const addMaterialLine3Button = document.getElementById("add-material-line-3");
     const removeMaterialLine2Button = document.getElementById("remove-material-line-2");
@@ -111,6 +117,7 @@
     let activeRequestController = null;
     let requestSequence = 0;
     let hasRenderedResult = false;
+    let estimateMode = "quick";
     const leadFormState = {
         zip: "",
         contactMethod: "",
@@ -126,6 +133,8 @@
     bindStepperControls();
     bindFormControls();
     bindAdditionalMaterialControls();
+    bindEstimateModeControls();
+    setEstimateMode(estimateMode, "init");
     setResultRailState(false);
     queueLiveEstimate();
 
@@ -281,6 +290,65 @@
         syncAdditionalUnitOptions();
     }
 
+    function bindEstimateModeControls() {
+        if (quickModeButton) {
+            quickModeButton.addEventListener("click", () => {
+                setEstimateMode("quick", "toggle");
+                queueLiveEstimate();
+            });
+        }
+        if (advancedModeButton) {
+            advancedModeButton.addEventListener("click", () => {
+                setEstimateMode("advanced", "toggle");
+                queueLiveEstimate();
+            });
+        }
+        if (openAdvancedModeButton) {
+            openAdvancedModeButton.addEventListener("click", () => {
+                setEstimateMode("advanced", "result_refine");
+                if (advancedContextStep) {
+                    advancedContextStep.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            });
+        }
+    }
+
+    function setEstimateMode(mode, source) {
+        const nextMode = mode === "advanced" ? "advanced" : "quick";
+        const changed = estimateMode !== nextMode;
+        estimateMode = nextMode;
+
+        const advancedEnabled = estimateMode === "advanced";
+        if (advancedMaterialControls) {
+            advancedMaterialControls.hidden = !advancedEnabled;
+        }
+        if (advancedContextStep) {
+            advancedContextStep.hidden = !advancedEnabled;
+        }
+
+        if (estimateModeNote) {
+            estimateModeNote.textContent = advancedEnabled
+                ? "Advanced mode includes extra materials, timing, and assumption modifiers."
+                : "Quick mode uses project + material + quantity for the fastest answer.";
+        }
+
+        if (quickModeButton) {
+            quickModeButton.classList.toggle("is-active", !advancedEnabled);
+        }
+        if (advancedModeButton) {
+            advancedModeButton.classList.toggle("is-active", advancedEnabled);
+        }
+        if (openAdvancedModeButton) {
+            openAdvancedModeButton.hidden = !hasRenderedResult || advancedEnabled;
+        }
+        if (changed && source !== "init") {
+            trackEvent("estimate_mode_changed", null, {
+                mode: estimateMode,
+                source
+            });
+        }
+    }
+
     function syncAdditionalUnitOptions() {
         syncRoofSquareCompatibility(materialInput2, unitInput2);
         syncRoofSquareCompatibility(materialInput3, unitInput3);
@@ -389,11 +457,12 @@
     }
 
     function buildPayload() {
+        const advancedEnabled = estimateMode === "advanced";
         const quantity = parseFloat(quantityInput.value || "0");
-        const allowanceRaw = allowanceInput.value;
-        const marketZip = sanitizeZip(marketZipInput ? marketZipInput.value : "");
-        const mixed = mixedInput.checked;
-        const wet = wetInput.checked;
+        const allowanceRaw = advancedEnabled && allowanceInput ? allowanceInput.value : "";
+        const marketZip = sanitizeZip(advancedEnabled && marketZipInput ? marketZipInput.value : "");
+        const mixed = advancedEnabled && mixedInput ? mixedInput.checked : false;
+        const wet = advancedEnabled && wetInput ? wetInput.checked : false;
         const items = [
             {
                 materialId: materialInput.value,
@@ -406,8 +475,10 @@
                 }
             }
         ];
-        appendAdditionalItem(items, materialLine2, materialInput2, quantityInput2, unitInput2, wet, mixed);
-        appendAdditionalItem(items, materialLine3, materialInput3, quantityInput3, unitInput3, wet, mixed);
+        if (advancedEnabled) {
+            appendAdditionalItem(items, materialLine2, materialInput2, quantityInput2, unitInput2, wet, mixed);
+            appendAdditionalItem(items, materialLine3, materialInput3, quantityInput3, unitInput3, wet, mixed);
+        }
 
         return {
             projectId: projectInput.value,
@@ -418,7 +489,7 @@
                 mixedLoad: mixed,
                 allowanceTons: allowanceRaw === "" ? null : parseFloat(allowanceRaw),
                 bulkingFactor: 1.2,
-                zipCode: isValidZip(marketZip) ? marketZip : null
+                zipCode: advancedEnabled && isValidZip(marketZip) ? marketZip : null
             }
         };
     }
@@ -464,6 +535,9 @@
         }
         if (mobileResultDock) {
             mobileResultDock.hidden = !hasResult;
+        }
+        if (openAdvancedModeButton) {
+            openAdvancedModeButton.hidden = !hasResult || estimateMode === "advanced";
         }
     }
 
@@ -1096,6 +1170,7 @@
         if (marketZipInput && zipParam) {
             marketZipInput.value = sanitizeZip(zipParam);
         }
+        estimateMode = params.get("mode") === "advanced" ? "advanced" : "quick";
     }
 
     function setPresetValue(input, value, targetId) {

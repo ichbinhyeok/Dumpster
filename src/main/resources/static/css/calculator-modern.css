@@ -3,6 +3,10 @@
     gap: var(--space-5);
 }
 
+.calc-page [hidden] {
+    display: none !important;
+}
+
 .calc-hero {
     position: relative;
     overflow: hidden;
@@ -136,6 +140,24 @@
     padding: clamp(20px, 2vw, 30px);
     display: grid;
     gap: var(--space-5);
+}
+
+.estimate-mode-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.estimate-mode-toggle .ui-button {
+    flex: 1 1 180px;
+    justify-content: center;
+}
+
+.estimate-mode-toggle .ui-button.is-active {
+    background: linear-gradient(145deg, #0b63f6 5%, #0a4bd6 95%);
+    border-color: rgba(8, 66, 196, 0.9);
+    color: #fff;
+    box-shadow: 0 16px 28px -14px rgba(8, 66, 196, 0.62);
 }
 
 .calc-stepper {

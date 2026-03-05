@@ -119,6 +119,18 @@
             <p>Choose the safer route in about 60 seconds: dumpster, junk removal, or staged multi-haul.</p>
             <p>Answer three homeowner-first questions: which route wins, how to avoid overage, and what size is safe on the first try.</p>
             <p class="meta-note">Reviewed by Debris Decision editorial team · Updated ${model.lastUpdatedIso()}</p>
+            <div class="scenario-chip-group">
+                @if("High".equals(model.confidenceTier()))
+                    <span class="ui-badge ui-badge--ok">Evidence confidence: ${model.confidenceTier()}</span>
+                @elseif("Medium".equals(model.confidenceTier()))
+                    <span class="ui-badge ui-badge--warn">Evidence confidence: ${model.confidenceTier()}</span>
+                @else
+                    <span class="ui-badge ui-badge--danger">Evidence confidence: ${model.confidenceTier()}</span>
+                @endif
+                <span class="scenario-chip">Range-based output</span>
+                <span class="scenario-chip">Operator rules vary</span>
+            </div>
+            <p class="meta-note"><strong>Variance note:</strong> ${model.varianceNote()}</p>
         </div>
         <nav class="decision-strip" aria-label="Quick decision routes">
             <a class="decision-pill" data-decision-mode="cheapest_route" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=4&timing=research&priority=cost">I want the cheapest route</a>
@@ -150,6 +162,12 @@
             <input id="unit-id" type="hidden" value="pickup_load">
             <input id="need-timing" type="hidden" value="research">
             <input id="decision-priority" type="hidden" value="balanced">
+
+            <div class="estimate-mode-toggle" role="group" aria-label="Estimate mode">
+                <button type="button" id="quick-mode-button" class="ui-button ui-button--ghost is-active">Quick estimate</button>
+                <button type="button" id="advanced-mode-button" class="ui-button ui-button--ghost">Advanced mode</button>
+            </div>
+            <p id="estimate-mode-note" class="calc-step__hint">Quick mode uses project + material + quantity for the fastest answer.</p>
 
             <div class="calc-stepper">
                 <section class="calc-step" data-choice-target="project-id">
@@ -230,109 +248,111 @@
                             <button type="button" id="quantity-inc" class="calc-stepper-btn" aria-label="Increase quantity">+</button>
                         </div>
                     </div>
-                    <div class="calc-step__head" style="margin-top:1rem;">
-                        <div>
-                            <h3 class="calc-step__title" style="font-size:1rem;">Additional materials (optional)</h3>
-                            <p class="calc-step__hint">Add up to 2 extra line items for mixed jobs.</p>
-                        </div>
-                    </div>
-                    <p>
-                        <button type="button" id="add-material-line-2" class="choice-chip">Add second material</button>
-                    </p>
-                    <div id="material-line-2" class="panel" hidden>
-                        <div class="ui-field">
-                            <label class="ui-field__label" for="material-id-2">Material</label>
-                            <select id="material-id-2">
-                                <option value="">Select material</option>
-                                <option value="asphalt_shingles">Asphalt shingles</option>
-                                <option value="concrete">Concrete</option>
-                                <option value="dirt_soil">Dirt / soil</option>
-                                <option value="brick">Brick</option>
-                                <option value="tile_ceramic">Tile / ceramic</option>
-                                <option value="gravel_rock">Gravel / rock</option>
-                                <option value="asphalt_pavement">Asphalt pavement</option>
-                                <option value="plaster">Plaster</option>
-                                <option value="drywall">Drywall</option>
-                                <option value="mixed_cd">Mixed construction debris (C&amp;D)</option>
-                                <option value="household_junk">Household junk</option>
-                                <option value="furniture">Furniture</option>
-                                <option value="carpet_pad">Carpet and pad</option>
-                                <option value="decking_wood">Decking wood</option>
-                                <option value="insulation_wet">Wet insulation</option>
-                                <option value="yard_waste">Yard waste</option>
-                            </select>
-                        </div>
-                        <div class="ui-field">
-                            <label class="ui-field__label" for="unit-id-2">Unit</label>
-                            <select id="unit-id-2">
-                                <option value="pickup_load">Pickup load</option>
-                                <option value="truckload_small">Small truckload</option>
-                                <option value="roof_square">Roof square</option>
-                                <option value="sqft_4in">sqft @ 4in</option>
-                                <option value="sqft_2in">sqft @ 2in</option>
-                                <option value="sqft_1in">sqft @ 1in</option>
-                                <option value="contractor_bag">Contractor bag</option>
-                                <option value="drywall_sheet">Drywall sheet</option>
-                                <option value="cubic_yard">Cubic yard</option>
-                            </select>
-                        </div>
-                        <div class="ui-field">
-                            <label class="ui-field__label" for="quantity-2">Quantity</label>
-                            <input id="quantity-2" type="number" min="0.1" step="0.1" value="2">
+                    <div id="advanced-material-controls" hidden>
+                        <div class="calc-step__head" style="margin-top:1rem;">
+                            <div>
+                                <h3 class="calc-step__title" style="font-size:1rem;">Additional materials (optional)</h3>
+                                <p class="calc-step__hint">Add up to 2 extra line items for mixed jobs.</p>
+                            </div>
                         </div>
                         <p>
-                            <button type="button" id="add-material-line-3" class="choice-chip">Add third material</button>
-                            <button type="button" id="remove-material-line-2" class="choice-chip">Remove</button>
+                            <button type="button" id="add-material-line-2" class="choice-chip">Add second material</button>
                         </p>
-                    </div>
-                    <div id="material-line-3" class="panel" hidden>
-                        <div class="ui-field">
-                            <label class="ui-field__label" for="material-id-3">Material</label>
-                            <select id="material-id-3">
-                                <option value="">Select material</option>
-                                <option value="asphalt_shingles">Asphalt shingles</option>
-                                <option value="concrete">Concrete</option>
-                                <option value="dirt_soil">Dirt / soil</option>
-                                <option value="brick">Brick</option>
-                                <option value="tile_ceramic">Tile / ceramic</option>
-                                <option value="gravel_rock">Gravel / rock</option>
-                                <option value="asphalt_pavement">Asphalt pavement</option>
-                                <option value="plaster">Plaster</option>
-                                <option value="drywall">Drywall</option>
-                                <option value="mixed_cd">Mixed construction debris (C&amp;D)</option>
-                                <option value="household_junk">Household junk</option>
-                                <option value="furniture">Furniture</option>
-                                <option value="carpet_pad">Carpet and pad</option>
-                                <option value="decking_wood">Decking wood</option>
-                                <option value="insulation_wet">Wet insulation</option>
-                                <option value="yard_waste">Yard waste</option>
-                            </select>
+                        <div id="material-line-2" class="panel" hidden>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="material-id-2">Material</label>
+                                <select id="material-id-2">
+                                    <option value="">Select material</option>
+                                    <option value="asphalt_shingles">Asphalt shingles</option>
+                                    <option value="concrete">Concrete</option>
+                                    <option value="dirt_soil">Dirt / soil</option>
+                                    <option value="brick">Brick</option>
+                                    <option value="tile_ceramic">Tile / ceramic</option>
+                                    <option value="gravel_rock">Gravel / rock</option>
+                                    <option value="asphalt_pavement">Asphalt pavement</option>
+                                    <option value="plaster">Plaster</option>
+                                    <option value="drywall">Drywall</option>
+                                    <option value="mixed_cd">Mixed construction debris (C&amp;D)</option>
+                                    <option value="household_junk">Household junk</option>
+                                    <option value="furniture">Furniture</option>
+                                    <option value="carpet_pad">Carpet and pad</option>
+                                    <option value="decking_wood">Decking wood</option>
+                                    <option value="insulation_wet">Wet insulation</option>
+                                    <option value="yard_waste">Yard waste</option>
+                                </select>
+                            </div>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="unit-id-2">Unit</label>
+                                <select id="unit-id-2">
+                                    <option value="pickup_load">Pickup load</option>
+                                    <option value="truckload_small">Small truckload</option>
+                                    <option value="roof_square">Roof square</option>
+                                    <option value="sqft_4in">sqft @ 4in</option>
+                                    <option value="sqft_2in">sqft @ 2in</option>
+                                    <option value="sqft_1in">sqft @ 1in</option>
+                                    <option value="contractor_bag">Contractor bag</option>
+                                    <option value="drywall_sheet">Drywall sheet</option>
+                                    <option value="cubic_yard">Cubic yard</option>
+                                </select>
+                            </div>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="quantity-2">Quantity</label>
+                                <input id="quantity-2" type="number" min="0.1" step="0.1" value="2">
+                            </div>
+                            <p>
+                                <button type="button" id="add-material-line-3" class="choice-chip">Add third material</button>
+                                <button type="button" id="remove-material-line-2" class="choice-chip">Remove</button>
+                            </p>
                         </div>
-                        <div class="ui-field">
-                            <label class="ui-field__label" for="unit-id-3">Unit</label>
-                            <select id="unit-id-3">
-                                <option value="pickup_load">Pickup load</option>
-                                <option value="truckload_small">Small truckload</option>
-                                <option value="roof_square">Roof square</option>
-                                <option value="sqft_4in">sqft @ 4in</option>
-                                <option value="sqft_2in">sqft @ 2in</option>
-                                <option value="sqft_1in">sqft @ 1in</option>
-                                <option value="contractor_bag">Contractor bag</option>
-                                <option value="drywall_sheet">Drywall sheet</option>
-                                <option value="cubic_yard">Cubic yard</option>
-                            </select>
+                        <div id="material-line-3" class="panel" hidden>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="material-id-3">Material</label>
+                                <select id="material-id-3">
+                                    <option value="">Select material</option>
+                                    <option value="asphalt_shingles">Asphalt shingles</option>
+                                    <option value="concrete">Concrete</option>
+                                    <option value="dirt_soil">Dirt / soil</option>
+                                    <option value="brick">Brick</option>
+                                    <option value="tile_ceramic">Tile / ceramic</option>
+                                    <option value="gravel_rock">Gravel / rock</option>
+                                    <option value="asphalt_pavement">Asphalt pavement</option>
+                                    <option value="plaster">Plaster</option>
+                                    <option value="drywall">Drywall</option>
+                                    <option value="mixed_cd">Mixed construction debris (C&amp;D)</option>
+                                    <option value="household_junk">Household junk</option>
+                                    <option value="furniture">Furniture</option>
+                                    <option value="carpet_pad">Carpet and pad</option>
+                                    <option value="decking_wood">Decking wood</option>
+                                    <option value="insulation_wet">Wet insulation</option>
+                                    <option value="yard_waste">Yard waste</option>
+                                </select>
+                            </div>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="unit-id-3">Unit</label>
+                                <select id="unit-id-3">
+                                    <option value="pickup_load">Pickup load</option>
+                                    <option value="truckload_small">Small truckload</option>
+                                    <option value="roof_square">Roof square</option>
+                                    <option value="sqft_4in">sqft @ 4in</option>
+                                    <option value="sqft_2in">sqft @ 2in</option>
+                                    <option value="sqft_1in">sqft @ 1in</option>
+                                    <option value="contractor_bag">Contractor bag</option>
+                                    <option value="drywall_sheet">Drywall sheet</option>
+                                    <option value="cubic_yard">Cubic yard</option>
+                                </select>
+                            </div>
+                            <div class="ui-field">
+                                <label class="ui-field__label" for="quantity-3">Quantity</label>
+                                <input id="quantity-3" type="number" min="0.1" step="0.1" value="1">
+                            </div>
+                            <p>
+                                <button type="button" id="remove-material-line-3" class="choice-chip">Remove</button>
+                            </p>
                         </div>
-                        <div class="ui-field">
-                            <label class="ui-field__label" for="quantity-3">Quantity</label>
-                            <input id="quantity-3" type="number" min="0.1" step="0.1" value="1">
-                        </div>
-                        <p>
-                            <button type="button" id="remove-material-line-3" class="choice-chip">Remove</button>
-                        </p>
                     </div>
                 </section>
 
-                <section class="calc-step">
+                <section class="calc-step" id="advanced-context-step" hidden>
                     <div class="calc-step__head">
                         <div>
                             <h2 class="calc-step__title">Context and modifiers</h2>
@@ -395,6 +415,7 @@
 
             <div class="calc-actions">
                 <button id="submit-button" type="submit" class="calc-submit">Calculate</button>
+                <button id="open-advanced-mode" type="button" class="ui-button ui-button--ghost" hidden>Refine with advanced mode</button>
                 <p id="live-note" aria-live="polite">Live update is on. Any change refreshes the recommendation.</p>
             </div>
         </form>
@@ -475,11 +496,11 @@
     <section class="calc-support-grid">
         <article class="calc-support-card">
             <h2 class="font-display">Vendor checklist</h2>
+            <p class="calc-step__hint">Evidence confidence: ${model.confidenceTier()} | Confirm before booking.</p>
             <ol>
-                <li>What included tons are in this quote?</li>
-                <li>What is overage per ton above included allowance?</li>
-                <li>For heavy debris, is clean-load and fill-ratio enforcement required?</li>
-                <li>If timing is urgent, what swap window is guaranteed?</li>
+                @for(var item : model.vendorChecklist())
+                    <li>${item}</li>
+                @endfor
             </ol>
         </article>
 
