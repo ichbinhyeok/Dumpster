@@ -3,7 +3,7 @@
 ## Status Note (2026-03-03)
 - This document remains a valid historical record for the presentation-only rebuild track.
 - Active execution control moved to:
-  - `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v1_2026-03-03.md`
+  - `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v2_2026-03-04.md`
 - The current program scope is broader than presentation and includes domain/data/API/analytics refactor workstreams.
 
 ## Locked Contract

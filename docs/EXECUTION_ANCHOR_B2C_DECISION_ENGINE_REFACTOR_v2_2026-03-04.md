@@ -325,7 +325,7 @@ All must be true:
   - `src/main/java/com/dumpster/calculator/infra/persistence/JunkQuoteBenchmarkRepository.java`
   - `src/test/java/com/dumpster/calculator/QuoteMatchIntakeApiControllerTests.java`
   - `src/test/java/com/dumpster/calculator/SeoIntentQualityGateTests.java`
-  - `docs/ACTIVE_DOCSET_AND_BRAND_GUARDRAILS_2026-03-04.md`
+  - `docs/ACTIVE_DOCSET_AND_BRAND_GUARDRAILS_2026-03-05.md`
 - Updated:
   - `schema.sql` (quote-match intake queue + junk quote benchmark tables)
   - `CsvBootstrapService` (junk quote benchmark ingest)
