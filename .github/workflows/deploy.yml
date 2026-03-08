@@ -103,23 +103,31 @@ jobs:
 
             HEALTH_CODE="000"
             ROOT_CODE="000"
+            ROOT_FINAL_CODE="000"
             CALC_CODE="000"
 
             for i in $(seq 1 30); do
               HEALTH_CODE=$(curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/api/health || true)
               ROOT_CODE=$(curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/ || true)
+              ROOT_FINAL_CODE=$(curl -sS -L -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/ || true)
               CALC_CODE=$(curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8808/dumpster/size-weight-calculator || true)
 
-              echo "[debug] attempt $i health=$HEALTH_CODE root=$ROOT_CODE calc=$CALC_CODE"
+              echo "[debug] attempt $i health=$HEALTH_CODE root=$ROOT_CODE root_final=$ROOT_FINAL_CODE calc=$CALC_CODE"
 
-              if [ "$HEALTH_CODE" = "200" ] && [ "$ROOT_CODE" = "200" ] && [ "$CALC_CODE" = "200" ]; then
+              if [ "$HEALTH_CODE" = "200" ] \
+                && { [ "$ROOT_CODE" = "200" ] || [ "$ROOT_CODE" = "301" ]; } \
+                && [ "$ROOT_FINAL_CODE" = "200" ] \
+                && [ "$CALC_CODE" = "200" ]; then
                 break
               fi
 
               sleep 2
             done
 
-            if [ "$HEALTH_CODE" != "200" ] || [ "$ROOT_CODE" != "200" ] || [ "$CALC_CODE" != "200" ]; then
+            if [ "$HEALTH_CODE" != "200" ] \
+              || { [ "$ROOT_CODE" != "200" ] && [ "$ROOT_CODE" != "301" ]; } \
+              || [ "$ROOT_FINAL_CODE" != "200" ] \
+              || [ "$CALC_CODE" != "200" ]; then
               echo "Web route check failed after retries."
               docker compose logs --tail=200 dumpster
               exit 1
