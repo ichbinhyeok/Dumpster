@@ -148,16 +148,23 @@ class SeoPageRenderingTests {
 
     @Test
     void nonPriorityProjectPageRemainsAccessibleButNoindex() throws Exception {
-        mockMvc.perform(get("/dumpster/size/concrete-removal"))
+        mockMvc.perform(get("/dumpster/size/light-commercial-fitout"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
     }
 
     @Test
-    void nonPrioritySpecialPageRemainsAccessibleButNoindex() throws Exception {
+    void experimentalSpecialPageIsIndexable() throws Exception {
         mockMvc.perform(get("/dumpster/what-size-dumpster-do-i-need"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
+    }
+
+    @Test
+    void experimentalProjectPageIsIndexable() throws Exception {
+        mockMvc.perform(get("/dumpster/size/concrete-removal"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
     }
 
     @Test

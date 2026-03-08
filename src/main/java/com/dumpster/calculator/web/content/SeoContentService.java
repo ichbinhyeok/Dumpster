@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -109,6 +110,12 @@ public class SeoContentService {
             "garage_cleanout",
             "kitchen_remodel"
     );
+    private static final Set<String> EXPERIMENT_INDEXABLE_PROJECT_IDS = Set.of(
+            "concrete_removal",
+            "estate_cleanout",
+            "yard_cleanup",
+            "dirt_grading"
+    );
     private static final Set<String> PRIORITY_INDEXABLE_SPECIAL_SLUGS = Set.of(
             "10-yard-dumpster-weight-limit-overage",
             "can-you-put-concrete-in-a-dumpster",
@@ -118,6 +125,11 @@ public class SeoContentService {
             "fill-line-rules-for-heavy-debris",
             "one-20-yard-vs-two-10-yard",
             "pickup-truck-loads-to-dumpster-size"
+    );
+    private static final Set<String> EXPERIMENT_INDEXABLE_SPECIAL_SLUGS = Set.of(
+            "what-size-dumpster-do-i-need",
+            "roof-shingles-dumpster-size-calculator",
+            "drywall-disposal-dumpster-rules"
     );
     private static final Set<String> MEDIUM_CONFIDENCE_MATERIAL_IDS = Set.of("brick");
     private static final Set<String> MEDIUM_CONFIDENCE_PROJECT_IDS = Set.of("garage_cleanout", "kitchen_remodel");
@@ -244,6 +256,21 @@ public class SeoContentService {
             new IndexableIntentSeed("garage_cleanout", "household_junk", "size-guide"),
             new IndexableIntentSeed("estate_cleanout", "household_junk", "size-guide"),
             new IndexableIntentSeed("yard_cleanup", "yard_waste", "size-guide")
+    );
+    private static final List<IndexableIntentSeed> EXPERIMENT_INDEXABLE_INTENT_SEEDS = List.of(
+            new IndexableIntentSeed("concrete_removal", "brick", "overage-risk"),
+            new IndexableIntentSeed("dirt_grading", "dirt_soil", "weight-estimate"),
+            new IndexableIntentSeed("yard_cleanup", "yard_waste", "overage-risk"),
+            new IndexableIntentSeed("yard_cleanup", "green_waste_brush", "size-guide"),
+            new IndexableIntentSeed("estate_cleanout", "household_junk", "overage-risk"),
+            new IndexableIntentSeed("estate_cleanout", "furniture", "size-guide"),
+            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "size-guide"),
+            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "weight-estimate"),
+            new IndexableIntentSeed("bathroom_remodel", "drywall", "weight-estimate"),
+            new IndexableIntentSeed("kitchen_remodel", "drywall", "weight-estimate"),
+            new IndexableIntentSeed("kitchen_remodel", "mixed_cd", "size-guide"),
+            new IndexableIntentSeed("deck_demolition", "decking_wood", "overage-risk"),
+            new IndexableIntentSeed("garage_cleanout", "furniture", "size-guide")
     );
     private static final Set<IndexableIntentSeed> WAVE_THREE_INTENT_EXCLUSIONS = Set.of(
             new IndexableIntentSeed("roof_tearoff", "tile_ceramic", "size-guide")
@@ -532,6 +559,18 @@ public class SeoContentService {
                 .filter(entry -> entry.getValue() <= waveLimit)
                 .map(Map.Entry::getKey)
                 .filter(this::isProjectIndexable)
+                .filter(PRIORITY_INDEXABLE_PROJECT_IDS::contains)
+                .map(this::projectCanonicalPath)
+                .toList();
+    }
+
+    public List<String> experimentProjectIndexPaths(int maxWave) {
+        int waveLimit = Math.max(1, Math.min(maxWave, MAX_WAVE));
+        return PROJECT_INDEX_WAVE.entrySet().stream()
+                .filter(entry -> entry.getValue() <= waveLimit)
+                .map(Map.Entry::getKey)
+                .filter(this::isProjectIndexable)
+                .filter(EXPERIMENT_INDEXABLE_PROJECT_IDS::contains)
                 .map(this::projectCanonicalPath)
                 .toList();
     }
@@ -545,10 +584,22 @@ public class SeoContentService {
                 .toList();
     }
 
-    public List<String> indexableIntentPaths() {
-        return activeIndexableIntentSeeds().stream()
+    public List<String> priorityIntentPaths() {
+        return activePrimaryIntentSeeds().stream()
                 .map(seed -> intentPath(seed.projectId(), seed.materialId(), seed.intentSlug()))
                 .toList();
+    }
+
+    public List<String> experimentIntentPaths() {
+        return activeExperimentIntentSeeds().stream()
+                .map(seed -> intentPath(seed.projectId(), seed.materialId(), seed.intentSlug()))
+                .toList();
+    }
+
+    public List<String> indexableIntentPaths() {
+        LinkedHashSet<String> paths = new LinkedHashSet<>(priorityIntentPaths());
+        paths.addAll(experimentIntentPaths());
+        return List.copyOf(paths);
     }
 
     public boolean isIndexableIntentPath(String projectId, String materialId, String intentSlug) {
@@ -697,6 +748,16 @@ public class SeoContentService {
                 .filter(entry -> entry.getValue() <= waveLimit)
                 .map(Map.Entry::getKey)
                 .filter(PRIORITY_INDEXABLE_SPECIAL_SLUGS::contains)
+                .map(entry -> "/dumpster/" + entry)
+                .toList();
+    }
+
+    public List<String> experimentSpecialPageIndexPaths(int maxWave) {
+        int waveLimit = Math.max(1, Math.min(maxWave, MAX_WAVE));
+        return SPECIAL_PAGE_INDEX_WAVE.entrySet().stream()
+                .filter(entry -> entry.getValue() <= waveLimit)
+                .map(Map.Entry::getKey)
+                .filter(EXPERIMENT_INDEXABLE_SPECIAL_SLUGS::contains)
                 .map(entry -> "/dumpster/" + entry)
                 .toList();
     }
@@ -1176,7 +1237,7 @@ public class SeoContentService {
 
     public List<LinkItemViewModel> intentClusterLinksForMaterialHub() {
         LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
-        for (IndexableIntentSeed seed : activeIndexableIntentSeeds()) {
+        for (IndexableIntentSeed seed : allActiveIndexableIntentSeeds()) {
             Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
             ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
             if (intentTypeOptional.isEmpty() || projectSeed == null) {
@@ -1199,7 +1260,7 @@ public class SeoContentService {
 
     public List<LinkItemViewModel> intentClusterLinksForProjectHub() {
         LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
-        for (IndexableIntentSeed seed : activeIndexableIntentSeeds()) {
+        for (IndexableIntentSeed seed : allActiveIndexableIntentSeeds()) {
             Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
             ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
             if (intentTypeOptional.isEmpty() || projectSeed == null) {
@@ -1477,12 +1538,16 @@ public class SeoContentService {
     }
 
     public boolean isProjectIndexable(String projectId) {
-        return isProjectEnabled(projectId) && PRIORITY_INDEXABLE_PROJECT_IDS.contains(projectId);
+        return isProjectEnabled(projectId)
+                && (PRIORITY_INDEXABLE_PROJECT_IDS.contains(projectId)
+                || EXPERIMENT_INDEXABLE_PROJECT_IDS.contains(projectId));
     }
 
     public boolean isSpecialPageIndexable(String slug) {
         String resolvedSlug = resolveSpecialSlug(slug);
-        return isSpecialPageEnabled(resolvedSlug) && PRIORITY_INDEXABLE_SPECIAL_SLUGS.contains(resolvedSlug);
+        return isSpecialPageEnabled(resolvedSlug)
+                && (PRIORITY_INDEXABLE_SPECIAL_SLUGS.contains(resolvedSlug)
+                || EXPERIMENT_INDEXABLE_SPECIAL_SLUGS.contains(resolvedSlug));
     }
 
     public boolean isMaterialGuidesIndexable() {
@@ -1576,7 +1641,7 @@ public class SeoContentService {
         return SeoRoutingCatalog.projectPublicSlug(projectId);
     }
 
-    private List<IndexableIntentSeed> activeIndexableIntentSeeds() {
+    private List<IndexableIntentSeed> activePrimaryIntentSeeds() {
         if (seoMaxWave >= 3 && "expanded".equals(intentIndexMode)) {
             LinkedHashMap<String, IndexableIntentSeed> expanded = new LinkedHashMap<>();
             for (String projectId : projectSeeds.keySet()) {
@@ -1604,6 +1669,25 @@ public class SeoContentService {
                 .toList();
     }
 
+    private List<IndexableIntentSeed> activeExperimentIntentSeeds() {
+        return EXPERIMENT_INDEXABLE_INTENT_SEEDS.stream()
+                .filter(seed -> isProjectEnabled(seed.projectId()))
+                .filter(seed -> projectIntentMaterialsForProject(seed.projectId()).contains(seed.materialId()))
+                .filter(seed -> IntentType.fromSlug(seed.intentSlug()).isPresent())
+                .toList();
+    }
+
+    private List<IndexableIntentSeed> allActiveIndexableIntentSeeds() {
+        LinkedHashMap<String, IndexableIntentSeed> combined = new LinkedHashMap<>();
+        for (IndexableIntentSeed seed : activePrimaryIntentSeeds()) {
+            combined.put(seed.projectId() + "|" + seed.materialId() + "|" + seed.intentSlug(), seed);
+        }
+        for (IndexableIntentSeed seed : activeExperimentIntentSeeds()) {
+            combined.putIfAbsent(seed.projectId() + "|" + seed.materialId() + "|" + seed.intentSlug(), seed);
+        }
+        return List.copyOf(combined.values());
+    }
+
     private String materialDisplayName(String materialId) {
         return materialFactorRepository.findById(materialId)
                 .map(MaterialFactor::name)
@@ -1613,7 +1697,7 @@ public class SeoContentService {
     private List<LinkItemViewModel> intentClusterLinksForMaterial(String materialId) {
         String materialName = materialDisplayName(materialId);
         LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
-        for (IndexableIntentSeed seed : activeIndexableIntentSeeds()) {
+        for (IndexableIntentSeed seed : allActiveIndexableIntentSeeds()) {
             if (!seed.materialId().equals(materialId)) {
                 continue;
             }
@@ -1642,7 +1726,7 @@ public class SeoContentService {
             return List.of();
         }
         LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
-        for (IndexableIntentSeed indexableSeed : activeIndexableIntentSeeds()) {
+        for (IndexableIntentSeed indexableSeed : allActiveIndexableIntentSeeds()) {
             if (!indexableSeed.projectId().equals(projectId)) {
                 continue;
             }

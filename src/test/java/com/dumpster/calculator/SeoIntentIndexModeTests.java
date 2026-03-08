@@ -17,14 +17,15 @@ class SeoIntentIndexModeTests {
     private SeoContentService seoContentService;
 
     @Test
-    void curatedModeKeepsExplicitIntentSeedSet() {
+    void curatedModeKeepsExplicitPrimaryAndExperimentIntentSets() {
         var paths = seoContentService.indexableIntentPaths();
 
-        assertThat(paths).hasSize(19);
+        assertThat(paths).hasSize(32);
         assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/overage-risk");
         assertThat(paths).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
+        assertThat(paths).contains("/dumpster/answers/bathroom-remodel/tile-ceramic/size-guide");
+        assertThat(paths).contains("/dumpster/answers/concrete-removal/brick-block/overage-risk");
         assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
     }
 }
-

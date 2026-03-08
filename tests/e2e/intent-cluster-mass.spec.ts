@@ -7,15 +7,21 @@ function extractFirstMatch(input: string, pattern: RegExp): string | null {
 }
 
 test.describe("Mass intent-cluster coverage", () => {
-  test("money sitemap includes only whitelisted intent pages", async ({ request }) => {
-    const sitemap = await request.get("/sitemap-money.xml");
-    expect(sitemap.ok()).toBeTruthy();
-    const xml = await sitemap.text();
-    const locs = sitemapLocs(xml);
+  test("split sitemaps include only indexed intent pages", async ({ request }) => {
+    const moneySitemap = await request.get("/sitemap-money.xml");
+    const experimentsSitemap = await request.get("/sitemap-experiments.xml");
+    expect(moneySitemap.ok()).toBeTruthy();
+    expect(experimentsSitemap.ok()).toBeTruthy();
+
+    const locs = [
+      ...sitemapLocs(await moneySitemap.text()),
+      ...sitemapLocs(await experimentsSitemap.text()),
+    ];
     const intentLocs = locs.filter((loc) => loc.includes("/dumpster/answers/"));
-    expect(intentLocs.length).toBe(89);
+    expect(intentLocs.length).toBe(32);
     expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/roof-tear-off/shingles/overage-risk");
     expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/garage-cleanout/household-junk/size-guide");
+    expect(intentLocs).toContain("http://127.0.0.1:4173/dumpster/answers/concrete-removal/brick-block/overage-risk");
     expect(intentLocs).not.toContain("http://127.0.0.1:4173/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
   });
 

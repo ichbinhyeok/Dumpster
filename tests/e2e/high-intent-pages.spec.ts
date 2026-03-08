@@ -19,11 +19,16 @@ const highIntentPaths = [
 ];
 
 test.describe("High-intent page pack", () => {
-  test("money sitemap includes all curated high-intent pages", async ({ request }) => {
-    const sitemap = await request.get("/sitemap-money.xml");
-    expect(sitemap.ok()).toBeTruthy();
-    const xml = await sitemap.text();
-    const locs = sitemapLocs(xml);
+  test("split sitemaps include all indexed high-intent pages", async ({ request }) => {
+    const moneySitemap = await request.get("/sitemap-money.xml");
+    const experimentsSitemap = await request.get("/sitemap-experiments.xml");
+    expect(moneySitemap.ok()).toBeTruthy();
+    expect(experimentsSitemap.ok()).toBeTruthy();
+
+    const locs = [
+      ...sitemapLocs(await moneySitemap.text()),
+      ...sitemapLocs(await experimentsSitemap.text()),
+    ];
 
     for (const path of highIntentPaths) {
       expect(locs).toContain(`http://127.0.0.1:4173${path}`);

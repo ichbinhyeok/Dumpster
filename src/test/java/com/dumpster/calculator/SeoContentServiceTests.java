@@ -82,15 +82,18 @@ class SeoContentServiceTests {
     }
 
     @Test
-    void defaultConfigUsesCuratedIntentIndexPaths() {
+    void defaultConfigUsesPrimaryAndExperimentIntentIndexPaths() {
         var paths = seoContentService.indexableIntentPaths();
 
-        assertThat(paths).hasSize(19);
+        assertThat(paths).hasSize(32);
         assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/overage-risk");
         assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/size-guide");
         assertThat(paths).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
         assertThat(paths).contains("/dumpster/answers/yard-cleanup/yard-waste/size-guide");
+        assertThat(paths).contains("/dumpster/answers/concrete-removal/brick-block/overage-risk");
+        assertThat(paths).contains("/dumpster/answers/bathroom-remodel/tile-ceramic/size-guide");
+        assertThat(paths).contains("/dumpster/answers/dirt-grading/dirt/weight-estimate");
         assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
         assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
     }

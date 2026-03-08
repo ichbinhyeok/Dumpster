@@ -91,7 +91,7 @@ public class SeoInfrastructureController {
         seoContentService.indexableMaterialIds(seoMaxWave).stream()
                 .map(seoContentService::materialCanonicalPath)
                 .forEach(uniquePaths::add);
-        seoContentService.indexableIntentPaths().forEach(uniquePaths::add);
+        seoContentService.priorityIntentPaths().forEach(uniquePaths::add);
 
         List<SitemapEntry> urls = uniquePaths.stream()
                 .map(path -> new SitemapEntry(path, defaultLastMod))
@@ -101,7 +101,15 @@ public class SeoInfrastructureController {
 
     @GetMapping(value = "/sitemap-experiments.xml", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> sitemapExperiments() {
-        List<SitemapEntry> urls = List.of();
+        String defaultLastMod = seoContentService.defaultLastModifiedDate().toString();
+        LinkedHashSet<String> uniquePaths = new LinkedHashSet<>();
+        seoContentService.experimentSpecialPageIndexPaths(seoMaxWave).forEach(uniquePaths::add);
+        seoContentService.experimentProjectIndexPaths(seoMaxWave).forEach(uniquePaths::add);
+        seoContentService.experimentIntentPaths().forEach(uniquePaths::add);
+
+        List<SitemapEntry> urls = uniquePaths.stream()
+                .map(path -> new SitemapEntry(path, defaultLastMod))
+                .toList();
         return toUrlSet(urls);
     }
 

@@ -6,9 +6,9 @@ Run a curated, evidence-first organic strategy that wins heavy-debris and risk-d
 ## Current Policy (Active)
 
 - Default intent index mode: `curated`
-- Index contract: priority seed set only (top material/project/special paths)
+- Index contract: priority seed set in `sitemap-money.xml` plus controlled next-batch expansion in `sitemap-experiments.xml`
 - Non-priority overlaps: `noindex` / canonical / merge handling
-- Experiments sitemap: intentionally empty while seed quality is enforced
+- Experiments sitemap: limited expansion set for query-dense follow-on pages under active observation
 
 ## Implemented Changes
 

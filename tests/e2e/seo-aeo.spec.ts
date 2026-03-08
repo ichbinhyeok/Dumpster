@@ -25,7 +25,7 @@ const pages: SeoExpectation[] = [
   },
   {
     path: "/dumpster/weight/shingles",
-    expectedTitlePart: "Asphalt shingles",
+    expectedTitlePart: "Shingles Dumpster Size",
     expectedType: "HowTo",
   },
   {
@@ -150,8 +150,11 @@ test.describe("SEO / AEO / SERP metadata validation", () => {
     const experimentsSitemap = await request.get("/sitemap-experiments.xml");
     expect(experimentsSitemap.ok()).toBeTruthy();
     const experimentsXml = await experimentsSitemap.text();
-    expect(experimentsXml).toContain("/dumpster/material-guides");
-    expect(experimentsXml).toContain("/dumpster/project-guides");
+    expect(experimentsXml).toContain("/dumpster/what-size-dumpster-do-i-need");
+    expect(experimentsXml).toContain("/dumpster/size/concrete-removal");
+    expect(experimentsXml).toContain("/dumpster/answers/bathroom-remodel/tile-ceramic/size-guide");
+    expect(experimentsXml).not.toContain("/dumpster/material-guides");
+    expect(experimentsXml).not.toContain("/dumpster/project-guides");
   });
 
   test("intent page includes decision blocks, table/checklist skeleton and next-step links", async ({ page }) => {

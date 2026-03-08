@@ -55,7 +55,7 @@ class SeoInfrastructureTests {
         seoContentService.indexableMaterialIds(3).stream()
                 .map(seoContentService::materialCanonicalPath)
                 .forEach(expectedPaths::add);
-        expectedPaths.addAll(seoContentService.indexableIntentPaths());
+        expectedPaths.addAll(seoContentService.priorityIntentPaths());
 
         assertThat(urlCount).isEqualTo(expectedPaths.size());
         assertThat(body).contains("/dumpster/weight/shingles");
@@ -74,12 +74,24 @@ class SeoInfrastructureTests {
     }
 
     @Test
-    void sitemapExperimentsRemainsEmptyWhenNoExperimentUrlsAreIndexable() {
+    void sitemapExperimentsContainsControlledExpansionUrls() {
         ResponseEntity<String> response = seoInfrastructureController.sitemapExperiments();
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(response.getBody()).isNotBlank();
         String body = response.getBody();
-        assertThat(body).doesNotContain("<url>");
+        int urlCount = body.split("<url>").length - 1;
+        LinkedHashSet<String> expectedPaths = new LinkedHashSet<>();
+        expectedPaths.addAll(seoContentService.experimentSpecialPageIndexPaths(3));
+        expectedPaths.addAll(seoContentService.experimentProjectIndexPaths(3));
+        expectedPaths.addAll(seoContentService.experimentIntentPaths());
+
+        assertThat(urlCount).isEqualTo(expectedPaths.size());
+        assertThat(body).contains("/dumpster/what-size-dumpster-do-i-need");
+        assertThat(body).contains("/dumpster/drywall-disposal-dumpster-rules");
+        assertThat(body).contains("/dumpster/size/concrete-removal");
+        assertThat(body).contains("/dumpster/answers/bathroom-remodel/tile-ceramic/size-guide");
+        assertThat(body).contains("/dumpster/answers/dirt-grading/dirt/weight-estimate");
+        assertThat(body).doesNotContain("/dumpster/size/light-commercial-fitout");
         assertThat(body).doesNotContain("/dumpster/material-guides");
         assertThat(body).doesNotContain("/dumpster/project-guides");
     }
