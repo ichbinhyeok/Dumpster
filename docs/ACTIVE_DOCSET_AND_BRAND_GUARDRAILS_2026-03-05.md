@@ -7,6 +7,7 @@ Use only the documents below for current strategy and execution context.
 - `docs/EXECUTION_ANCHOR_B2C_DECISION_ENGINE_REFACTOR_v2_2026-03-04.md`
 - `docs/BETA_TEST_INTERVIEW_REPORT_2026-03-05.md`
 - `docs/seo/ORGANIC_EXECUTION_TICKETS_v2_2026-03-05.md`
+- `docs/seo/SEO_TRACKING_CHECKPOINT_2026-03-22.md`
 - `docs/seo/data/url_classification_v2_curated.csv`
 - `docs/seo/data/priority_pages_top20_v2.csv`
 - `docs/seo/data/title_h1_meta_intro_rewrite_v2.csv`
