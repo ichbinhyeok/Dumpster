@@ -20,12 +20,14 @@ class SeoIntentIndexModeTests {
     void curatedModeKeepsExplicitPrimaryAndExperimentIntentSets() {
         var paths = seoContentService.indexableIntentPaths();
 
-        assertThat(paths).hasSize(32);
+        assertThat(paths).hasSize(34);
         assertThat(paths).contains("/dumpster/answers/roof-tear-off/shingles/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete-removal/concrete/overage-risk");
         assertThat(paths).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
         assertThat(paths).contains("/dumpster/answers/bathroom-remodel/tile-ceramic/size-guide");
         assertThat(paths).contains("/dumpster/answers/concrete-removal/brick-block/overage-risk");
+        assertThat(paths).contains("/dumpster/answers/estate-cleanout/furniture/weight-estimate");
+        assertThat(paths).contains("/dumpster/answers/light-commercial-fitout/drywall/size-guide");
         assertThat(paths).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
     }
 }

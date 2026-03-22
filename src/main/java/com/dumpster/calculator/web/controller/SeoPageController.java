@@ -69,14 +69,14 @@ public class SeoPageController {
                 seoContentService.isMaterialGuidesIndexable() ? "index, follow" : "noindex, follow"
         );
         GuideHubPageViewModel model = new GuideHubPageViewModel(
-                "Dumpster Material Weight Guides: Density Chart + Live Calculator",
+                "Dumpster Debris Type Guides: Weight, Size, and Risk by Material",
                 seoContentService.materialGuidesUrl(baseUrl),
                 seoContentService.calculatorUrl(baseUrl),
                 seoContentService.ogImageUrl(baseUrl),
-                "Compare material density ranges, sample tonnage, and overage risk before choosing a dumpster size.",
+                "Browse debris-type guides for concrete, shingles, drywall, household junk, and other common cleanup materials before choosing dumpster size.",
                 seoContentService.defaultLastModifiedDate().toString(),
                 "Debris Decision Editorial Team",
-                "Material Guides",
+                "Debris Type Guides",
                 seoContentService.materialGuideLinks(),
                 seoContentService.materialGroupsByCategory(),
                 seoContentService.materialComparisonTable(),
@@ -95,14 +95,14 @@ public class SeoPageController {
                 seoContentService.isProjectGuidesIndexable() ? "index, follow" : "noindex, follow"
         );
         GuideHubPageViewModel model = new GuideHubPageViewModel(
-                "Dumpster Project Guides: Size Strategy by Job Type",
+                "Dumpster Job Guides: Project Presets for Size, Weight, and Route",
                 seoContentService.projectGuidesUrl(baseUrl),
                 seoContentService.calculatorUrl(baseUrl),
                 seoContentService.ogImageUrl(baseUrl),
-                "Use project-based presets to pick safer dumpster strategies and avoid overage surprises by timeline.",
+                "Start with project-specific presets for roof tear-off, concrete removal, garage cleanout, estate cleanout, and remodel jobs.",
                 seoContentService.defaultLastModifiedDate().toString(),
                 "Debris Decision Editorial Team",
-                "Project Guides",
+                "Job Guides",
                 seoContentService.projectGuideLinks(),
                 null,
                 null,

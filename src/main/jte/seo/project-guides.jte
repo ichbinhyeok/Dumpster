@@ -72,7 +72,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Project library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Job preset library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -80,7 +80,7 @@
             <article class="quick-answer-card">
                 <p class="eyebrow">${model.eyebrow()}</p>
                 <h1 class="font-display">${model.pageTitle()}</h1>
-                <p class="answer-first"><strong>Direct answer:</strong> pick the project preset first, then validate with material profile and tonnage risk.</p>
+                <p class="answer-first"><strong>Direct answer:</strong> start with the project preset, then validate with the material profile that drives weight and haul risk.</p>
                 <p>${model.description()}</p>
                 <p class="meta-note">Reviewed by ${model.reviewedBy()} · Updated ${model.lastUpdatedIso()}</p>
                 <div class="quick-facts">
@@ -94,16 +94,16 @@
                     </div>
                     <div class="fact-chip">
                         <strong>Output mode</strong>
-                        <span>Safe vs budget strategy</span>
+                        <span>Safe vs budget route</span>
                     </div>
                 </div>
             </article>
             <aside class="launch-card">
-                <h2 class="font-display">Jump into a project flow</h2>
-                <p>Use one of the presets below or open the base calculator.</p>
+                <h2 class="font-display">Jump into a job-specific flow</h2>
+                <p>Use one of the project presets below or open the base calculator if the cleanup is unusual.</p>
                 <div class="inline-cta-row">
                     <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/size/roof-tear-off">Try roof tear-off</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/size/concrete-removal">Try concrete removal</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
                 </div>
             </aside>
@@ -124,7 +124,7 @@
 
     @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
         <section class="panel">
-            <h2 class="font-display">Intent-driven guide cluster</h2>
+            <h2 class="font-display">High-intent answer pages</h2>
             <ul class="link-grid">
                 @for(var link : model.intentClusterLinks())
                     <li>
@@ -155,4 +155,3 @@
 @template.components.appFooter()
 </body>
 </html>
-

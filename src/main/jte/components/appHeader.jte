@@ -7,13 +7,13 @@
             <span class="brand-mark" aria-hidden="true">DD</span>
             <span class="brand-copy">
                 <strong>Debris Decision</strong>
-                <small>Dumpster vs junk, made simple</small>
+                <small>Job-specific dumpster decisions</small>
             </span>
         </a>
         <nav class="site-nav" aria-label="Primary">
-            <a href="/dumpster/material-guides">Material guides</a>
-            <a href="/dumpster/project-guides">Project guides</a>
-            <a href="/dumpster/heavy-debris-rules">Heavy rules</a>
+            <a href="/dumpster/project-guides">Job presets</a>
+            <a href="/dumpster/material-guides">Debris types</a>
+            <a href="/dumpster/heavy-debris-rules">Heavy-load rules</a>
         </nav>
         <div class="site-header-actions">
             <span class="trust-pill">${trustLabel}</span>

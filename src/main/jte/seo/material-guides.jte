@@ -72,7 +72,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Material library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Debris-type library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -80,17 +80,17 @@
             <article class="quick-answer-card">
                 <p class="eyebrow">${model.eyebrow()}</p>
                 <h1 class="font-display">${model.pageTitle()}</h1>
-                <p class="answer-first"><strong>Direct answer:</strong> use material density first, then confirm overage risk by size.</p>
+                <p class="answer-first"><strong>Direct answer:</strong> start with the debris type that dominates the load, then validate size and overage risk by job.</p>
                 <p>${model.description()}</p>
                 <p class="meta-note">Reviewed by ${model.reviewedBy()} · Updated ${model.lastUpdatedIso()}</p>
                 <div class="quick-facts">
                     <div class="fact-chip">
                         <strong>Navigation model</strong>
-                        <span>Grouped by debris class</span>
+                        <span>Grouped by debris type</span>
                     </div>
                     <div class="fact-chip">
                         <strong>Decision basis</strong>
-                        <span>Density + allowance risk</span>
+                        <span>Material + haul risk</span>
                     </div>
                     <div class="fact-chip">
                         <strong>Action path</strong>
@@ -99,11 +99,11 @@
                 </div>
             </article>
             <aside class="launch-card">
-                <h2 class="font-display">Launch calculator</h2>
-                <p>Open live calculator now, or pick a specific material guide below.</p>
+                <h2 class="font-display">Start with a debris profile</h2>
+                <p>Open the live calculator or jump into a debris guide that matches the dominant material in your load.</p>
                 <div class="inline-cta-row">
                     <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/shingles">Try shingles preset</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/concrete">Try concrete guide</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
                 </div>
             </aside>
@@ -158,8 +158,8 @@
 
     @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
         <section class="panel">
-            <h2 class="font-display">Intent-driven guide cluster</h2>
-            <p>These pages target high-intent questions where users want a direct recommendation, not generic background copy.</p>
+            <h2 class="font-display">High-intent answer pages</h2>
+            <p>These are the pages closest to real search demand: users asking for an exact recommendation, not general background information.</p>
             <ul class="link-grid">
                 @for(var link : model.intentClusterLinks())
                     <li>
@@ -199,4 +199,3 @@
 @template.components.appFooter()
 </body>
 </html>
-

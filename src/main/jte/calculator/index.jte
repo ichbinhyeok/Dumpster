@@ -110,15 +110,15 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Homeowner-first guidance", primaryHref = "#estimate-form", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Job-specific recommendation engine", primaryHref = "#estimate-form", primaryLabel = "Run live estimate")
 
 <main class="app-container app-main calc-page">
     <section class="calc-hero">
         <div class="calc-hero__head">
-            <p class="eyebrow">Find your best disposal option</p>
+            <p class="eyebrow">Choose by job + debris type</p>
             <h1 class="font-display">${model.pageTitle()}</h1>
-            <p>Choose the safer route in about 60 seconds: dumpster, junk removal, or staged multi-haul.</p>
-            <p>Answer three homeowner-first questions: which route wins, how to avoid overage, and what size is safe on the first try.</p>
+            <p>Start with the actual job and dominant material, then choose the safer route: dumpster, junk removal, or staged multi-haul.</p>
+            <p>This is not a generic volume calculator. It is a recommendation engine for heavy-load risk, overage exposure, and first-try dumpster sizing.</p>
             <p class="meta-note">Reviewed by Debris Decision editorial team · Updated ${model.lastUpdatedIso()}</p>
             <div class="scenario-chip-group">
                 @if("High".equals(model.confidenceTier()))
@@ -134,23 +134,23 @@
             <p class="meta-note"><strong>Variance note:</strong> ${model.varianceNote()}</p>
         </div>
         <nav class="decision-strip" aria-label="Quick decision routes">
-            <a class="decision-pill" data-decision-mode="cheapest_route" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=4&timing=research&priority=cost">I want the cheapest route</a>
-            <a class="decision-pill" data-decision-mode="easiest_option" href="/dumpster/size-weight-calculator?project=moving_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=this_week&priority=labor">I want the easiest route</a>
-            <a class="decision-pill" data-decision-mode="heavy_material" href="/dumpster/size-weight-calculator?project=concrete_removal&material=concrete&unit=sqft_4in&qty=180&timing=research&priority=heavy">I have heavy material</a>
-            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=general_junk_removal&material=household_junk&unit=pickup_load&qty=4&timing=48h&priority=speed">I need it gone fast</a>
+            <a class="decision-pill" data-decision-mode="roof_job" href="/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles&unit=roof_square&qty=22&timing=research&priority=balanced">I have a roof tear-off</a>
+            <a class="decision-pill" data-decision-mode="heavy_material" href="/dumpster/size-weight-calculator?project=concrete_removal&material=concrete&unit=sqft_4in&qty=180&timing=research&priority=heavy">I have concrete or brick</a>
+            <a class="decision-pill" data-decision-mode="cleanout_job" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=research&priority=cost">I am doing a cleanout</a>
+            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=general_junk_removal&material=household_junk&unit=pickup_load&qty=4&timing=48h&priority=speed">I need the fastest route</a>
         </nav>
         <div class="calc-benefits">
             <article class="calc-benefit">
-                <strong>Decision first</strong>
-                <p>See your best next move before shopping quotes.</p>
+                <strong>Exact-fit entry point</strong>
+                <p>Start with the job and debris profile that actually matches your cleanup.</p>
             </article>
             <article class="calc-benefit">
-                <strong>Risk visible</strong>
-                <p>Weight and allowance risk shown as ranges, not guesswork.</p>
+                <strong>Weight-first risk</strong>
+                <p>See tonnage and allowance pressure before a quote turns into an overage problem.</p>
             </article>
             <article class="calc-benefit">
-                <strong>Actionable output</strong>
-                <p>Dumpsters, junk removal, and heavy-load fallback in one board.</p>
+                <strong>Route recommendation</strong>
+                <p>Compare dumpster, junk removal, and staged-haul fallbacks in one board.</p>
             </article>
         </div>
     </section>
@@ -526,7 +526,7 @@
         <article class="calc-support-card">
             <h2 class="font-display">Preset guides</h2>
             <div>
-                <h3>Popular material guides</h3>
+                <h3>High-signal debris guides</h3>
                 <ul>
                     @for(var link : model.featuredMaterialLinks())
                         <li><a href="${link.href()}">${link.label()}</a></li>
@@ -535,7 +535,7 @@
                 <p><a href="/dumpster/material-guides">See all material guides</a></p>
             </div>
             <div>
-                <h3>Project quick starts</h3>
+                <h3>Job-specific quick starts</h3>
                 <ul>
                     @for(var link : model.featuredProjectLinks())
                         <li><a href="${link.href()}">${link.label()}</a></li>
@@ -565,5 +565,4 @@
 <script src="/js/calculator.js?v=stripeapple4"></script>
 </body>
 </html>
-
 

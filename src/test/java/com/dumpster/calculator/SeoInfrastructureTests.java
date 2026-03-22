@@ -59,16 +59,21 @@ class SeoInfrastructureTests {
 
         assertThat(urlCount).isEqualTo(expectedPaths.size());
         assertThat(body).contains("/dumpster/weight/shingles");
+        assertThat(body).contains("/dumpster/roof-shingles-dumpster-size-calculator");
+        assertThat(body).contains("/dumpster/drywall-disposal-dumpster-rules");
         assertThat(body).contains("/dumpster/size/roof-tear-off");
         assertThat(body).contains("/dumpster/size/garage-cleanout");
+        assertThat(body).contains("/dumpster/size/concrete-removal");
+        assertThat(body).contains("/dumpster/size/estate-cleanout");
         assertThat(body).contains("/dumpster/answers/roof-tear-off/shingles/overage-risk");
         assertThat(body).contains("/dumpster/answers/concrete-removal/concrete/size-guide");
         assertThat(body).contains("/dumpster/answers/garage-cleanout/household-junk/size-guide");
+        assertThat(body).contains("/dumpster/answers/estate-cleanout/household-junk/overage-risk");
         assertThat(body).doesNotContain("/dumpster/answers/roof-tear-off/tile-ceramic/size-guide");
         assertThat(body).doesNotContain("/dumpster/answers/roof-tear-off/metal-scrap-light/size-guide");
         assertThat(body).doesNotContain("/dumpster/what-size-dumpster-do-i-need");
-        assertThat(body).doesNotContain("/dumpster/size/concrete-removal");
         assertThat(body).doesNotContain("/dumpster/size/light-commercial-fitout");
+        assertThat(body).doesNotContain("/dumpster/answers/kitchen-remodel/mixed-cd/size-guide");
         assertThat(body).doesNotContain("/dumpster/material-guides");
         assertThat(body).doesNotContain("/dumpster/project-guides");
     }
@@ -87,11 +92,14 @@ class SeoInfrastructureTests {
 
         assertThat(urlCount).isEqualTo(expectedPaths.size());
         assertThat(body).contains("/dumpster/what-size-dumpster-do-i-need");
-        assertThat(body).contains("/dumpster/drywall-disposal-dumpster-rules");
-        assertThat(body).contains("/dumpster/size/concrete-removal");
-        assertThat(body).contains("/dumpster/answers/bathroom-remodel/tile-ceramic/size-guide");
-        assertThat(body).contains("/dumpster/answers/dirt-grading/dirt/weight-estimate");
-        assertThat(body).doesNotContain("/dumpster/size/light-commercial-fitout");
+        assertThat(body).contains("/dumpster/size/light-commercial-fitout");
+        assertThat(body).contains("/dumpster/size/yard-cleanup");
+        assertThat(body).contains("/dumpster/answers/bathroom-remodel/drywall/weight-estimate");
+        assertThat(body).contains("/dumpster/answers/kitchen-remodel/mixed-cd/size-guide");
+        assertThat(body).doesNotContain("/dumpster/drywall-disposal-dumpster-rules");
+        assertThat(body).doesNotContain("/dumpster/size/concrete-removal");
+        assertThat(body).doesNotContain("/dumpster/size/estate-cleanout");
+        assertThat(body).doesNotContain("/dumpster/answers/estate-cleanout/furniture/size-guide");
         assertThat(body).doesNotContain("/dumpster/material-guides");
         assertThat(body).doesNotContain("/dumpster/project-guides");
     }

@@ -1,26 +1,39 @@
 package com.dumpster.calculator;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 class SeoPageRenderingTests {
+    private static final Pattern JSON_LD_SCRIPT_PATTERN = Pattern.compile(
+            "<script type=\"application/ld\\+json\">\\s*(\\{.*?})\\s*</script>",
+            Pattern.DOTALL
+    );
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -147,10 +160,10 @@ class SeoPageRenderingTests {
     }
 
     @Test
-    void nonPriorityProjectPageRemainsAccessibleButNoindex() throws Exception {
+    void experimentalProjectPageRemainsAccessibleAndIndexable() throws Exception {
         mockMvc.perform(get("/dumpster/size/light-commercial-fitout"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
     }
 
     @Test
@@ -161,7 +174,7 @@ class SeoPageRenderingTests {
     }
 
     @Test
-    void experimentalProjectPageIsIndexable() throws Exception {
+    void promotedProjectPageIsIndexable() throws Exception {
         mockMvc.perform(get("/dumpster/size/concrete-removal"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
@@ -175,6 +188,30 @@ class SeoPageRenderingTests {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Decision matrix")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"FAQPage\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"BreadcrumbList\"")));
+    }
+
+    @Test
+    void specialConcreteRulesPageJsonLdScriptsParseAsValidJson() throws Exception {
+        MvcResult result = mockMvc.perform(get("/dumpster/can-you-put-concrete-in-a-dumpster"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<JsonNode> scripts = parseJsonLdScripts(result.getResponse().getContentAsString());
+        assertThat(scripts).hasSize(3);
+        assertThat(scripts).extracting(node -> node.path("@type").asText())
+                .containsExactly("BreadcrumbList", "FAQPage", "Article");
+    }
+
+    @Test
+    void concreteIntentPageJsonLdScriptsParseAsValidJson() throws Exception {
+        MvcResult result = mockMvc.perform(get("/dumpster/answers/concrete-removal/concrete/size-guide"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<JsonNode> scripts = parseJsonLdScripts(result.getResponse().getContentAsString());
+        assertThat(scripts).hasSize(3);
+        assertThat(scripts).extracting(node -> node.path("@type").asText())
+                .containsExactly("BreadcrumbList", "FAQPage", "Article");
     }
 
     @Test
@@ -205,5 +242,14 @@ class SeoPageRenderingTests {
         mockMvc.perform(get("/dumpster/fill-line-rules-for-heavy-debris"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
+    }
+
+    private List<JsonNode> parseJsonLdScripts(String html) throws Exception {
+        Matcher matcher = JSON_LD_SCRIPT_PATTERN.matcher(html);
+        List<JsonNode> scripts = new ArrayList<>();
+        while (matcher.find()) {
+            scripts.add(objectMapper.readTree(matcher.group(1)));
+        }
+        return scripts;
     }
 }

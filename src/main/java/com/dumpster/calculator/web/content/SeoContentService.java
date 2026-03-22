@@ -45,24 +45,36 @@ public class SeoContentService {
     private static final List<String> MATERIAL_PRIORITY = List.of(
             "asphalt_shingles",
             "concrete",
+            "household_junk",
             "dirt_soil",
+            "furniture",
+            "mixed_cd",
+            "drywall",
             "brick",
             "tile_ceramic",
+            "decking_wood",
+            "cardboard_packaging",
             "gravel_rock",
             "asphalt_pavement",
-            "drywall",
             "lumber",
-            "mixed_cd",
-            "household_junk",
-            "furniture",
             "carpet_pad",
-            "decking_wood",
             "plaster",
             "insulation_wet",
             "yard_waste",
             "green_waste_brush",
-            "cardboard_packaging",
             "metal_scrap_light"
+    );
+    private static final List<String> PROJECT_PRIORITY = List.of(
+            "concrete_removal",
+            "roof_tearoff",
+            "garage_cleanout",
+            "estate_cleanout",
+            "dirt_grading",
+            "bathroom_remodel",
+            "kitchen_remodel",
+            "deck_demolition",
+            "yard_cleanup",
+            "light_commercial_fitout"
     );
     private static final Map<String, Integer> MATERIAL_INDEX_WAVE = Map.of(
             "concrete", 1,
@@ -101,20 +113,24 @@ public class SeoContentService {
             "asphalt_shingles",
             "drywall",
             "dirt_soil",
-            "brick"
+            "brick",
+            "household_junk",
+            "furniture",
+            "mixed_cd"
     );
     private static final Set<String> PRIORITY_INDEXABLE_PROJECT_IDS = Set.of(
             "bathroom_remodel",
             "roof_tearoff",
             "deck_demolition",
             "garage_cleanout",
-            "kitchen_remodel"
+            "kitchen_remodel",
+            "estate_cleanout",
+            "dirt_grading",
+            "concrete_removal"
     );
     private static final Set<String> EXPERIMENT_INDEXABLE_PROJECT_IDS = Set.of(
-            "concrete_removal",
-            "estate_cleanout",
             "yard_cleanup",
-            "dirt_grading"
+            "light_commercial_fitout"
     );
     private static final Set<String> PRIORITY_INDEXABLE_SPECIAL_SLUGS = Set.of(
             "10-yard-dumpster-weight-limit-overage",
@@ -124,12 +140,12 @@ public class SeoContentService {
             "bagster-vs-dumpster",
             "fill-line-rules-for-heavy-debris",
             "one-20-yard-vs-two-10-yard",
-            "pickup-truck-loads-to-dumpster-size"
-    );
-    private static final Set<String> EXPERIMENT_INDEXABLE_SPECIAL_SLUGS = Set.of(
-            "what-size-dumpster-do-i-need",
+            "pickup-truck-loads-to-dumpster-size",
             "roof-shingles-dumpster-size-calculator",
             "drywall-disposal-dumpster-rules"
+    );
+    private static final Set<String> EXPERIMENT_INDEXABLE_SPECIAL_SLUGS = Set.of(
+            "what-size-dumpster-do-i-need"
     );
     private static final Set<String> MEDIUM_CONFIDENCE_MATERIAL_IDS = Set.of("brick");
     private static final Set<String> MEDIUM_CONFIDENCE_PROJECT_IDS = Set.of("garage_cleanout", "kitchen_remodel");
@@ -245,32 +261,34 @@ public class SeoContentService {
             new IndexableIntentSeed("concrete_removal", "concrete", "overage-risk"),
             new IndexableIntentSeed("dirt_grading", "dirt_soil", "size-guide"),
             new IndexableIntentSeed("dirt_grading", "dirt_soil", "overage-risk"),
+            new IndexableIntentSeed("dirt_grading", "dirt_soil", "weight-estimate"),
             new IndexableIntentSeed("dirt_grading", "gravel_rock", "weight-estimate"),
             new IndexableIntentSeed("concrete_removal", "brick", "size-guide"),
+            new IndexableIntentSeed("concrete_removal", "brick", "overage-risk"),
             new IndexableIntentSeed("kitchen_remodel", "drywall", "size-guide"),
             new IndexableIntentSeed("kitchen_remodel", "mixed_cd", "overage-risk"),
             new IndexableIntentSeed("bathroom_remodel", "drywall", "size-guide"),
+            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "size-guide"),
             new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "overage-risk"),
+            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "weight-estimate"),
             new IndexableIntentSeed("light_commercial_fitout", "drywall", "size-guide"),
             new IndexableIntentSeed("deck_demolition", "decking_wood", "size-guide"),
+            new IndexableIntentSeed("deck_demolition", "decking_wood", "overage-risk"),
             new IndexableIntentSeed("garage_cleanout", "household_junk", "size-guide"),
+            new IndexableIntentSeed("garage_cleanout", "furniture", "size-guide"),
+            new IndexableIntentSeed("garage_cleanout", "cardboard_packaging", "weight-estimate"),
             new IndexableIntentSeed("estate_cleanout", "household_junk", "size-guide"),
+            new IndexableIntentSeed("estate_cleanout", "household_junk", "overage-risk"),
+            new IndexableIntentSeed("estate_cleanout", "furniture", "size-guide"),
+            new IndexableIntentSeed("estate_cleanout", "furniture", "weight-estimate"),
             new IndexableIntentSeed("yard_cleanup", "yard_waste", "size-guide")
     );
     private static final List<IndexableIntentSeed> EXPERIMENT_INDEXABLE_INTENT_SEEDS = List.of(
-            new IndexableIntentSeed("concrete_removal", "brick", "overage-risk"),
-            new IndexableIntentSeed("dirt_grading", "dirt_soil", "weight-estimate"),
             new IndexableIntentSeed("yard_cleanup", "yard_waste", "overage-risk"),
             new IndexableIntentSeed("yard_cleanup", "green_waste_brush", "size-guide"),
-            new IndexableIntentSeed("estate_cleanout", "household_junk", "overage-risk"),
-            new IndexableIntentSeed("estate_cleanout", "furniture", "size-guide"),
-            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "size-guide"),
-            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "weight-estimate"),
             new IndexableIntentSeed("bathroom_remodel", "drywall", "weight-estimate"),
             new IndexableIntentSeed("kitchen_remodel", "drywall", "weight-estimate"),
-            new IndexableIntentSeed("kitchen_remodel", "mixed_cd", "size-guide"),
-            new IndexableIntentSeed("deck_demolition", "decking_wood", "overage-risk"),
-            new IndexableIntentSeed("garage_cleanout", "furniture", "size-guide")
+            new IndexableIntentSeed("kitchen_remodel", "mixed_cd", "size-guide")
     );
     private static final Set<IndexableIntentSeed> WAVE_THREE_INTENT_EXCLUSIONS = Set.of(
             new IndexableIntentSeed("roof_tearoff", "tile_ceramic", "size-guide")
@@ -1198,8 +1216,8 @@ public class SeoContentService {
                 .limit(limit)
                 .map(material -> new LinkItemViewModel(
                         materialCanonicalPath(material.materialId()),
-                        material.name() + " weight guide",
-                        material.category().name().toLowerCase() + " debris profile with tonnage range"
+                        material.name() + " debris guide",
+                        material.category().name().toLowerCase() + " material profile with size and tonnage risk"
                 ))
                 .toList();
     }
@@ -1210,7 +1228,7 @@ public class SeoContentService {
                 .map(seed -> new LinkItemViewModel(
                         projectCanonicalPath(seed.projectId()),
                         seed.title(),
-                        seed.sampleInput()
+                        seed.sampleDecision()
                 ))
                 .toList();
     }
@@ -1219,8 +1237,8 @@ public class SeoContentService {
         return sortedIndexableMaterials().stream()
                 .map(material -> new LinkItemViewModel(
                         materialCanonicalPath(material.materialId()),
-                        material.name() + " weight guide",
-                        material.category().name().toLowerCase() + " load behavior and decision notes"
+                        material.name() + " debris guide",
+                        material.category().name().toLowerCase() + " load behavior, tonnage, and decision notes"
                 ))
                 .toList();
     }
@@ -1559,8 +1577,15 @@ public class SeoContentService {
     }
 
     private List<ProjectSeed> sortedIndexableProjects() {
+        Map<String, Integer> priorityRank = new LinkedHashMap<>();
+        for (int i = 0; i < PROJECT_PRIORITY.size(); i++) {
+            priorityRank.put(PROJECT_PRIORITY.get(i), i);
+        }
         return projectSeeds.values().stream()
                 .filter(seed -> isProjectEnabled(seed.projectId()))
+                .sorted(Comparator
+                        .comparingInt((ProjectSeed seed) -> priorityRank.getOrDefault(seed.projectId(), Integer.MAX_VALUE))
+                        .thenComparing(ProjectSeed::projectId))
                 .toList();
     }
 
