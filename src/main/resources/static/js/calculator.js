@@ -329,7 +329,7 @@
         if (estimateModeNote) {
             estimateModeNote.textContent = advancedEnabled
                 ? "Advanced mode includes extra materials, timing, and assumption modifiers."
-                : "Quick mode uses project + material + quantity for the fastest answer.";
+                : "Quick mode starts with a heavy-debris job, dominant material, and quantity for the fastest feasibility call.";
         }
 
         if (quickModeButton) {
@@ -548,6 +548,10 @@
         const assumptions = Array.isArray(result.assumptions) ? result.assumptions : [];
         const inputImpactSummary = Array.isArray(result.inputImpactSummary) ? result.inputImpactSummary : [];
         const hardStops = Array.isArray(result.hardStopReasons) ? result.hardStopReasons : [];
+        const executionPlan = result && result.executionPlan ? result.executionPlan : null;
+        const executionCheckpoints = executionPlan && Array.isArray(executionPlan.checkpoints)
+            ? executionPlan.checkpoints
+            : [];
 
         const topRecommendation = recommendations.length > 0
             ? recommendations[0]
@@ -558,8 +562,12 @@
             .filter((key) => key !== primaryCtaKey)
             .map((key) => ctaConfig(key));
         const decisionMode = deriveDecisionMode(primaryCtaKey, topRecommendation, result);
-        const verdictText = decisionHeadline(primaryCtaKey, topRecommendation, result);
-        const bestMoveDetail = decisionDetail(primaryCtaKey, topRecommendation, result);
+        const verdictText = executionPlan && executionPlan.headline
+            ? executionPlan.headline
+            : decisionHeadline(primaryCtaKey, topRecommendation, result);
+        const bestMoveDetail = executionPlan && executionPlan.summary
+            ? executionPlan.summary
+            : decisionDetail(primaryCtaKey, topRecommendation, result);
         const junkSmartWhen = junkSmartWhenText(primaryCtaKey, result, inputPayload);
         const localPriceRange = extractCostWindow(costOptions);
         const activePriorityMode = currentDecisionPriority();
@@ -628,6 +636,8 @@
             : "No major input risk signal.";
         const feasibilityText = translateFeasibility(result.feasibility);
         const riskText = translatePriceRisk(result.priceRisk);
+        const leadCaptureTitle = leadCaptureHeading(primaryCtaKey, executionPlan);
+        const leadCaptureHint = leadCaptureHelp(primaryCtaKey, executionPlan);
 
         if (resultStateBanner) {
             resultStateBanner.hidden = false;
@@ -690,6 +700,12 @@
                 <h3>Input impact</h3>
                 <p>${impactLine}</p>
             </article>
+            ${executionCheckpoints.length > 0 ? `
+            <article class="stat stat--full">
+                <h3>Execution checks</h3>
+                <ul>${executionCheckpoints.map((item) => "<li>" + item + "</li>").join("")}</ul>
+            </article>
+            ` : ""}
             <article class="stat stat--full decision-scorecard">
                 <h3>Decision scorecard</h3>
                 <p class="lead-hint" style="margin:0 0 0.75rem 0;">Priority mode: ${decisionPriorityLabel(decisionScores.priorityMode)}</p>
@@ -724,6 +740,10 @@
         `).join("");
 
         resultAssumptions.innerHTML = `
+            ${executionCheckpoints.length > 0 ? `
+            <h3>Execution checks</h3>
+            <ul>${executionCheckpoints.map((item) => "<li>" + item + "</li>").join("")}</ul>
+            ` : ""}
             <h3>Assumptions</h3>
             <ul>${assumptions.map((item) => "<li>" + item + "</li>").join("")}</ul>
             <h3>Input impact summary</h3>
@@ -740,8 +760,8 @@
 
         resultActions.innerHTML = `
             <section class="lead-capture">
-                <h3>Get matched after you confirm the safer route</h3>
-                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">Beta queue for local matching. No spam.</p>
+                <h3>${leadCaptureTitle}</h3>
+                <p class="lead-hint" style="margin-top:-0.5rem; margin-bottom:1rem; color:var(--text-ok);">${leadCaptureHint}</p>
                 <div class="lead-step" id="lead-step-1" ${leadFormState.step === 2 ? "hidden" : ""}>
                     <label for="lead-zip">ZIP code</label>
                     <input id="lead-zip" type="text" inputmode="numeric" maxlength="5" placeholder="e.g. 30339" value="${escapeHtml(leadFormState.zip)}">
@@ -755,7 +775,7 @@
                     </select>
                     <label for="lead-contact-value" id="lead-contact-label">${isEmailContact ? "Email" : "Phone number"}</label>
                     <input id="lead-contact-value" type="${isEmailContact ? "email" : "tel"}" placeholder="${isEmailContact ? "name@company.com" : "(555) 555-5555"}" value="${escapeHtml(leadFormState.contactValue)}">
-                    <button type="button" id="lead-submit">Submit lead</button>
+                    <button type="button" id="lead-submit">Request local review</button>
                 </div>
                 <p class="lead-hint" id="lead-status" aria-live="polite">${escapeHtml(leadFormState.statusText)}</p>
             </section>
@@ -894,7 +914,7 @@
                 emitContentGateEvent("pass", { step: "submit", reason: "lead_ready" });
                 emitLeadSubmitted("lead_form_submit");
                 leadSubmit.disabled = true;
-                leadStatus.textContent = "Submitting to quote-match beta queue...";
+                leadStatus.textContent = "Submitting to local heavy-load queue...";
                 leadFormState.statusText = leadStatus.textContent;
                 const intake = await createQuoteMatchIntake(apiData, inputPayload, result, {
                     zipCode: zip,
@@ -1297,7 +1317,7 @@
             return "Allowance may be crossed depending on mix or moisture.";
         }
         if (risk === "HIGH") {
-            return "Overage likely; compare junk removal or staged multi-haul.";
+            return "Overage likely; compare crew pickup or staged multi-haul.";
         }
         return "Risk signal unavailable for this scenario.";
     }
@@ -1340,12 +1360,12 @@
 
     function ctaConfig(key) {
         if (key === "dumpster_form") {
-            return { id: "cta-dumpster-form", href: "#estimate-form", label: "Run the live estimate" };
+            return { id: "cta-dumpster-form", href: "#estimate-form", label: "Refine heavy-load assumptions" };
         }
         if (key === "junk_call") {
-            return { id: "cta-junk", href: "/dumpster/dumpster-vs-junk-removal-which-is-cheaper", label: "Compare junk removal" };
+            return { id: "cta-junk", href: "/dumpster/dumpster-vs-junk-removal-which-is-cheaper", label: "Compare crew pickup" };
         }
-        return { id: "cta-dumpster-call", href: QUOTE_MATCH_BETA_PATH, label: "Join quote-match beta" };
+        return { id: "cta-dumpster-call", href: QUOTE_MATCH_BETA_PATH, label: "Check local heavy-load options" };
     }
 
     function deriveDecisionMode(primaryCtaKey, topRecommendation, result) {
@@ -1367,13 +1387,13 @@
     function decisionHeadline(primaryCtaKey, topRecommendation, result) {
         const feasibility = String(result.feasibility || "").toUpperCase();
         if (primaryCtaKey === "junk_call" || feasibility !== "OK") {
-            return "Best next move: compare junk removal first.";
+            return "Best next move: compare crew pickup first.";
         }
         if (topRecommendation && topRecommendation.multiHaul) {
             return `Best next move: ${topRecommendation.sizeYd}yd staged multi-haul plan.`;
         }
         if (topRecommendation) {
-            return `Best next move: join quote-match beta for a ${topRecommendation.sizeYd}-yard dumpster.`;
+            return `Best next move: check local options for a ${topRecommendation.sizeYd}-yard heavy-load route.`;
         }
         return "Best next move unavailable: review inputs and rerun.";
     }
@@ -1413,6 +1433,34 @@
             return "When same-day removal speed matters more than lowest rental cost.";
         }
         return "When access, labor, or sorting burden is higher than expected on site.";
+    }
+
+    function leadCaptureHeading(primaryCtaKey, executionPlan) {
+        const focus = String(executionPlan && executionPlan.focus || "").toLowerCase();
+        if (primaryCtaKey === "junk_call" || focus === "crew_pickup_fallback") {
+            return "Need local help on the fallback route?";
+        }
+        if (primaryCtaKey === "dumpster_form" || focus === "heavy_assumption_check") {
+            return "Refine assumptions, then request local review";
+        }
+        if (focus === "staged_multi_haul") {
+            return "Check local staged-haul availability";
+        }
+        return "Check local heavy-load availability";
+    }
+
+    function leadCaptureHelp(primaryCtaKey, executionPlan) {
+        const focus = String(executionPlan && executionPlan.focus || "").toLowerCase();
+        if (primaryCtaKey === "junk_call" || focus === "crew_pickup_fallback") {
+            return "Queue a local review if you still want help comparing crew pickup against dumpster routes. No spam.";
+        }
+        if (primaryCtaKey === "dumpster_form" || focus === "heavy_assumption_check") {
+            return "Use the refined plan to tighten tonnage and policy assumptions before local handoff.";
+        }
+        if (focus === "staged_multi_haul") {
+            return "Local review for dense loads that may need swaps or multiple pulls. No spam.";
+        }
+        return "Local review for heavy-debris coverage and operator fit. No spam.";
     }
 
     function buildDecisionScores(result, inputPayload, topRecommendation, primaryCtaKey, priorityMode) {
@@ -1640,11 +1688,15 @@
             .filter((materialId) => typeof materialId === "string" && materialId.length > 0)
             .slice(0, 3);
         const primaryCta = normalizeCtaKey(result && result.ctaRouting ? result.ctaRouting.primaryCta : "");
+        const feasibility = String(result && result.feasibility || "").toUpperCase();
+        const planFocus = String(result && result.executionPlan ? result.executionPlan.focus : "").toLowerCase();
         const decisionMode = primaryCta === "junk_call"
             ? "junk"
-            : String(result && result.feasibility || "").toUpperCase() === "OK"
-                ? "dumpster"
-                : "unsure";
+            : (feasibility.includes("MULTI") || planFocus === "staged_multi_haul")
+                ? "multi_haul"
+                : feasibility === "OK"
+                    ? "dumpster"
+                    : "unsure";
         try {
             const response = await fetch(QUOTE_MATCH_INTAKE_ENDPOINT, {
                 method: "POST",

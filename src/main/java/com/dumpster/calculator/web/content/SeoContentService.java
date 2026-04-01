@@ -43,18 +43,18 @@ public class SeoContentService {
     private final String intentIndexMode;
     private static final DateTimeFormatter SOURCE_MONTH_YEAR = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US);
     private static final List<String> MATERIAL_PRIORITY = List.of(
-            "asphalt_shingles",
             "concrete",
-            "household_junk",
             "dirt_soil",
-            "furniture",
-            "mixed_cd",
-            "drywall",
+            "asphalt_shingles",
             "brick",
+            "gravel_rock",
+            "drywall",
+            "mixed_cd",
             "tile_ceramic",
             "decking_wood",
+            "household_junk",
+            "furniture",
             "cardboard_packaging",
-            "gravel_rock",
             "asphalt_pavement",
             "lumber",
             "carpet_pad",
@@ -66,13 +66,13 @@ public class SeoContentService {
     );
     private static final List<String> PROJECT_PRIORITY = List.of(
             "concrete_removal",
-            "roof_tearoff",
-            "garage_cleanout",
-            "estate_cleanout",
             "dirt_grading",
+            "roof_tearoff",
             "bathroom_remodel",
             "kitchen_remodel",
             "deck_demolition",
+            "garage_cleanout",
+            "estate_cleanout",
             "yard_cleanup",
             "light_commercial_fitout"
     );
@@ -234,6 +234,7 @@ public class SeoContentService {
     private static final String COMPARISON_HUB_PATH = "/dumpster/dumpster-vs-junk-removal-which-is-cheaper";
     private static final String PICKUP_CONVERTER_PATH = "/dumpster/pickup-truck-loads-to-dumpster-size";
     private static final String DECISION_OVERVIEW_PATH = "/dumpster/what-size-dumpster-do-i-need";
+    private static final String QUOTE_MATCH_BETA_PATH = "/about/quote-match-beta";
     private static final String INTENT_BASE_PATH = "/dumpster/answers";
     private static final List<IntentType> INTENT_TYPES = List.of(
             IntentType.SIZE_GUIDE,
@@ -2024,7 +2025,8 @@ public class SeoContentService {
 
         LinkedHashMap<String, LinkItemViewModel> links = new LinkedHashMap<>();
         links.put(calculatorHref, link(calculatorHref, "Run live estimate", "Validate this exact scenario in the decision engine."));
-        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs junk removal", "Decide dumpster vs junk based on speed, labor, and risk."));
+        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs crew pickup", "Decide dumpster versus crew pickup based on speed, labor, and risk."));
+        links.put(QUOTE_MATCH_BETA_PATH, link(QUOTE_MATCH_BETA_PATH, "Check local heavy-load options", "Move from research into local heavy-load follow-up once the route looks feasible."));
         links.put(PICKUP_CONVERTER_PATH, link(PICKUP_CONVERTER_PATH, "Use pickup-load converter", "Translate visual load count into safer size planning."));
         links.put(HEAVY_RULES_PATH, link(HEAVY_RULES_PATH, "Check heavy-load rules first", "Confirm fill-line and haul constraints before booking."));
         links.put(followupIntent, link(followupIntent, "Next intent question", "Move to the next decision-stage question for this scenario."));
@@ -2032,6 +2034,7 @@ public class SeoContentService {
         links.put(projectGuideHref, link(projectGuideHref, "Open project workflow guide", "See the full project strategy and operator questions."));
         String materialGuideHref = materialCanonicalPath(materialId);
         links.put(materialGuideHref, link(materialGuideHref, "Open material weight guide", "Review density range and size-level risk table."));
+        addConcreteClusterLinks(links, projectId, materialId);
         return List.copyOf(links.values());
     }
 
@@ -2054,9 +2057,11 @@ public class SeoContentService {
         links.put(overageHref, link(overageHref, "Check overage-risk answer", "See where included tons and haul limits diverge."));
         String projectGuideHref = projectCanonicalPath(projectId);
         links.put(projectGuideHref, link(projectGuideHref, "Open related project guide", "Move from material-only logic into a full project workflow."));
-        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs junk removal", "Use labor, speed, and risk tradeoffs before booking."));
+        links.put(QUOTE_MATCH_BETA_PATH, link(QUOTE_MATCH_BETA_PATH, "Check local heavy-load options", "Use the current material profile to request local heavy-load follow-up."));
+        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs crew pickup", "Use labor, speed, and risk tradeoffs before booking."));
         links.put(PICKUP_CONVERTER_PATH, link(PICKUP_CONVERTER_PATH, "Use pickup-load converter", "Translate rough load count into safer size planning."));
         links.put(HEAVY_RULES_PATH, link(HEAVY_RULES_PATH, "Check heavy-load rules first", "Validate fill and feasibility constraints for dense loads."));
+        addConcreteClusterLinks(links, projectId, materialId);
         return List.copyOf(links.values());
     }
 
@@ -2072,11 +2077,55 @@ public class SeoContentService {
         links.put(sizeGuideHref, link(sizeGuideHref, "Check size-guide answer", "Validate the safer baseline size for this project/material pair."));
         String overageHref = intentPath(projectId, intentMaterialId, IntentType.OVERAGE_RISK);
         links.put(overageHref, link(overageHref, "Check overage-risk answer", "Validate allowance pressure before requesting quotes."));
-        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs junk removal", "Decide whether convenience or staged pricing should win."));
+        links.put(QUOTE_MATCH_BETA_PATH, link(QUOTE_MATCH_BETA_PATH, "Check local heavy-load options", "Request local heavy-load follow-up after this project path looks feasible."));
+        links.put(COMPARISON_HUB_PATH, link(COMPARISON_HUB_PATH, "Compare dumpster vs crew pickup", "Decide whether convenience or staged pricing should win."));
         links.put(PICKUP_CONVERTER_PATH, link(PICKUP_CONVERTER_PATH, "Use pickup-load converter", "Map pickup-load intuition to container size."));
         links.put(HEAVY_RULES_PATH, link(HEAVY_RULES_PATH, "Check heavy-load rules first", "Confirm fill-line and haul constraints for dense debris."));
         links.put(DECISION_OVERVIEW_PATH, link(DECISION_OVERVIEW_PATH, "Open decision overview", "Recheck size, overage, and feasibility framework in one page."));
+        addConcreteClusterLinks(links, projectId, intentMaterialId);
         return List.copyOf(links.values());
+    }
+
+    private void addConcreteClusterLinks(
+            LinkedHashMap<String, LinkItemViewModel> links,
+            String projectId,
+            String materialId
+    ) {
+        if (!isConcreteCluster(projectId, materialId)) {
+            return;
+        }
+
+        links.putIfAbsent(
+                "/dumpster/can-you-put-concrete-in-a-dumpster",
+                link(
+                        "/dumpster/can-you-put-concrete-in-a-dumpster",
+                        "Check concrete rules and load limits",
+                        "Use the strongest early-performing rules page before booking a heavy load."
+                )
+        );
+        links.putIfAbsent(
+                "/dumpster/size/concrete-removal",
+                link(
+                        "/dumpster/size/concrete-removal",
+                        "Open concrete removal project guide",
+                        "Stay inside the concrete-focused project workflow instead of falling back to generic sizing."
+                )
+        );
+        links.putIfAbsent(
+                "/dumpster/weight/concrete",
+                link(
+                        "/dumpster/weight/concrete",
+                        "Open concrete debris guide",
+                        "Review tonnage behavior and small-bin haul constraints for concrete."
+                )
+        );
+    }
+
+    private boolean isConcreteCluster(String projectId, String materialId) {
+        return "concrete_removal".equals(projectId)
+                || "concrete".equals(materialId)
+                || "brick".equals(materialId)
+                || "asphalt_pavement".equals(materialId);
     }
 
     private Optional<String> primaryProjectForMaterial(String materialId) {

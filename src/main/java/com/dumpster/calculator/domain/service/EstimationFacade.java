@@ -30,6 +30,7 @@ public class EstimationFacade {
     private final DumpsterSizeRepository dumpsterSizeRepository;
     private final CostComparisonService costComparisonService;
     private final CtaRoutingService ctaRoutingService;
+    private final ExecutionPlanService executionPlanService;
     private final Clock clock;
 
     public EstimationFacade(
@@ -37,12 +38,14 @@ public class EstimationFacade {
             DumpsterSizeRepository dumpsterSizeRepository,
             CostComparisonService costComparisonService,
             CtaRoutingService ctaRoutingService,
+            ExecutionPlanService executionPlanService,
             Clock clock
     ) {
         this.normalizationService = normalizationService;
         this.dumpsterSizeRepository = dumpsterSizeRepository;
         this.costComparisonService = costComparisonService;
         this.ctaRoutingService = ctaRoutingService;
+        this.executionPlanService = executionPlanService;
         this.clock = clock;
     }
 
@@ -95,7 +98,22 @@ public class EstimationFacade {
         List<String> hardStops = collectHardStops(evaluations);
         List<String> assumptions = buildAssumptions(usedAssumedAllowance, bulkingFactor);
         List<String> impacts = buildInputImpactSummary(lineItems, usedAssumedAllowance);
-        CtaRouting ctaRouting = ctaRoutingService.decide(command, overallRisk, overallFeasibility, heavyMode);
+        CtaRouting ctaRouting = ctaRoutingService.decide(
+                command,
+                overallRisk,
+                overallFeasibility,
+                heavyMode,
+                usedAssumedAllowance
+        );
+        var executionPlan = executionPlanService.build(
+                command,
+                lineItems,
+                safeRecommendation,
+                overallRisk,
+                overallFeasibility,
+                usedAssumedAllowance,
+                heavyMode
+        );
 
         return new EstimateResult(
                 safeVolume.round2(),
@@ -104,6 +122,7 @@ public class EstimationFacade {
                 overallFeasibility,
                 usedAssumedAllowance,
                 heavyMode,
+                executionPlan,
                 ctaRouting,
                 recommendations,
                 costComparison,

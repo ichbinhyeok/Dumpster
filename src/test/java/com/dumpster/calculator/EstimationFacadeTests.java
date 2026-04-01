@@ -41,6 +41,9 @@ class EstimationFacadeTests {
         assertThat(result.recommendations()).isNotEmpty();
         assertThat(result.recommendations().getFirst().multiHaul()
                 || !result.hardStopReasons().isEmpty()).isTrue();
+        assertThat(result.executionPlan().focus())
+                .isIn("staged_multi_haul", "crew_pickup_fallback");
+        assertThat(result.executionPlan().dominantMaterialLabel()).isEqualTo("Concrete");
     }
 
     @Test
@@ -126,6 +129,29 @@ class EstimationFacadeTests {
 
         EstimateResult result = estimationFacade.estimate(command);
         assertThat(result.ctaRouting().primaryCta()).isEqualTo("dumpster_call");
+    }
+
+    @Test
+    void heavyScenarioWithAssumedAllowanceRoutesToRefinePlan() {
+        EstimateCommand command = command(
+                "concrete_removal",
+                "homeowner",
+                "concrete",
+                50,
+                "sqft_4in",
+                false,
+                false,
+                null,
+                "research"
+        );
+
+        EstimateResult result = estimationFacade.estimate(command);
+
+        assertThat(result.heavyDebrisWarning()).isTrue();
+        assertThat(result.usedAssumedAllowance()).isTrue();
+        assertThat(result.feasibility().name()).isEqualTo("OK");
+        assertThat(result.ctaRouting().primaryCta()).isEqualTo("dumpster_form");
+        assertThat(result.executionPlan().focus()).isEqualTo("heavy_assumption_check");
     }
 
     @Test

@@ -28,27 +28,27 @@
         {
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "Quote Match Beta",
+          "name": "Local Heavy-Debris Match",
           "url": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Quote Match Beta", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Local Heavy-Debris Match", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run heavy-debris estimate")
 <main class="app-container app-main">
     <section class="panel">
-        <p class="eyebrow">Quote Match Beta</p>
+        <p class="eyebrow">Local Heavy-Debris Match</p>
         <h1>${model.pageTitle()}</h1>
-        <p>This intake is for beta coverage only. We use your calculator inputs to queue local follow-up when partner coverage is available for your ZIP.</p>
+        <p>This intake is for local heavy-load coverage review. We use your calculator result to queue follow-up when partner coverage is available for your ZIP and material profile.</p>
     </section>
 
     <section class="panel">
-        <h2>What this beta does</h2>
+        <h2>What this queue does</h2>
         <ul>
-            <li>Captures your project intent, material profile, timing, and ZIP details.</li>
-            <li>Queues your request for local dumpster or junk-removal partner follow-up.</li>
-            <li>Helps us validate coverage gaps before full marketplace launch.</li>
+            <li>Captures your project intent, dominant material, timing, and ZIP details.</li>
+            <li>Queues your request for local heavy-load dumpster or crew-pickup follow-up.</li>
+            <li>Helps confirm where heavy-debris coverage is strong enough for a real next step.</li>
         </ul>
     </section>
 
@@ -56,9 +56,9 @@
         <h2>What to expect</h2>
         <ul>
             <li>This is not instant booking and does not guarantee same-day dispatch.</li>
-            <li>Coverage depends on active partner markets and material policy fit.</li>
+            <li>Coverage depends on active partner markets and heavy-load policy fit.</li>
             <li>If your ZIP is covered, typical first response is within one business day.</li>
-            <li>If your ZIP is not covered, we provide fallback guidance to run direct vendor outreach.</li>
+            <li>If your ZIP is not covered, we provide fallback guidance for direct vendor outreach or crew-pickup comparison.</li>
             <li>For corrections or source updates, use the <a href="/about/contact">contact page</a>.</li>
         </ul>
     </section>
@@ -67,17 +67,17 @@
         <h2>Data and consent</h2>
         <ul>
             <li>We store contact info, ZIP, project scope, material profile, and timing to route your request.</li>
-            <li>Submitted details are used only for quote-match operations and quality review.</li>
+            <li>Submitted details are used only for local heavy-debris matching operations and quality review.</li>
             <li>You can request deletion or correction from the <a href="/about/contact">contact page</a>.</li>
         </ul>
     </section>
 
     <section class="panel">
         <h2>Next step</h2>
-        <p>Return to the calculator, confirm your safer route, then submit ZIP and contact details from the result board.</p>
+        <p>Return to the calculator, confirm the heavy-load route, then submit ZIP and contact details from the result board.</p>
         <p>
-            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Back to calculator</a>
-            <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper">Fallback: compare dumpster vs junk</a>
+            <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Back to heavy-debris calculator</a>
+            <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper">Fallback: compare dumpster vs crew pickup</a>
         </p>
     </section>
 

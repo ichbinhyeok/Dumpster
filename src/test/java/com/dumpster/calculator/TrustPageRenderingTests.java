@@ -56,7 +56,8 @@ class TrustPageRenderingTests {
     void quoteMatchBetaPageRenders() throws Exception {
         mockMvc.perform(get("/about/quote-match-beta"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Quote Match Beta")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Local Heavy-Debris Match")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("local heavy-load coverage review")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("not instant booking")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")));
     }

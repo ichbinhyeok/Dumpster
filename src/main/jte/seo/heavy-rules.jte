@@ -224,12 +224,11 @@
             <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator?material=concrete&project=concrete_removal" data-analytics-event="rules_page_to_calculator_click" data-analytics-params='{"source":"inline_cta"}'>Run calculator in heavy mode</a>
             <a class="ui-button ui-button--ghost" href="${model.materialGuidesUrl()}">Browse material guides</a>
             <a class="ui-button ui-button--ghost" href="${model.projectGuidesUrl()}">Browse project guides</a>
-            <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"heavy_rules","placement":"inline_cta"}'>Compare dumpster vs junk</a>
+                <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"heavy_rules","placement":"inline_cta"}'>Compare dumpster vs crew pickup</a>
         </div>
     </section>
 </main>
 @template.components.appFooter()
 </body>
 </html>
-
 

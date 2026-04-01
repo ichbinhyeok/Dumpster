@@ -72,7 +72,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Debris-type library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Heavy-material library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run heavy-debris estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -80,17 +80,17 @@
             <article class="quick-answer-card">
                 <p class="eyebrow">${model.eyebrow()}</p>
                 <h1 class="font-display">${model.pageTitle()}</h1>
-                <p class="answer-first"><strong>Direct answer:</strong> start with the debris type that dominates the load, then validate size and overage risk by job.</p>
+                <p class="answer-first"><strong>Direct answer:</strong> start with the heavy material that dominates the load, then validate haul limits and overage risk by job.</p>
                 <p>${model.description()}</p>
                 <p class="meta-note">Reviewed by ${model.reviewedBy()} · Updated ${model.lastUpdatedIso()}</p>
                 <div class="quick-facts">
                     <div class="fact-chip">
                         <strong>Navigation model</strong>
-                        <span>Grouped by debris type</span>
+                        <span>Grouped by dense-material behavior</span>
                     </div>
                     <div class="fact-chip">
                         <strong>Decision basis</strong>
-                        <span>Material + haul risk</span>
+                        <span>Weight + haul constraints</span>
                     </div>
                     <div class="fact-chip">
                         <strong>Action path</strong>
@@ -99,12 +99,13 @@
                 </div>
             </article>
             <aside class="launch-card">
-                <h2 class="font-display">Start with a debris profile</h2>
-                <p>Open the live calculator or jump into a debris guide that matches the dominant material in your load.</p>
+                <h2 class="font-display">Start with a heavy-material profile</h2>
+                <p>Open the live calculator or jump into the concrete, dirt, shingles, or drywall guide that matches the load that can break your plan.</p>
                 <div class="inline-cta-row">
-                    <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/concrete">Try concrete guide</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
+                    <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run heavy-debris estimate</a>
+                    <a class="ui-button ui-button--ghost" href="/about/quote-match-beta">Check local heavy-load options</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/concrete">Open concrete guide</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"hero_cta"}'>Compare dumpster vs crew pickup</a>
                 </div>
             </aside>
         </div>
@@ -159,7 +160,7 @@
     @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
         <section class="panel">
             <h2 class="font-display">High-intent answer pages</h2>
-            <p>These are the pages closest to real search demand: users asking for an exact recommendation, not general background information.</p>
+            <p>These are the pages closest to real heavy-debris demand: users asking whether a load is feasible, overweight, or better handled another way.</p>
             <ul class="link-grid">
                 @for(var link : model.intentClusterLinks())
                     <li>
@@ -193,7 +194,8 @@
             </div>
         @endif
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
-        <p><a href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"footer_link"}'>Compare dumpster vs junk before requesting quotes</a></p>
+        <p><a href="/about/quote-match-beta">Check local heavy-load availability for this debris profile</a></p>
+        <p><a href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"footer_link"}'>Compare dumpster vs crew pickup before requesting quotes</a></p>
     </section>
 </main>
 @template.components.appFooter()

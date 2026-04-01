@@ -72,7 +72,7 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Job preset library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Heavy-job library", primaryHref = "/dumpster/size-weight-calculator", primaryLabel = "Run heavy-debris estimate")
 
 <main class="app-container app-main">
     <section class="entry-surface">
@@ -80,31 +80,32 @@
             <article class="quick-answer-card">
                 <p class="eyebrow">${model.eyebrow()}</p>
                 <h1 class="font-display">${model.pageTitle()}</h1>
-                <p class="answer-first"><strong>Direct answer:</strong> start with the project preset, then validate with the material profile that drives weight and haul risk.</p>
+                <p class="answer-first"><strong>Direct answer:</strong> start with the heavy-debris job preset, then validate with the material profile that controls haul risk.</p>
                 <p>${model.description()}</p>
                 <p class="meta-note">Reviewed by ${model.reviewedBy()} · Updated ${model.lastUpdatedIso()}</p>
                 <div class="quick-facts">
                     <div class="fact-chip">
                         <strong>Preset-first flow</strong>
-                        <span>Project scope before volume guess</span>
+                        <span>Heavy-debris job before volume guess</span>
                     </div>
                     <div class="fact-chip">
                         <strong>Risk trigger</strong>
-                        <span>Material + moisture + allowance</span>
+                        <span>Weight + fill rule + allowance</span>
                     </div>
                     <div class="fact-chip">
                         <strong>Output mode</strong>
-                        <span>Safe vs budget route</span>
+                        <span>Feasible vs risky route</span>
                     </div>
                 </div>
             </article>
             <aside class="launch-card">
-                <h2 class="font-display">Jump into a job-specific flow</h2>
-                <p>Use one of the project presets below or open the base calculator if the cleanup is unusual.</p>
+                <h2 class="font-display">Jump into a heavy-debris workflow</h2>
+                <p>Use a concrete, roofing, dirt, or remodel preset first, then fall back to the base calculator only when the job is unusual.</p>
                 <div class="inline-cta-row">
-                    <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run live estimate</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/size/concrete-removal">Try concrete removal</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"hero_cta"}'>Compare dumpster vs junk</a>
+                    <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run heavy-debris estimate</a>
+                    <a class="ui-button ui-button--ghost" href="/about/quote-match-beta">Check local heavy-load options</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/size/concrete-removal">Open concrete removal</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"hero_cta"}'>Compare dumpster vs crew pickup</a>
                 </div>
             </aside>
         </div>
@@ -149,7 +150,8 @@
             @endif
         </div>
         <p><a class="button-link primary" href="/dumpster/size-weight-calculator">Run calculator</a></p>
-        <p><a href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"footer_link"}'>Compare dumpster vs junk for this project flow</a></p>
+        <p><a href="/about/quote-match-beta">Check local heavy-load availability for this project path</a></p>
+        <p><a href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"footer_link"}'>Compare dumpster vs crew pickup for this project flow</a></p>
     </section>
 </main>
 @template.components.appFooter()

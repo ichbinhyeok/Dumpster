@@ -32,6 +32,14 @@ class CalculatorPageRenderingTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-header")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("site-footer")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Heavy Debris Dumpster Calculator")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Concrete-first heavy debris sizing")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("This is not a generic cleanup calculator.")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("/about/quote-match-beta")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"concrete_removal\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"concrete\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Other cleanup cases")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Check local heavy-load options")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"@type\": \"WebApplication\"")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("Data updated:"))));
     }

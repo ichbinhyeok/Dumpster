@@ -69,14 +69,14 @@ public class SeoPageController {
                 seoContentService.isMaterialGuidesIndexable() ? "index, follow" : "noindex, follow"
         );
         GuideHubPageViewModel model = new GuideHubPageViewModel(
-                "Dumpster Debris Type Guides: Weight, Size, and Risk by Material",
+                "Heavy Debris Material Guides: Concrete, Dirt, Shingles, Drywall",
                 seoContentService.materialGuidesUrl(baseUrl),
                 seoContentService.calculatorUrl(baseUrl),
                 seoContentService.ogImageUrl(baseUrl),
-                "Browse debris-type guides for concrete, shingles, drywall, household junk, and other common cleanup materials before choosing dumpster size.",
+                "Browse heavy-debris material guides for concrete, dirt, shingles, drywall, brick, and other cleanup loads where tonnage and haul limits matter first.",
                 seoContentService.defaultLastModifiedDate().toString(),
                 "Debris Decision Editorial Team",
-                "Debris Type Guides",
+                "Heavy Debris Materials",
                 seoContentService.materialGuideLinks(),
                 seoContentService.materialGroupsByCategory(),
                 seoContentService.materialComparisonTable(),
@@ -95,14 +95,14 @@ public class SeoPageController {
                 seoContentService.isProjectGuidesIndexable() ? "index, follow" : "noindex, follow"
         );
         GuideHubPageViewModel model = new GuideHubPageViewModel(
-                "Dumpster Job Guides: Project Presets for Size, Weight, and Route",
+                "Heavy Debris Job Guides: Concrete Removal, Roofing, Dirt, Remodel",
                 seoContentService.projectGuidesUrl(baseUrl),
                 seoContentService.calculatorUrl(baseUrl),
                 seoContentService.ogImageUrl(baseUrl),
-                "Start with project-specific presets for roof tear-off, concrete removal, garage cleanout, estate cleanout, and remodel jobs.",
+                "Start with heavy-debris project presets for concrete removal, roof tear-off, dirt grading, remodel debris, and other jobs where haul risk dominates.",
                 seoContentService.defaultLastModifiedDate().toString(),
                 "Debris Decision Editorial Team",
-                "Job Guides",
+                "Heavy Debris Jobs",
                 seoContentService.projectGuideLinks(),
                 null,
                 null,

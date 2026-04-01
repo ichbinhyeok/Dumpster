@@ -32,7 +32,7 @@
           "name": "Debris Disposal Decision Engine",
           "applicationCategory": "UtilitiesApplication",
           "operatingSystem": "Web",
-          "description": "Homeowner-first decision tool for choosing between dumpster rental and junk removal while reducing overage risk.",
+          "description": "Heavy-debris decision tool for choosing dumpster size and route for concrete, dirt, shingles, and other weight-limited loads.",
           "url": "${JsonLd.content(String.valueOf(model.canonicalUrl()))}"
         }
     </script>
@@ -110,15 +110,15 @@
     @template.components.analyticsTag()
 </head>
 <body class="neo-body neo-content">
-@template.components.appHeader(trustLabel = "Job-specific recommendation engine", primaryHref = "#estimate-form", primaryLabel = "Run live estimate")
+@template.components.appHeader(trustLabel = "Heavy-debris decision engine", primaryHref = "#estimate-form", primaryLabel = "Run heavy-debris estimate")
 
 <main class="app-container app-main calc-page">
     <section class="calc-hero">
         <div class="calc-hero__head">
-            <p class="eyebrow">Choose by job + debris type</p>
+            <p class="eyebrow">Concrete-first heavy debris sizing</p>
             <h1 class="font-display">${model.pageTitle()}</h1>
-            <p>Start with the actual job and dominant material, then choose the safer route: dumpster, junk removal, or staged multi-haul.</p>
-            <p>This is not a generic volume calculator. It is a recommendation engine for heavy-load risk, overage exposure, and first-try dumpster sizing.</p>
+        <p>Start with the heavy material that controls the job, then choose the safer route: staged dumpster hauls, one-bin plan, or crew-pickup fallback.</p>
+            <p>This is not a generic cleanup calculator. It is built for concrete, dirt, shingles, brick, and other dense loads where haul limits break naive sizing.</p>
             <p class="meta-note">Reviewed by Debris Decision editorial team · Updated ${model.lastUpdatedIso()}</p>
             <div class="scenario-chip-group">
                 @if("High".equals(model.confidenceTier()))
@@ -134,32 +134,37 @@
             <p class="meta-note"><strong>Variance note:</strong> ${model.varianceNote()}</p>
         </div>
         <nav class="decision-strip" aria-label="Quick decision routes">
-            <a class="decision-pill" data-decision-mode="roof_job" href="/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles&unit=roof_square&qty=22&timing=research&priority=balanced">I have a roof tear-off</a>
             <a class="decision-pill" data-decision-mode="heavy_material" href="/dumpster/size-weight-calculator?project=concrete_removal&material=concrete&unit=sqft_4in&qty=180&timing=research&priority=heavy">I have concrete or brick</a>
-            <a class="decision-pill" data-decision-mode="cleanout_job" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=household_junk&unit=pickup_load&qty=6&timing=research&priority=cost">I am doing a cleanout</a>
-            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=general_junk_removal&material=household_junk&unit=pickup_load&qty=4&timing=48h&priority=speed">I need the fastest route</a>
+            <a class="decision-pill" data-decision-mode="dirt_job" href="/dumpster/size-weight-calculator?project=dirt_grading&material=dirt_soil&unit=pickup_load&qty=5&timing=research&priority=heavy">I have dirt or gravel</a>
+            <a class="decision-pill" data-decision-mode="roof_job" href="/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles&unit=roof_square&qty=22&timing=research&priority=balanced">I have shingles</a>
+            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=general_junk_removal&material=household_junk&unit=pickup_load&qty=4&timing=48h&priority=speed">I need a fast fallback</a>
         </nav>
         <div class="calc-benefits">
             <article class="calc-benefit">
-                <strong>Exact-fit entry point</strong>
-                <p>Start with the job and debris profile that actually matches your cleanup.</p>
+                <strong>Heavy-load specialist</strong>
+                <p>Start with dense debris where tonnage and transport rules matter more than visible volume.</p>
             </article>
             <article class="calc-benefit">
-                <strong>Weight-first risk</strong>
-                <p>See tonnage and allowance pressure before a quote turns into an overage problem.</p>
+                <strong>Concrete-first workflows</strong>
+                <p>Move through concrete, dirt, and shingles scenarios with rule-aware presets instead of guesswork.</p>
             </article>
             <article class="calc-benefit">
-                <strong>Route recommendation</strong>
-                <p>Compare dumpster, junk removal, and staged-haul fallbacks in one board.</p>
+                <strong>Route plus rules</strong>
+                <p>Compare staged hauls, heavy-load rules, and fallback routes before a pickup failure happens.</p>
             </article>
+        </div>
+        <div class="inline-cta-row" style="margin-top:1rem;">
+            <a class="ui-button ui-button--primary" href="#estimate-form">Run heavy-debris estimate</a>
+            <a class="ui-button ui-button--ghost" href="/about/quote-match-beta">Check local heavy-load options</a>
+            <a class="ui-button ui-button--ghost" href="/dumpster/can-you-put-concrete-in-a-dumpster">Open concrete rules</a>
         </div>
     </section>
 
     <section class="calc-layout">
         <form id="estimate-form" class="calc-workflow">
-            <input id="project-id" type="hidden" value="roof_tearoff">
+            <input id="project-id" type="hidden" value="concrete_removal">
             <input id="persona" type="hidden" value="homeowner">
-            <input id="material-id" type="hidden" value="asphalt_shingles">
+            <input id="material-id" type="hidden" value="concrete">
             <input id="unit-id" type="hidden" value="pickup_load">
             <input id="need-timing" type="hidden" value="research">
             <input id="decision-priority" type="hidden" value="balanced">
@@ -168,58 +173,78 @@
                 <button type="button" id="quick-mode-button" class="ui-button ui-button--ghost is-active">Quick estimate</button>
                 <button type="button" id="advanced-mode-button" class="ui-button ui-button--ghost">Advanced mode</button>
             </div>
-            <p id="estimate-mode-note" class="calc-step__hint">Quick mode uses project + material + quantity for the fastest answer.</p>
+            <p id="estimate-mode-note" class="calc-step__hint">Quick mode starts with a heavy-debris job, dominant material, and quantity for the fastest feasibility call.</p>
 
             <div class="calc-stepper">
                 <section class="calc-step" data-choice-target="project-id">
                     <div class="calc-step__head">
                         <div>
-                            <h2 class="calc-step__title">Project scope</h2>
-                            <p class="calc-step__hint">Choose the closest job type.</p>
+                            <h2 class="calc-step__title">Heavy-debris job</h2>
+                            <p class="calc-step__hint">Start with the dense-load workflow that best matches the site reality.</p>
                         </div>
                     </div>
                     <div class="choice-grid">
-                        <button type="button" class="choice-chip is-active" data-choice-value="roof_tearoff">Roof tear-off</button>
+                        <button type="button" class="choice-chip is-active" data-choice-value="concrete_removal">Concrete removal</button>
+                        <button type="button" class="choice-chip" data-choice-value="dirt_grading">Dirt grading</button>
+                        <button type="button" class="choice-chip" data-choice-value="roof_tearoff">Roof tear-off</button>
                         <button type="button" class="choice-chip" data-choice-value="kitchen_remodel">Kitchen remodel</button>
                         <button type="button" class="choice-chip" data-choice-value="bathroom_remodel">Bathroom remodel</button>
                         <button type="button" class="choice-chip" data-choice-value="deck_demolition">Deck demo</button>
-                        <button type="button" class="choice-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
-                        <button type="button" class="choice-chip" data-choice-value="estate_cleanout">Estate cleanout</button>
-                        <button type="button" class="choice-chip" data-choice-value="moving_cleanout">Moving / apartment cleanout</button>
-                        <button type="button" class="choice-chip" data-choice-value="furniture_appliance_disposal">Furniture or appliance disposal</button>
-                        <button type="button" class="choice-chip" data-choice-value="general_junk_removal">General junk removal</button>
-                        <button type="button" class="choice-chip" data-choice-value="yard_cleanup">Yard cleanup</button>
-                        <button type="button" class="choice-chip" data-choice-value="dirt_grading">Dirt grading</button>
-                        <button type="button" class="choice-chip" data-choice-value="concrete_removal">Concrete removal</button>
                         <button type="button" class="choice-chip" data-choice-value="light_commercial_fitout">Light commercial fit-out</button>
                     </div>
+                    <details class="ui-accordion" style="margin-top:0.9rem;">
+                        <summary>
+                            <span>Other cleanup cases</span>
+                            <small>Fallback scenarios that are not the lead wedge</small>
+                        </summary>
+                        <div class="ui-accordion__body">
+                            <div class="choice-grid choice-grid--compact">
+                                <button type="button" class="choice-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
+                                <button type="button" class="choice-chip" data-choice-value="estate_cleanout">Estate cleanout</button>
+                                <button type="button" class="choice-chip" data-choice-value="moving_cleanout">Moving / apartment cleanout</button>
+                                <button type="button" class="choice-chip" data-choice-value="furniture_appliance_disposal">Furniture or appliance disposal</button>
+                                <button type="button" class="choice-chip" data-choice-value="general_junk_removal">General cleanup fallback</button>
+                                <button type="button" class="choice-chip" data-choice-value="yard_cleanup">Yard cleanup</button>
+                            </div>
+                        </div>
+                    </details>
                 </section>
 
                 <section class="calc-step" data-choice-target="material-id">
                     <div class="calc-step__head">
                         <div>
-                            <h2 class="calc-step__title">Material profile</h2>
-                            <p class="calc-step__hint">Weight behavior changes the recommendation fastest.</p>
+                            <h2 class="calc-step__title">Dominant material</h2>
+                            <p class="calc-step__hint">Lead with the material most likely to break haul limits or overage assumptions.</p>
                         </div>
                     </div>
                     <div class="choice-grid">
-                        <button type="button" class="choice-chip is-active" data-choice-value="asphalt_shingles">Asphalt shingles</button>
-                        <button type="button" class="choice-chip" data-choice-value="concrete">Concrete</button>
+                        <button type="button" class="choice-chip is-active" data-choice-value="concrete">Concrete</button>
                         <button type="button" class="choice-chip" data-choice-value="dirt_soil">Dirt / soil</button>
+                        <button type="button" class="choice-chip" data-choice-value="asphalt_shingles">Asphalt shingles</button>
                         <button type="button" class="choice-chip" data-choice-value="brick">Brick</button>
-                        <button type="button" class="choice-chip" data-choice-value="tile_ceramic">Tile / ceramic</button>
                         <button type="button" class="choice-chip" data-choice-value="gravel_rock">Gravel / rock</button>
+                        <button type="button" class="choice-chip" data-choice-value="tile_ceramic">Tile / ceramic</button>
                         <button type="button" class="choice-chip" data-choice-value="asphalt_pavement">Asphalt pavement</button>
-                        <button type="button" class="choice-chip" data-choice-value="plaster">Plaster</button>
                         <button type="button" class="choice-chip" data-choice-value="drywall">Drywall</button>
                         <button type="button" class="choice-chip" data-choice-value="mixed_cd">Mixed construction debris (C&amp;D)</button>
-                        <button type="button" class="choice-chip" data-choice-value="household_junk">Household junk</button>
-                        <button type="button" class="choice-chip" data-choice-value="furniture">Furniture</button>
-                        <button type="button" class="choice-chip" data-choice-value="carpet_pad">Carpet and pad</button>
-                        <button type="button" class="choice-chip" data-choice-value="decking_wood">Decking wood</button>
-                        <button type="button" class="choice-chip" data-choice-value="insulation_wet">Wet insulation</button>
-                        <button type="button" class="choice-chip" data-choice-value="yard_waste">Yard waste</button>
+                        <button type="button" class="choice-chip" data-choice-value="plaster">Plaster</button>
                     </div>
+                    <details class="ui-accordion" style="margin-top:0.9rem;">
+                        <summary>
+                            <span>Other material profiles</span>
+                            <small>Fallback materials that are not the current lead wedge</small>
+                        </summary>
+                        <div class="ui-accordion__body">
+                            <div class="choice-grid choice-grid--compact">
+                                <button type="button" class="choice-chip" data-choice-value="household_junk">Household junk</button>
+                                <button type="button" class="choice-chip" data-choice-value="furniture">Furniture</button>
+                                <button type="button" class="choice-chip" data-choice-value="carpet_pad">Carpet and pad</button>
+                                <button type="button" class="choice-chip" data-choice-value="decking_wood">Decking wood</button>
+                                <button type="button" class="choice-chip" data-choice-value="insulation_wet">Wet insulation</button>
+                                <button type="button" class="choice-chip" data-choice-value="yard_waste">Yard waste</button>
+                            </div>
+                        </div>
+                    </details>
                 </section>
 
                 <section class="calc-step">
@@ -245,7 +270,7 @@
                         <p id="unit-helper-text" class="calc-step__hint" style="margin-top: -0.25rem; margin-bottom: 0.5rem;">Standard 8ft pickup truck bed, level full (~2.5 yd3).</p>
                         <div class="calc-quantity-stepper">
                             <button type="button" id="quantity-dec" class="calc-stepper-btn" aria-label="Decrease quantity">-</button>
-                            <input id="quantity" type="number" step="0.1" min="0.1" value="6" required>
+                            <input id="quantity" type="number" step="0.1" min="0.1" value="1" required>
                             <button type="button" id="quantity-inc" class="calc-stepper-btn" aria-label="Increase quantity">+</button>
                         </div>
                     </div>
@@ -429,9 +454,9 @@
             </div>
 
             <section id="result-precalc" class="result-precalc">
-                <p class="result-precalc__lead"><strong>Direct answer:</strong> this tool decides the safest next move before you call anyone.</p>
+                <p class="result-precalc__lead"><strong>Direct answer:</strong> this tool decides the safest heavy-load route before you call anyone.</p>
                 <ul>
-                    <li><strong>Route:</strong> dumpster, junk removal, or staged multi-haul.</li>
+                    <li><strong>Route:</strong> dumpster, crew pickup, or staged multi-haul.</li>
                     <li><strong>Risk:</strong> where overage or feasibility can break the plan.</li>
                     <li><strong>Action:</strong> exact next CTA based on your timing and material profile.</li>
                 </ul>
@@ -496,6 +521,13 @@
 
     <section class="calc-support-grid">
         <article class="calc-support-card">
+            <h2 class="font-display">Check local heavy-load availability</h2>
+            <p>Once the route looks feasible, move from estimation into local heavy-load matching so you can validate operator policy before booking.</p>
+            <p><a class="ui-button ui-button--primary" href="/about/quote-match-beta">Check local heavy-load options</a></p>
+            <p><a href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper">Or compare dumpster vs crew pickup first</a></p>
+        </article>
+
+        <article class="calc-support-card">
             <h2 class="font-display">Vendor checklist</h2>
             <p class="calc-step__hint">Evidence confidence: ${model.confidenceTier()} | Confirm before booking.</p>
             <ol>
@@ -524,9 +556,9 @@
         </article>
 
         <article class="calc-support-card">
-            <h2 class="font-display">Preset guides</h2>
+            <h2 class="font-display">Specialist guides</h2>
             <div>
-                <h3>High-signal debris guides</h3>
+                <h3>Heavy-debris guides</h3>
                 <ul>
                     @for(var link : model.featuredMaterialLinks())
                         <li><a href="${link.href()}">${link.label()}</a></li>
@@ -535,7 +567,7 @@
                 <p><a href="/dumpster/material-guides">See all material guides</a></p>
             </div>
             <div>
-                <h3>Job-specific quick starts</h3>
+                <h3>Heavy-debris job starts</h3>
                 <ul>
                     @for(var link : model.featuredProjectLinks())
                         <li><a href="${link.href()}">${link.label()}</a></li>
@@ -558,11 +590,10 @@
 </div>
 
 <div id="floating-cta" class="floating-cta" hidden>
-    <a id="floating-call" href="/about/quote-match-beta">Join quote-match beta</a>
+    <a id="floating-call" href="/about/quote-match-beta">Check local heavy-load options</a>
     <a id="floating-quote" href="#estimate-form">Run live estimate</a>
 </div>
 
 <script src="/js/calculator.js?v=stripeapple4"></script>
 </body>
 </html>
-

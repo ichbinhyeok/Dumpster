@@ -61,9 +61,9 @@ public class TrustPageController {
     public ModelAndView quoteMatchBeta() {
         ModelAndView modelAndView = new ModelAndView("trust/quote-match-beta");
         modelAndView.addObject("model", new TrustPageViewModel(
-                "Quote Match Beta",
-                "Quote Match Beta: Local Dumpster and Junk Removal Intake",
-                "Join the quote-match beta to request local dumpster or junk removal partner follow-up based on your project details.",
+                "Local Heavy-Debris Match",
+                "Local Heavy-Debris Match: Dumpster and Crew Pickup Intake",
+                "Request local heavy-load dumpster or crew-pickup follow-up for concrete, dirt, shingles, and other dense debris scenarios.",
                 baseUrl,
                 baseUrl + "/about/quote-match-beta",
                 baseUrl + "/og-image.png"

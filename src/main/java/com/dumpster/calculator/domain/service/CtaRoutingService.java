@@ -11,19 +11,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class CtaRoutingService {
 
-    public CtaRouting decide(EstimateCommand command, PriceRisk priceRisk, Feasibility feasibility, boolean heavyWarning) {
+    public CtaRouting decide(
+            EstimateCommand command,
+            PriceRisk priceRisk,
+            Feasibility feasibility,
+            boolean heavyWarning,
+            boolean usedAssumedAllowance
+    ) {
         List<String> reasons = new ArrayList<>();
-        String primary = "dumpster_quote";
-        String secondary = "junk_removal";
+        String primary = "dumpster_call";
+        String secondary = "junk_call";
 
         if (feasibility != Feasibility.OK) {
-            primary = "junk_removal";
-            secondary = "dumpster_quote";
+            primary = "junk_call";
+            secondary = "dumpster_call";
             reasons.add("operational feasibility is not OK");
         } else if (priceRisk == PriceRisk.HIGH) {
-            primary = "junk_removal";
-            secondary = "dumpster_quote";
+            primary = "junk_call";
+            secondary = "dumpster_form";
             reasons.add("high overweight price risk");
+        } else if (heavyWarning && usedAssumedAllowance) {
+            primary = "dumpster_form";
+            secondary = "dumpster_call";
+            reasons.add("heavy debris route depends on assumed allowance");
         }
 
         if (heavyWarning) {
@@ -33,7 +43,7 @@ public class CtaRoutingService {
                 && feasibility == Feasibility.OK
                 && priceRisk != PriceRisk.HIGH) {
             primary = "dumpster_call";
-            secondary = "junk_removal";
+            secondary = "junk_call";
             reasons.add("urgent timing selected");
         }
         if ("contractor".equalsIgnoreCase(command.persona())) {

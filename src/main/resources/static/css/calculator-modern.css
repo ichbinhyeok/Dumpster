@@ -1137,6 +1137,10 @@
     .mobile-result-dock {
         display: block;
     }
+
+    .floating-cta {
+        display: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

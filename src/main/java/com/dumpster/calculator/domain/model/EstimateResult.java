@@ -9,6 +9,7 @@ public record EstimateResult(
         Feasibility feasibility,
         boolean usedAssumedAllowance,
         boolean heavyDebrisWarning,
+        ExecutionPlan executionPlan,
         CtaRouting ctaRouting,
         List<RecommendationOption> recommendations,
         List<CostComparisonOption> costComparison,

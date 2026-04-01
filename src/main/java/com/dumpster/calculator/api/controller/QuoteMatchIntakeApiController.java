@@ -90,7 +90,7 @@ public class QuoteMatchIntakeApiController {
                 statusLabel(intake.status()),
                 expectedWindow(intake.needTiming()),
                 ISO_TIME.format(intake.createdAt()),
-                "Queued for partner-coverage review. This is not instant booking."
+                "Queued for local heavy-load coverage review. This is not instant booking."
         );
     }
 

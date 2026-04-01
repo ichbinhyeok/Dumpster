@@ -82,6 +82,43 @@ class SeoContentServiceTests {
     }
 
     @Test
+    void concreteClusterPagesExposeConcreteFocusedInternalLinks() {
+        var material = seoContentService.materialPage("concrete", "http://localhost:8080").orElseThrow();
+        var project = seoContentService.projectPage("concrete_removal", "http://localhost:8080").orElseThrow();
+        var intent = seoContentService.intentPage(
+                "concrete_removal",
+                "concrete",
+                "size-guide",
+                "http://localhost:8080"
+        ).orElseThrow();
+
+        assertThat(material.decisionStageLinks())
+                .extracting(link -> link.href())
+                .contains(
+                        "/about/quote-match-beta",
+                        "/dumpster/can-you-put-concrete-in-a-dumpster",
+                        "/dumpster/size/concrete-removal",
+                        "/dumpster/weight/concrete"
+                );
+        assertThat(project.decisionStageLinks())
+                .extracting(link -> link.href())
+                .contains(
+                        "/about/quote-match-beta",
+                        "/dumpster/can-you-put-concrete-in-a-dumpster",
+                        "/dumpster/size/concrete-removal",
+                        "/dumpster/weight/concrete"
+                );
+        assertThat(intent.decisionStageLinks())
+                .extracting(link -> link.href())
+                .contains(
+                        "/about/quote-match-beta",
+                        "/dumpster/can-you-put-concrete-in-a-dumpster",
+                        "/dumpster/size/concrete-removal",
+                        "/dumpster/weight/concrete"
+                );
+    }
+
+    @Test
     void defaultConfigUsesPrimaryAndExperimentIntentIndexPaths() {
         var paths = seoContentService.indexableIntentPaths();
 
