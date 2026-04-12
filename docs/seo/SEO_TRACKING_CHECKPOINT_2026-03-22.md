@@ -728,3 +728,35 @@ The next manual actions should be:
    - `/dumpster/answers/roof-tear-off/shingles/weight-estimate`
 2. re-check the kitchen/plaster page after Google re-crawls it
 3. keep monitoring whether roofing / garage / mixed C&D answer pages outpace the concrete cluster
+
+### Push and indexing constraint recorded on 2026-04-12
+
+The code and documentation changes from this checkpoint were pushed to `master`.
+
+Relevant commit:
+
+- `ef1d87e` — `Promote answer winners and guide hubs for indexing`
+
+Important operating constraint discovered after the push:
+
+- manual Search Console indexing requests were blocked by quota / resource-allocation exhaustion during this session
+
+Practical consequence:
+
+- the next step is **not** to keep retrying the same URLs blindly
+- rely on:
+  - `index, follow` policy now active on the guide hubs
+  - `sitemap-core.xml` inclusion for the guide hubs
+  - existing internal links from the calculator, answer pages, and rules pages
+
+Priority URLs when manual indexing quota becomes available again:
+
+1. `https://debrisdecision.com/dumpster/material-guides`
+2. `https://debrisdecision.com/dumpster/project-guides`
+3. `https://debrisdecision.com/dumpster/answers/kitchen-remodel/plaster/weight-estimate`
+
+Operating rule while quota is unavailable:
+
+- do not spend indexing requests on URLs already showing `Submitted and indexed`
+- let Google recrawl through sitemap and internal-link discovery first
+- use the next checkpoint to verify whether the two guide hubs moved from `unknown to Google` into indexed state without manual intervention
