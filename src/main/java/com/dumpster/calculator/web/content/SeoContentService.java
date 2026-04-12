@@ -44,34 +44,34 @@ public class SeoContentService {
     private static final DateTimeFormatter SOURCE_MONTH_YEAR = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US);
     private static final List<String> MATERIAL_PRIORITY = List.of(
             "concrete",
-            "dirt_soil",
             "asphalt_shingles",
+            "mixed_cd",
+            "decking_wood",
+            "plaster",
+            "cardboard_packaging",
+            "dirt_soil",
+            "drywall",
+            "tile_ceramic",
             "brick",
             "gravel_rock",
-            "drywall",
-            "mixed_cd",
-            "tile_ceramic",
-            "decking_wood",
             "household_junk",
             "furniture",
-            "cardboard_packaging",
             "asphalt_pavement",
             "lumber",
             "carpet_pad",
-            "plaster",
             "insulation_wet",
             "yard_waste",
             "green_waste_brush",
             "metal_scrap_light"
     );
     private static final List<String> PROJECT_PRIORITY = List.of(
-            "concrete_removal",
-            "dirt_grading",
             "roof_tearoff",
-            "bathroom_remodel",
-            "kitchen_remodel",
-            "deck_demolition",
             "garage_cleanout",
+            "kitchen_remodel",
+            "concrete_removal",
+            "deck_demolition",
+            "dirt_grading",
+            "bathroom_remodel",
             "estate_cleanout",
             "yard_cleanup",
             "light_commercial_fitout"
@@ -79,8 +79,13 @@ public class SeoContentService {
     private static final Map<String, Integer> MATERIAL_INDEX_WAVE = Map.of(
             "concrete", 1,
             "asphalt_shingles", 1,
+            "mixed_cd", 1,
             "drywall", 1,
             "dirt_soil", 1,
+            "decking_wood", 2,
+            "plaster", 2,
+            "cardboard_packaging", 2,
+            "tile_ceramic", 2,
             "brick", 3
     );
     private static final Map<String, Integer> PROJECT_INDEX_WAVE = Map.ofEntries(
@@ -114,9 +119,13 @@ public class SeoContentService {
             "drywall",
             "dirt_soil",
             "brick",
+            "decking_wood",
+            "plaster",
+            "cardboard_packaging",
             "household_junk",
             "furniture",
-            "mixed_cd"
+            "mixed_cd",
+            "tile_ceramic"
     );
     private static final Set<String> PRIORITY_INDEXABLE_PROJECT_IDS = Set.of(
             "bathroom_remodel",
@@ -290,6 +299,16 @@ public class SeoContentService {
             new IndexableIntentSeed("bathroom_remodel", "drywall", "weight-estimate"),
             new IndexableIntentSeed("kitchen_remodel", "drywall", "weight-estimate"),
             new IndexableIntentSeed("kitchen_remodel", "mixed_cd", "size-guide")
+    );
+    private static final List<IndexableIntentSeed> FEATURED_WINNER_INTENT_SEEDS = List.of(
+            new IndexableIntentSeed("roof_tearoff", "asphalt_shingles", "weight-estimate"),
+            new IndexableIntentSeed("garage_cleanout", "cardboard_packaging", "weight-estimate"),
+            new IndexableIntentSeed("kitchen_remodel", "plaster", "weight-estimate"),
+            new IndexableIntentSeed("deck_demolition", "decking_wood", "weight-estimate"),
+            new IndexableIntentSeed("concrete_removal", "concrete", "size-guide"),
+            new IndexableIntentSeed("dirt_grading", "dirt_soil", "weight-estimate"),
+            new IndexableIntentSeed("bathroom_remodel", "tile_ceramic", "size-guide"),
+            new IndexableIntentSeed("estate_cleanout", "furniture", "weight-estimate")
     );
     private static final Set<IndexableIntentSeed> WAVE_THREE_INTENT_EXCLUSIONS = Set.of(
             new IndexableIntentSeed("roof_tearoff", "tile_ceramic", "size-guide")
@@ -1234,6 +1253,35 @@ public class SeoContentService {
                 .toList();
     }
 
+    public List<LinkItemViewModel> featuredWinnerAnswerLinks(int limit) {
+        LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
+        for (IndexableIntentSeed seed : FEATURED_WINNER_INTENT_SEEDS) {
+            if (!isProjectEnabled(seed.projectId())) {
+                continue;
+            }
+            if (!projectIntentMaterialsForProject(seed.projectId()).contains(seed.materialId())) {
+                continue;
+            }
+            Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
+            ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
+            if (intentTypeOptional.isEmpty() || projectSeed == null) {
+                continue;
+            }
+            IntentType intentType = intentTypeOptional.get();
+            String materialName = materialDisplayName(seed.materialId());
+            String href = intentPath(seed.projectId(), seed.materialId(), intentType);
+            deduped.putIfAbsent(href, new LinkItemViewModel(
+                    href,
+                    intentType.linkLabel(projectSeed.title(), materialName),
+                    "Live answer-path bet based on recent Search Console signal."
+            ));
+            if (deduped.size() >= limit) {
+                return List.copyOf(deduped.values());
+            }
+        }
+        return List.copyOf(deduped.values());
+    }
+
     public List<LinkItemViewModel> materialGuideLinks() {
         return sortedIndexableMaterials().stream()
                 .map(material -> new LinkItemViewModel(
@@ -1256,6 +1304,9 @@ public class SeoContentService {
 
     public List<LinkItemViewModel> intentClusterLinksForMaterialHub() {
         LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
+        for (LinkItemViewModel featured : featuredWinnerAnswerLinks(8)) {
+            deduped.putIfAbsent(featured.href(), featured);
+        }
         for (IndexableIntentSeed seed : allActiveIndexableIntentSeeds()) {
             Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
             ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
@@ -1279,6 +1330,9 @@ public class SeoContentService {
 
     public List<LinkItemViewModel> intentClusterLinksForProjectHub() {
         LinkedHashMap<String, LinkItemViewModel> deduped = new LinkedHashMap<>();
+        for (LinkItemViewModel featured : featuredWinnerAnswerLinks(8)) {
+            deduped.putIfAbsent(featured.href(), featured);
+        }
         for (IndexableIntentSeed seed : allActiveIndexableIntentSeeds()) {
             Optional<IntentType> intentTypeOptional = IntentType.fromSlug(seed.intentSlug());
             ProjectSeed projectSeed = projectSeeds.get(seed.projectId());
@@ -1570,11 +1624,11 @@ public class SeoContentService {
     }
 
     public boolean isMaterialGuidesIndexable() {
-        return false;
+        return true;
     }
 
     public boolean isProjectGuidesIndexable() {
-        return false;
+        return true;
     }
 
     private List<ProjectSeed> sortedIndexableProjects() {

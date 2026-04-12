@@ -74,6 +74,8 @@ public class SeoInfrastructureController {
         String defaultLastMod = seoContentService.defaultLastModifiedDate().toString();
         List<SitemapEntry> urls = List.of(
                 new SitemapEntry("/dumpster/size-weight-calculator", defaultLastMod),
+                new SitemapEntry("/dumpster/material-guides", defaultLastMod),
+                new SitemapEntry("/dumpster/project-guides", defaultLastMod),
                 new SitemapEntry("/dumpster/heavy-debris-rules", defaultLastMod),
                 new SitemapEntry("/about/methodology", defaultLastMod),
                 new SitemapEntry("/about/editorial-policy", defaultLastMod),

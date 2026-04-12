@@ -94,14 +94,14 @@ class SeoPageRenderingTests {
     }
 
     @Test
-    void guideHubsAreServedAsNoindexByPolicy() throws Exception {
+    void guideHubsAreServedAsIndexablePages() throws Exception {
         mockMvc.perform(get("/dumpster/material-guides"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
 
         mockMvc.perform(get("/dumpster/project-guides"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("noindex")));
+                .andExpect(header().string("X-Robots-Tag", org.hamcrest.Matchers.containsString("index")));
     }
 
     @Test
@@ -205,6 +205,18 @@ class SeoPageRenderingTests {
     @Test
     void concreteIntentPageJsonLdScriptsParseAsValidJson() throws Exception {
         MvcResult result = mockMvc.perform(get("/dumpster/answers/concrete-removal/concrete/size-guide"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<JsonNode> scripts = parseJsonLdScripts(result.getResponse().getContentAsString());
+        assertThat(scripts).hasSize(3);
+        assertThat(scripts).extracting(node -> node.path("@type").asText())
+                .containsExactly("BreadcrumbList", "FAQPage", "Article");
+    }
+
+    @Test
+    void clickedKitchenPlasterIntentPageJsonLdScriptsParseAsValidJson() throws Exception {
+        MvcResult result = mockMvc.perform(get("/dumpster/answers/kitchen-remodel/plaster/weight-estimate"))
                 .andExpect(status().isOk())
                 .andReturn();
 

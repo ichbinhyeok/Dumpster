@@ -99,17 +99,32 @@
                 </div>
             </article>
             <aside class="launch-card">
-                <h2 class="font-display">Start with a heavy-material profile</h2>
-                <p>Open the live calculator or jump into the concrete, dirt, shingles, or drywall guide that matches the load that can break your plan.</p>
+                <h2 class="font-display">Start with the answer path already working</h2>
+                <p>Use the winner answer pages first when your job looks like shingles, mixed remodel debris, garage overflow, deck teardown, or concrete-heavy cleanup.</p>
                 <div class="inline-cta-row">
                     <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run heavy-debris estimate</a>
                     <a class="ui-button ui-button--ghost" href="/about/quote-match-beta">Check local heavy-load options</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/weight/concrete">Open concrete guide</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/answers/roof-tear-off/shingles/weight-estimate">Open shingles winner</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"material_guides_hub","placement":"hero_cta"}'>Compare dumpster vs crew pickup</a>
                 </div>
             </aside>
         </div>
     </section>
+
+    @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
+        <section class="panel">
+            <h2 class="font-display">Winner answer pages</h2>
+            <p>These are the answer paths currently closest to real search demand. Use them as the front door, then route into the calculator when the job matches.</p>
+            <ul class="link-grid">
+                @for(var link : model.intentClusterLinks())
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
+                @endfor
+            </ul>
+        </section>
+    @endif
 
     @if(model.materialGroups() != null)
         @for(var group : model.materialGroups())
@@ -154,21 +169,6 @@
                     </tbody>
                 </table>
             </div>
-        </section>
-    @endif
-
-    @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
-        <section class="panel">
-            <h2 class="font-display">High-intent answer pages</h2>
-            <p>These are the pages closest to real heavy-debris demand: users asking whether a load is feasible, overweight, or better handled another way.</p>
-            <ul class="link-grid">
-                @for(var link : model.intentClusterLinks())
-                    <li>
-                        <a href="${link.href()}">${link.label()}</a>
-                        <span>${link.summary()}</span>
-                    </li>
-                @endfor
-            </ul>
         </section>
     @endif
 

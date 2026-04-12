@@ -38,6 +38,8 @@ class SeoInfrastructureTests {
         String body = response.getBody();
         String stableLastMod = seoContentService.defaultLastModifiedDate().toString();
         assertThat(body).contains("/dumpster/size-weight-calculator</loc><lastmod>" + stableLastMod + "</lastmod>");
+        assertThat(body).contains("/dumpster/material-guides</loc><lastmod>" + stableLastMod + "</lastmod>");
+        assertThat(body).contains("/dumpster/project-guides</loc><lastmod>" + stableLastMod + "</lastmod>");
         assertThat(body).contains("/dumpster/heavy-debris-rules</loc><lastmod>" + stableLastMod + "</lastmod>");
     }
 

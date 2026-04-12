@@ -13,6 +13,7 @@ public record CalculatorPageViewModel(
         String siteBaseUrl,
         String canonicalUrl,
         String ogImageUrl,
+        List<LinkItemViewModel> featuredAnswerLinks,
         List<LinkItemViewModel> featuredMaterialLinks,
         List<LinkItemViewModel> featuredProjectLinks
 ) {

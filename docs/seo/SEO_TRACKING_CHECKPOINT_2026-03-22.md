@@ -520,3 +520,211 @@ Artifacts kept from this verification pass:
 - `build/playwright/calculator-desktop.png`
 - `build/playwright/calculator-mobile.png`
 - `build/playwright/calculator-check.json`
+
+## Follow-Up Checkpoint On 2026-04-12
+
+### Data freshness used for this review
+
+- Review date: `2026-04-12`
+- Search Console data state used: `final`
+- Final data available through: `2026-04-09`
+
+This matters because the review date is later than the freshest final GSC date.
+
+### Search Console state on 2026-04-12
+
+Observed 28-day window:
+
+- `2026-03-12` through `2026-04-09`
+- Result: `1 click / 384 impressions / 0.26% CTR / average position 23.30`
+
+Short-period comparison used during review:
+
+- `2026-03-27` through `2026-04-09`
+- versus `2026-03-13` through `2026-03-26`
+- Result:
+  - clicks improved from `0` to `1`
+  - impressions fell from `203` to `172`
+  - average position improved from `28.13` to `17.38`
+
+Interpretation:
+
+- The site is no longer at absolute zero because the first click has now appeared.
+- The site is still not in breakout traction.
+- Google appears to be testing a smaller set of pages more seriously rather than expanding broad visibility.
+
+### What actually generated traction
+
+The first click did **not** come from the broad calculator page or the primary concrete rules page.
+
+The click was attached at page level to:
+
+- `https://debrisdecision.com/dumpster/answers/kitchen_remodel/plaster/weight-estimate`
+
+Observed page-level metrics:
+
+- `1 click / 10 impressions / position 5.0`
+
+Important note:
+
+- Query-level data for that page did not surface the matching click row.
+- The likely explanation is low-volume anonymization in GSC query reporting.
+- This is an inference from the Search Console output, not a direct query-level confirmation.
+
+### What pages now look strongest
+
+The current strongest signals are still not broad calculator terms. They are answer/weight pages and some rules pages.
+
+Examples from the `2026-03-12` through `2026-04-09` review window:
+
+- `/dumpster/answers/roof_tearoff/asphalt_shingles/weight-estimate`: `50 impressions / position 7.98`
+- `/dumpster/answers/garage_cleanout/cardboard_packaging/weight-estimate`: `42 impressions / position 6.26`
+- `/dumpster/heavy-debris-rules`: `31 impressions / position 4.90`
+- `/dumpster/weight/mixed_cd`: `56 impressions / position 6.89`
+- `/dumpster/size/concrete-removal`: `15 impressions / position 6.53`
+- `/dumpster/size-weight-calculator`: `65 impressions / position 42.38`
+
+Implication:
+
+- The acquisition layer is behaving more like a long-tail answer engine than a calculator-led SEO property.
+- The earlier concrete-first thesis still has some validity, but the live signal is broader than concrete alone.
+- Roofing, garage, deck, mixed C&D, and remodel answers now deserve active attention.
+
+### Important indexing findings from URL inspection
+
+Confirmed indexed and passing:
+
+- `https://debrisdecision.com/dumpster/size-weight-calculator`
+- `https://debrisdecision.com/dumpster/can-you-put-concrete-in-a-dumpster`
+- `https://debrisdecision.com/dumpster/size/concrete-removal`
+- `https://debrisdecision.com/dumpster/weight/concrete`
+- `https://debrisdecision.com/dumpster/heavy-debris-rules`
+
+Unexpectedly still unknown to Google:
+
+- `https://debrisdecision.com/dumpster/material-guides`
+- `https://debrisdecision.com/dumpster/project-guides`
+
+This finding explained a real product/SEO mismatch:
+
+- the hub pages were being treated like important navigational surfaces by the site,
+- but in code they were still deliberately marked `noindex`,
+- and they were also excluded from sitemap coverage.
+
+### Important structured-data finding on 2026-04-12
+
+The clicked kitchen/plaster answer page showed:
+
+- `Submitted and indexed`
+- last crawl: `2026-03-04`
+- Rich Results verdict: `FAIL`
+- issue: `Unparsable structured data`
+- issue detail: `Bad escape sequence in string`
+
+Interpretation:
+
+- This could be an old crawl snapshot rather than a still-live rendering bug.
+- A local rendering regression test was needed to distinguish "current code is broken" from "Google has not re-crawled the fixed render yet."
+
+### Code actions taken on 2026-04-12
+
+Two concrete changes were made after this review:
+
+1. Guide hubs were promoted into indexable SEO surfaces
+
+- `material-guides` and `project-guides` were changed from `noindex` policy to `index, follow`
+- both hubs were added to `sitemap-core.xml`
+
+Reason:
+
+- Search Console showed they were still unknown to Google.
+- This was not a crawl mystery. It was partly a deliberate policy choice in code that no longer matched the SEO strategy.
+
+2. JSON-LD regression coverage was expanded
+
+- a new test was added for:
+  - `/dumpster/answers/kitchen-remodel/plaster/weight-estimate`
+
+Reason:
+
+- This page generated the first click but still showed a stale-looking structured-data failure in Search Console.
+- The local test now verifies that the current rendered JSON-LD blocks parse correctly.
+
+### Verification completed on 2026-04-12
+
+Command run:
+
+- `./gradlew test --tests com.dumpster.calculator.SeoInfrastructureTests --tests com.dumpster.calculator.SeoPageRenderingTests`
+
+Result:
+
+- passed
+
+Meaning:
+
+- the current codebase now treats the guide hubs as indexable pages,
+- the hub sitemap behavior matches that policy,
+- and the clicked kitchen/plaster intent page renders valid JSON-LD in local test coverage.
+
+### Product structure changes implemented after the 2026-04-12 review
+
+The review did not stop at indexing fixes.
+
+The live site strategy was adjusted to match the actual acquisition pattern seen in Search Console:
+
+- answer pages are the front door
+- guide hubs are supporting navigation and crawl concentration layers
+- the calculator is the conversion and routing layer
+
+Practical changes made in code:
+
+- calculator hero and quick routes were rewritten to emphasize answer-led entry instead of a concrete-only framing
+- calculator UI now promotes winner-style routes such as:
+  - shingles
+  - mixed remodel debris / plaster
+  - bulky garage loads
+  - concrete / brick
+- guide hubs now promote winner answer pages ahead of the full library
+- project and material priority ordering was updated to better reflect live signal from:
+  - roofing
+  - garage
+  - kitchen plaster / remodel
+  - deck teardown
+  - concrete
+
+Why this matters:
+
+- the earlier product framing still over-assumed that the main calculator page would be the primary SEO surface
+- the data now says the site behaves more like an answer acquisition machine
+- these changes move the site structure closer to that reality instead of forcing a calculator-first interpretation
+
+### Updated reading of the strategy after 2026-04-12
+
+The original broad fear was:
+
+- "Maybe the topic is wrong."
+
+The more accurate answer after this checkpoint is:
+
+- the topic is still not proven large enough,
+- but the current failure mode is not "Google hates the site,"
+- it is "the site is winning only through narrow answer-page discovery while its intended hub layer is still underdeveloped or underindexed."
+
+Practical reading:
+
+- calculator-first is still weak
+- hub-first has not yet had a fair indexed test
+- answer-page acquisition is the clearest current growth surface
+
+### Immediate follow-up after this checkpoint
+
+The next manual actions should be:
+
+1. request indexing for:
+   - `/dumpster/material-guides`
+   - `/dumpster/project-guides`
+   - `/dumpster/answers/kitchen-remodel/plaster/weight-estimate`
+   - `/dumpster/heavy-debris-rules`
+   - `/dumpster/answers/roof-tear-off/shingles/weight-estimate`
+2. re-check the kitchen/plaster page after Google re-crawls it
+3. keep monitoring whether roofing / garage / mixed C&D answer pages outpace the concrete cluster

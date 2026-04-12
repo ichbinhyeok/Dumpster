@@ -115,10 +115,10 @@
 <main class="app-container app-main calc-page">
     <section class="calc-hero">
         <div class="calc-hero__head">
-            <p class="eyebrow">Concrete-first heavy debris sizing</p>
+            <p class="eyebrow">Answer-led heavy debris sizing</p>
             <h1 class="font-display">${model.pageTitle()}</h1>
-        <p>Start with the heavy material that controls the job, then choose the safer route: staged dumpster hauls, one-bin plan, or crew-pickup fallback.</p>
-            <p>This is not a generic cleanup calculator. It is built for concrete, dirt, shingles, brick, and other dense loads where haul limits break naive sizing.</p>
+        <p>Use the calculator as a conversion layer after the right debris question is framed: shingles, garage loads, remodel plaster, concrete, deck teardown, or other high-risk material mixes.</p>
+            <p>This is not a generic cleanup calculator. It is designed for decision-stage debris questions where haul limits, fill rules, and awkward load shapes break naive sizing.</p>
             <p class="meta-note">Reviewed by Debris Decision editorial team · Updated ${model.lastUpdatedIso()}</p>
             <div class="scenario-chip-group">
                 @if("High".equals(model.confidenceTier()))
@@ -135,22 +135,22 @@
         </div>
         <nav class="decision-strip" aria-label="Quick decision routes">
             <a class="decision-pill" data-decision-mode="heavy_material" href="/dumpster/size-weight-calculator?project=concrete_removal&material=concrete&unit=sqft_4in&qty=180&timing=research&priority=heavy">I have concrete or brick</a>
-            <a class="decision-pill" data-decision-mode="dirt_job" href="/dumpster/size-weight-calculator?project=dirt_grading&material=dirt_soil&unit=pickup_load&qty=5&timing=research&priority=heavy">I have dirt or gravel</a>
             <a class="decision-pill" data-decision-mode="roof_job" href="/dumpster/size-weight-calculator?project=roof_tearoff&material=asphalt_shingles&unit=roof_square&qty=22&timing=research&priority=balanced">I have shingles</a>
-            <a class="decision-pill" data-decision-mode="need_fast" href="/dumpster/size-weight-calculator?project=general_junk_removal&material=household_junk&unit=pickup_load&qty=4&timing=48h&priority=speed">I need a fast fallback</a>
+            <a class="decision-pill" data-decision-mode="remodel_job" href="/dumpster/size-weight-calculator?project=kitchen_remodel&material=plaster&unit=pickup_load&qty=3&timing=research&priority=balanced">I have remodel plaster or mixed demo</a>
+            <a class="decision-pill" data-decision-mode="garage_job" href="/dumpster/size-weight-calculator?project=garage_cleanout&material=cardboard_packaging&unit=pickup_load&qty=5&timing=research&priority=balanced">I have bulky garage loads</a>
         </nav>
         <div class="calc-benefits">
             <article class="calc-benefit">
-                <strong>Heavy-load specialist</strong>
-                <p>Start with dense debris where tonnage and transport rules matter more than visible volume.</p>
+                <strong>Answer-first entry</strong>
+                <p>Lead with the real question that wins impressions, then hand off into the estimate only after the debris pattern is clear.</p>
             </article>
             <article class="calc-benefit">
-                <strong>Concrete-first workflows</strong>
-                <p>Move through concrete, dirt, and shingles scenarios with rule-aware presets instead of guesswork.</p>
+                <strong>Dense and awkward loads</strong>
+                <p>Handle shingles, garage overflow, mixed remodel debris, deck teardown, and concrete with the same risk-first engine.</p>
             </article>
             <article class="calc-benefit">
-                <strong>Route plus rules</strong>
-                <p>Compare staged hauls, heavy-load rules, and fallback routes before a pickup failure happens.</p>
+                <strong>Conversion layer</strong>
+                <p>Route each winner scenario into heavy-load options, crew-pickup comparison, or staged-haul planning before booking.</p>
             </article>
         </div>
         <div class="inline-cta-row" style="margin-top:1rem;">
@@ -159,6 +159,21 @@
             <a class="ui-button ui-button--ghost" href="/dumpster/can-you-put-concrete-in-a-dumpster">Open concrete rules</a>
         </div>
     </section>
+
+    @if(model.featuredAnswerLinks() != null && !model.featuredAnswerLinks().isEmpty())
+        <section class="panel">
+            <h2 class="font-display">Winner decision guides</h2>
+            <p>These answer pages now match the site’s real acquisition pattern better than the broad calculator head term.</p>
+            <ul class="link-grid">
+                @for(var link : model.featuredAnswerLinks())
+                    <li>
+                        <a href="${link.href()}">${link.label()}</a>
+                        <span>${link.summary()}</span>
+                    </li>
+                @endfor
+            </ul>
+        </section>
+    @endif
 
     <section class="calc-layout">
         <form id="estimate-form" class="calc-workflow">
@@ -185,11 +200,12 @@
                     </div>
                     <div class="choice-grid">
                         <button type="button" class="choice-chip is-active" data-choice-value="concrete_removal">Concrete removal</button>
-                        <button type="button" class="choice-chip" data-choice-value="dirt_grading">Dirt grading</button>
                         <button type="button" class="choice-chip" data-choice-value="roof_tearoff">Roof tear-off</button>
+                        <button type="button" class="choice-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
                         <button type="button" class="choice-chip" data-choice-value="kitchen_remodel">Kitchen remodel</button>
-                        <button type="button" class="choice-chip" data-choice-value="bathroom_remodel">Bathroom remodel</button>
                         <button type="button" class="choice-chip" data-choice-value="deck_demolition">Deck demo</button>
+                        <button type="button" class="choice-chip" data-choice-value="dirt_grading">Dirt grading</button>
+                        <button type="button" class="choice-chip" data-choice-value="bathroom_remodel">Bathroom remodel</button>
                         <button type="button" class="choice-chip" data-choice-value="light_commercial_fitout">Light commercial fit-out</button>
                     </div>
                     <details class="ui-accordion" style="margin-top:0.9rem;">
@@ -199,7 +215,6 @@
                         </summary>
                         <div class="ui-accordion__body">
                             <div class="choice-grid choice-grid--compact">
-                                <button type="button" class="choice-chip" data-choice-value="garage_cleanout">Garage cleanout</button>
                                 <button type="button" class="choice-chip" data-choice-value="estate_cleanout">Estate cleanout</button>
                                 <button type="button" class="choice-chip" data-choice-value="moving_cleanout">Moving / apartment cleanout</button>
                                 <button type="button" class="choice-chip" data-choice-value="furniture_appliance_disposal">Furniture or appliance disposal</button>
@@ -219,15 +234,15 @@
                     </div>
                     <div class="choice-grid">
                         <button type="button" class="choice-chip is-active" data-choice-value="concrete">Concrete</button>
-                        <button type="button" class="choice-chip" data-choice-value="dirt_soil">Dirt / soil</button>
                         <button type="button" class="choice-chip" data-choice-value="asphalt_shingles">Asphalt shingles</button>
-                        <button type="button" class="choice-chip" data-choice-value="brick">Brick</button>
-                        <button type="button" class="choice-chip" data-choice-value="gravel_rock">Gravel / rock</button>
-                        <button type="button" class="choice-chip" data-choice-value="tile_ceramic">Tile / ceramic</button>
-                        <button type="button" class="choice-chip" data-choice-value="asphalt_pavement">Asphalt pavement</button>
-                        <button type="button" class="choice-chip" data-choice-value="drywall">Drywall</button>
                         <button type="button" class="choice-chip" data-choice-value="mixed_cd">Mixed construction debris (C&amp;D)</button>
+                        <button type="button" class="choice-chip" data-choice-value="cardboard_packaging">Cardboard / bulky packing</button>
                         <button type="button" class="choice-chip" data-choice-value="plaster">Plaster</button>
+                        <button type="button" class="choice-chip" data-choice-value="decking_wood">Decking wood</button>
+                        <button type="button" class="choice-chip" data-choice-value="dirt_soil">Dirt / soil</button>
+                        <button type="button" class="choice-chip" data-choice-value="tile_ceramic">Tile / ceramic</button>
+                        <button type="button" class="choice-chip" data-choice-value="drywall">Drywall</button>
+                        <button type="button" class="choice-chip" data-choice-value="brick">Brick</button>
                     </div>
                     <details class="ui-accordion" style="margin-top:0.9rem;">
                         <summary>
@@ -239,9 +254,10 @@
                                 <button type="button" class="choice-chip" data-choice-value="household_junk">Household junk</button>
                                 <button type="button" class="choice-chip" data-choice-value="furniture">Furniture</button>
                                 <button type="button" class="choice-chip" data-choice-value="carpet_pad">Carpet and pad</button>
-                                <button type="button" class="choice-chip" data-choice-value="decking_wood">Decking wood</button>
                                 <button type="button" class="choice-chip" data-choice-value="insulation_wet">Wet insulation</button>
                                 <button type="button" class="choice-chip" data-choice-value="yard_waste">Yard waste</button>
+                                <button type="button" class="choice-chip" data-choice-value="gravel_rock">Gravel / rock</button>
+                                <button type="button" class="choice-chip" data-choice-value="asphalt_pavement">Asphalt pavement</button>
                             </div>
                         </div>
                     </details>

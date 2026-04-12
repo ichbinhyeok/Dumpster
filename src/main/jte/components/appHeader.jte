@@ -7,7 +7,7 @@
             <span class="brand-mark" aria-hidden="true">DD</span>
             <span class="brand-copy">
                 <strong>Debris Decision</strong>
-                <small>Heavy debris dumpster specialist</small>
+                <small>Answer-first debris decision engine</small>
             </span>
         </a>
         <nav class="site-nav" aria-label="Primary">

@@ -99,12 +99,12 @@
                 </div>
             </article>
             <aside class="launch-card">
-                <h2 class="font-display">Jump into a heavy-debris workflow</h2>
-                <p>Use a concrete, roofing, dirt, or remodel preset first, then fall back to the base calculator only when the job is unusual.</p>
+                <h2 class="font-display">Jump into a winning workflow</h2>
+                <p>Start from roofing, garage, remodel, deck, or concrete answer paths that already align with live demand, then escalate into the calculator only when needed.</p>
                 <div class="inline-cta-row">
                     <a class="ui-button ui-button--primary" href="/dumpster/size-weight-calculator">Run heavy-debris estimate</a>
                     <a class="ui-button ui-button--ghost" href="/about/quote-match-beta">Check local heavy-load options</a>
-                    <a class="ui-button ui-button--ghost" href="/dumpster/size/concrete-removal">Open concrete removal</a>
+                    <a class="ui-button ui-button--ghost" href="/dumpster/answers/garage-cleanout/cardboard-packaging/weight-estimate">Open garage winner</a>
                     <a class="ui-button ui-button--ghost" href="/dumpster/dumpster-vs-junk-removal-which-is-cheaper" data-analytics-event="comparison_hub_entry_click" data-analytics-params='{"source":"project_guides_hub","placement":"hero_cta"}'>Compare dumpster vs crew pickup</a>
                 </div>
             </aside>
@@ -112,9 +112,10 @@
     </section>
 
     <section class="panel">
-        <h2 class="font-display">All project guides</h2>
+        <h2 class="font-display">Winner answer pages</h2>
+        <p>These are the query patterns currently closest to real acquisition. Treat them as the main entry layer, not as supporting content.</p>
         <ul class="link-grid">
-            @for(var link : model.links())
+            @for(var link : model.intentClusterLinks())
                 <li>
                     <a href="${link.href()}">${link.label()}</a>
                     <span>${link.summary()}</span>
@@ -123,11 +124,11 @@
         </ul>
     </section>
 
-    @if(model.intentClusterLinks() != null && !model.intentClusterLinks().isEmpty())
+    @if(model.links() != null && !model.links().isEmpty())
         <section class="panel">
-            <h2 class="font-display">High-intent answer pages</h2>
+            <h2 class="font-display">All project guides</h2>
             <ul class="link-grid">
-                @for(var link : model.intentClusterLinks())
+                @for(var link : model.links())
                     <li>
                         <a href="${link.href()}">${link.label()}</a>
                         <span>${link.summary()}</span>

@@ -50,6 +50,7 @@ public class CalculatorPageController {
                 baseUrl,
                 baseUrl + "/dumpster/size-weight-calculator",
                 seoContentService.ogImageUrl(baseUrl),
+                seoContentService.featuredWinnerAnswerLinks(6),
                 seoContentService.featuredMaterialLinks(6),
                 seoContentService.featuredProjectLinks(6)
         ));
