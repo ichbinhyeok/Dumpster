@@ -675,7 +675,7 @@ textarea:focus,
 
 .entry-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.55fr);
     gap: var(--space-4);
     align-items: start;
 }
@@ -1059,7 +1059,7 @@ textarea:focus,
 
 .rail {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
     gap: var(--space-4);
     align-items: start;
 }

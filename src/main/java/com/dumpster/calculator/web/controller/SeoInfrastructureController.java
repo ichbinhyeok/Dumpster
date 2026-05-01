@@ -94,6 +94,9 @@ public class SeoInfrastructureController {
                 .map(seoContentService::materialCanonicalPath)
                 .forEach(uniquePaths::add);
         seoContentService.priorityIntentPaths().forEach(uniquePaths::add);
+        seoContentService.experimentSpecialPageIndexPaths(seoMaxWave).forEach(uniquePaths::add);
+        seoContentService.experimentProjectIndexPaths(seoMaxWave).forEach(uniquePaths::add);
+        seoContentService.experimentIntentPaths().forEach(uniquePaths::add);
 
         List<SitemapEntry> urls = uniquePaths.stream()
                 .map(path -> new SitemapEntry(path, defaultLastMod))
